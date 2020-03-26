@@ -10,7 +10,7 @@ const staticManifest = null;
 //         fs.readFileSync(path.join(__dirname, '../../AssetManifest.json')),
 //       );
 
-const assetManifestURL = `http://localhost:8081/src/${process.env.CLIENT_SRC}.assets?platform=web`;
+// const assetManifestURL = `http://localhost:8081/src/${process.env.CLIENT_SRC}.assets?platform=web`;
 
 async function fetchManifest() {
   return [];
