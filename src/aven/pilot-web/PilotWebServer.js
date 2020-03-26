@@ -1,18 +1,17 @@
 import App from './PilotWebApp';
-import { createSessionClient, CloudContext } from '@aven/cloud-core';
+import { createSessionClient } from '@aven/cloud-core';
 import { startFSStorageSource } from '@aven/cloud-fs';
 import { attachWebServer } from '@aven/web-server';
 
-const path = require('path');
-const HOME = require('os').homedir();
-console.log('Uh2');
+const appConfig = require('./app.json');
+const homedir = require('os').homedir();
 
-const runServer = async () => {
-  console.log('☁️ Starting Cloud 💨');
+const serverListenLocation = process.env.LISTEN_PATH || '8080';
 
+export default async function runServer() {
   const storageSource = await startFSStorageSource({
     domain: 'pilot.aven.io',
-    dataDir: HOME + '/db',
+    dataDir: homedir + '/db',
   });
 
   const source = createSessionClient({
@@ -21,27 +20,12 @@ const runServer = async () => {
     auth: null,
   });
 
-  const context = new Map();
-
-  context.set(CloudContext, source);
   const webService = await attachWebServer({
     App,
-    context,
     source,
-    serverListenLocation: process.env.LISTEN_PATH || '8080',
-    publicDir: path.join(__dirname, '../../../client'),
-    assets: {
-      client: {
-        js:
-          process.env.NODE_ENV === 'development'
-            ? 'http://localhost:8081/src/aven/pilot-web/PilotWebClient.js.bundle?platform=web'
-            : `/main.js`,
-      },
-    },
-    publicDir: [!__DEV__ && path.join(__dirname, '../../../public')],
+    appConfig,
+    serverListenLocation,
   });
-
-  console.log('☁️️ Web Ready 🕸');
 
   return {
     close: async () => {
@@ -49,11 +33,22 @@ const runServer = async () => {
       await source.close();
     },
   };
-};
+}
 if (require.main === module) {
   runServer()
-    .then(() => {
-      console.log('Started!');
+    .then(({ close }) => {
+      process.on('SIGINT', () => {
+        close()
+          .then(() => {
+            console.log('Server Closed');
+            process.exit(0);
+          })
+          .catch(err => {
+            console.error('Error closing server');
+            console.error(err);
+            process.exit(1);
+          });
+      });
     })
     .catch(err => {
       console.error('Error running server');
@@ -61,4 +56,3 @@ if (require.main === module) {
       process.exit(1);
     });
 }
-export default runServer;

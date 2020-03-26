@@ -4,7 +4,12 @@
   "private": true,
   "scripts": {
     "pg": "cd src/aven/cloud-postgres; docker-compose up",
-    "dev": "node ./node_modules/@react-native-community/cli/build/bin.js start --reset-cache",
+    "dev": "node scripts/dev.js",
+    "dev-server": "node scripts/dev-server.js",
+    "pods": "node scripts/pods.js",
+    "build": "node scripts/build.js",
+    "start": "node scripts/start.js",
+    "run-ios": "node scripts/run-ios.js",
     "wing:dev": "concurrently \"yarn wing:dev-server\" \"yarn dev\"",
     "wing:dev-server": "cross-env CLIENT_SRC=aven/wing-web/WingWebClient.js BABEL_ENV=web-development NODE_ENV=development yarn babel-node src/aven/wing-web/WingWebServer.js",
     "wing:xcode": "open wing-mobile/ios/wing.xcworkspace",
@@ -26,8 +31,7 @@
     "pilot:create-bundles": "concurrently \"yarn pilot:bundle-client\" \"yarn pilot:bundle-server\" \"yarn pilot:create-asset-manifest\"",
     "pilot:bundle-server": "cross-env NODE_ENV=web-production yarn babel -d dist/pilot/server src",
     "pilot:bundle-client": "mkdirp dist/pilot/client dist/pilot/public && react-native bundle --entry-file src/aven/pilot-web/PilotWebClient.js --dev false --platform web --reset-cache --bundle-output dist/pilot/public/main.js --assets-dest dist/pilot/client",
-    "pilot:create-asset-manifest": "node scripts/bundleAssets.js pilot aven/pilot-web/PilotWebClient.js",
-    "legal-experimental": "cross-env BABEL_ENV=web-development NODE_ENV=development yarn babel-node src/aven/legal-experimental/test.js"
+    "pilot:create-asset-manifest": "node scripts/bundleAssets.js pilot aven/pilot-web/PilotWebClient.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

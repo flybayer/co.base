@@ -113,6 +113,10 @@ window.addEventListener('error', function(evt) {
 </script>
 `;
 
+const DEFAULT_PUB_DIR = __DEV__
+  ? null
+  : path.join(__dirname, '../../../public');
+
 export default async function attachWebServer({
   httpServer,
   App,
@@ -121,13 +125,16 @@ export default async function attachWebServer({
   serverListenLocation,
   expressRouting = undefined,
   fallbackExpressRouting = undefined,
-  assets,
   sourceDomain,
   domainAppOverrides,
   augmentRequestDispatchAction,
+  appConfig,
   screenProps,
-  publicDir = isProd ? 'build/public' : 'public',
+  publicDir = DEFAULT_PUB_DIR,
 }) {
+  const clientBundlePath = __DEV__
+    ? `http://localhost:8081/src/${appConfig.name}/${appConfig.clientEntry}.bundle?platform=web`
+    : '/main.js';
   let appIdCount = 0;
   function registerDomainApp(DomainApp) {
     const appId = `App${appIdCount}`;
@@ -135,9 +142,11 @@ export default async function attachWebServer({
     AppRegistry.registerComponent(appId, () => {
       function AppWithContext(props) {
         let el = <DomainApp {...props} />;
-        context.forEach((value, C) => {
-          el = <C.Provider value={value}>{el}</C.Provider>;
-        });
+        context &&
+          context.forEach((value, C) => {
+            el = <C.Provider value={value}>{el}</C.Provider>;
+          });
+        el = <CloudContext.Provider value={source}>{el}</CloudContext.Provider>;
         el = (
           <NavigationContext.Provider value={props.navigation}>
             {el}
@@ -304,8 +313,8 @@ export default async function attachWebServer({
             }
             ${
               isProd
-                ? `<script src="${assets.client.js}" defer></script>`
-                : `<script src="${assets.client.js}" defer crossorigin></script>`
+                ? `<script src="${clientBundlePath}" defer></script>`
+                : `<script src="${clientBundlePath}" defer crossorigin></script>`
             }
             ${
               dataPayload

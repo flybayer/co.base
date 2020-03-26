@@ -1252,7 +1252,9 @@ export function createDocSet({
 
 function sourceFromRootDocSet(rootDocSet, domain, source, auth) {
   const sourceId = `CloudClient-${cuid()}`;
-  function close() {}
+  async function close() {
+    // todo: get rid of local state...
+  }
 
   function getDocStream(subsDomain, name, auth) {
     if (subsDomain !== domain) {
