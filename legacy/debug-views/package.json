@@ -1,9 +1,0 @@
-{
-  "name": "@aven-cloud/debug-views",
-  "version": "1.1.0",
-  "aven": {
-    "srcDependencies": [],
-    "moduleDependencies": []
-  },
-  "srcChecksum": "489e1102107318d5a8ab3a845f9a1a72fe22bbed8ff293f091533a90780963e8"
-}
