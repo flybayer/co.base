@@ -19,13 +19,13 @@ jobs:
           sudo sysctl fs.inotify.max_user_watches=524288
           sudo sysctl -p
 
-          yarn wing:build
+          yarn build aven/wing
 
       - name: Deploy to Runtime Server
         uses: AvenCloud/actions/deploy@v1
         with:
           domains: wing.aven.io
-          start-server-command: /usr/bin/yarn wing:start
+          start-server-command: /usr/bin/yarn start aven/wing
           runtime-server-timezone: America/Los_Angeles
           deploy-key: ${{ secrets.DEPLOY_KEY }}
 

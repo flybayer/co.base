@@ -1,5 +1,5 @@
 import { startWebClient } from '@aven/web-browser';
-import App from './PilotWebApp';
+import App from './WingApp';
 import { createBrowserNetworkSource } from '@aven/cloud-browser';
 import { createSessionClient, CloudContext } from '@aven/cloud-core';
 

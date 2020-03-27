@@ -1,0 +1,5 @@
+{
+  "name": "aven/pilot",
+  "clientEntry": "PilotClient.js",
+  "serverEntry": "PilotServer.js"
+}

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "pg": "cd src/aven/cloud-postgres; docker-compose up",
+    "init-web": "node scripts/init-web.js",
     "dev": "node scripts/dev.js",
     "dev-server": "node scripts/dev-server.js",
     "pods": "node scripts/pods.js",
@@ -89,6 +90,7 @@
     "pg": "^7.5.0",
     "pg-format": "^1.0.4",
     "prism-react-renderer": "^0.1.5",
+    "prompts": "^2.3.2",
     "query-string": "^6.2.0",
     "react": "16.9.0",
     "react-art": "^16.9.0",

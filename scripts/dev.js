@@ -10,8 +10,15 @@ const appConfig = appConfigPath && JSON.parse(fs.readFileSync(appConfigPath));
 
 async function startDevServer() {
   spawn(
-    pathJoin(__dirname, '../node_modules/.bin/react-native'),
-    ['start', '--reset-cache'],
+    'node',
+    [
+      pathJoin(
+        __dirname,
+        '../node_modules/@react-native-community/cli/build/bin.js',
+      ),
+      'start',
+      '--reset-cache',
+    ],
     {
       stdio: 'inherit',
     },

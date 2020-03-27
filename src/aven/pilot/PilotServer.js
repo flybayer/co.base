@@ -1,4 +1,4 @@
-import App from './PilotWebApp';
+import App from './PilotApp';
 import { createSessionClient } from '@aven/cloud-core';
 import { startFSStorageSource } from '@aven/cloud-fs';
 import { attachWebServer } from '@aven/web-server';
