@@ -1,14 +1,14 @@
 ## What is the main difference between React, React Native and Aven?
 
-React - JS system for putting things on the screen. Provides JSX
-React Native - Uses React. Styling system on web, and the code framework on iOS and Android. Gives us "View and Text" components
-Aven - Uses React native and React. Full application framework for building websites and mobile apps. Includes a solution for navigation and database. Gives us cloud and navigation (uses React navigation)
+**React** - JS library for UI components. Provides JSX
+**React Native** - Uses React. Styling system on web, and the code framework on iOS and Android. Provides `<View>` and `<Text>` components
+**Aven** - Uses React native and React. Full application framework for building websites and mobile apps. Includes a solution for navigation and database. Gives us cloud and navigation (built upon **React navigation**)
 
 ## Why would I use Aven?
 
-The main reason right now Aven is the first framework that works on iOS, web and Android, and also includes a database solution. It provides a full solution, great for beginners and companies.
+Aven is the first framework for web, Android and iOS that includes a database solution. The full-solution approach is ideal for beginners, and for companies who need a full stack.
 
-What are the components of Aven
+## What are the components of Aven
 
 - Aven Cloud - Database solution, client, server
 - Aven Plane - UI library
@@ -18,22 +18,24 @@ What are the components of Aven
 
 There are several approaches
 
-**New application Aven Cloud**
+**Greenfield Aven Cloud**
+
+Use Aven Cloud for a new application, on top of PostgreSQL
 
 **Legacy data source**
 
-- Create a custom data source for a new Aven application
+- Create a custom data source for a new Aven application, backed by your existing backend
 - Test and deploy your new app
 
 **Partial Aven app (no Aven Cloud)**
 
-- Use fetch or a graphql client to connect your Aven client apps to your existing backend
+- Use fetch or a graphql client to connect Aven client apps to your existing backend
 
 **Production Switchover**
 
 - Keep old server running
-- Prototype new app with aven cloud
-- Create migration script to copy from old app to aven cloud app
+- Prototype new app with Aven Cloud
+- Create migration script to copy from old app to Aven Cloud app
 - Run the migration script, on a schedule
 - Switch over to new app
 
@@ -41,14 +43,16 @@ There are several approaches
 
 If you want to use Cloud, Plane, or Navigation, and you want to copy-paste code from this repository:
 
-- For everything imported from '@aven/\*' this will need to be installed from npm, but currently it is not published there!
+- For everything imported from '@aven/\*' this will need to be installed from npm, but currently it is not published there! (This is why we reccomend forking this repo)
 - The code in this repo imports from '@rn', and in your application, it will import from 'react-native' or 'react-native-web'
 
-## What happens if I'm using a different version?
+## What happens if I'm using different versions?
 
-The main reason you just start to use Aven is because you won't have any compatibility issues. This is the supported way
+This respository aims to provide a working and mostly up-to-date set of dependencies for you.
 
-You are welcome to test other versions.
+If you want to manage versions yourself, you can take guidance from the package.json of this repo, in the commit of the code you need grab.
+
+You are welcome to test other versions and report problems that you find.
 
 ## What is the main difference between react and aven navigations?
 
@@ -70,12 +74,8 @@ The important thing: most of the time, the Aven repository will provide a workin
 
 ## Is Aven secure?
 
-Aven is designed to be secure, and is built with common technologies and security patterns, but it has not stood the test of time and has not earned a robust security history.
+Aven is built with common security patterns and it is possible to build secure applications with the framework, but the project is still young and has not been fully audited for security.
 
 ## What happens if Aven loses support?
 
-Eric will maintain this project for as long as he can, but if he dies, you may be responsible for mainting the Aven components such as Cloud and Plane.
-
-could you elaborate on the components of Aven (I mean in deep detail)
-could you give examples on database queries
-could I use more packages like axios without creating issues
+Eric will maintain this project for as long as he can, but if he dies, you may be responsible for maintaining the Aven components such as Cloud and Plane, along with other Aven users.
