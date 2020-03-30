@@ -2,6 +2,10 @@ import App from './WingApp';
 import { createSessionClient } from '@aven/cloud-core';
 import { startFSStorageSource } from '@aven/cloud-fs';
 import { attachWebServer } from '@aven/web-server';
+import { createEmailAuthProvider } from '@aven/cloud-auth-email';
+import { createProtectedSource } from '@aven/cloud-auth';
+import { EmailAgent } from '@aven/email-agent-sendgrid';
+import { SMSAgent } from '@aven/sms-agent-twilio';
 
 const appConfig = require('./app.json');
 const homedir = require('os').homedir();
@@ -14,10 +18,41 @@ export default async function runServer() {
     dataDir: homedir + '/db',
   });
 
-  const source = createSessionClient({
+  const privateCloud = createSessionClient({
     source: storageSource,
     domain: 'todo.aven.io',
     auth: null,
+  });
+
+  const emailAgent = EmailAgent({
+    defaultFromEmail: 'Aven Support <admin@aven.io>',
+    config: {
+      sendgridAPIKey: process.env.SENDGRID_API_KEY,
+    },
+  });
+
+  const smsAgent = SMSAgent({
+    defaultFromNumber: process.env.TWILIO_FROM_NUMBER,
+    config: {
+      accountSid: process.env.TWILIO_ACCOUNT_SID,
+      authToken: process.env.TWILIO_AUTH_TOKEN,
+    },
+  });
+
+  const emailAuthProvider = createEmailAuthProvider({
+    agent: emailAgent,
+    getMessage: async (authCode, verifyInfo, accountId) => {
+      const subject = 'Welcome to Aven';
+
+      const message = `To log in, your code is ${authCode}`;
+
+      return { subject, message };
+    },
+  });
+
+  const source = createProtectedSource({
+    source: privateCloud,
+    providers: [emailAuthProvider],
   });
 
   const webService = await attachWebServer({
