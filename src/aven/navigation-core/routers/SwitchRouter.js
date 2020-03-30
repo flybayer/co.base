@@ -238,15 +238,13 @@ export default (routeConfigs, config = {}) => {
           }
           return false;
         });
-        if (didNavigate) {
+        if (didNavigate || action.params) {
           const childState = state.routes[activeChildIndex];
           const childRouter = childRouters[action.routeName];
           let newChildState = childState;
 
           if (action.params) {
-            const updatedParams = newChildState.params
-              ? { ...newChildState.params }
-              : {};
+            const updatedParams = {};
             Object.keys(action.params).forEach(paramName => {
               if (
                 !config.explicitParams ||
