@@ -4,7 +4,7 @@ function defaultGetMessage(verifyCode) {
   return `Your code is ${verifyCode}`;
 }
 
-export default function SMSAuthProvider({ agent, getMessage }) {
+export default function createSMSAuthProvider({ agent, getMessage }) {
   const authProviderName = 'sms';
   function identifyInfo(verificationInfo) {
     if (!verificationInfo || !verificationInfo.number) {

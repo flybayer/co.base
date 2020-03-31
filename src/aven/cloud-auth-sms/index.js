@@ -1,1 +1,1 @@
-export { default as SMSAuthProvider } from './SMSAuthProvider';
+export { default as createSMSAuthProvider } from './createSMSAuthProvider';
