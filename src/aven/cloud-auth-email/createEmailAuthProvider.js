@@ -7,7 +7,7 @@ function defaultGetMessage(verifyCode) {
   };
 }
 
-export default function EmailAuthProvider({
+export default function createEmailAuthProvider({
   agent,
   getMessage,
   acceptableEmailRegex,

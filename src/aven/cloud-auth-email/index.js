@@ -1,1 +1,1 @@
-export { default as EmailAuthProvider } from './EmailAuthProvider';
+export { default as createEmailAuthProvider } from './createEmailAuthProvider';
