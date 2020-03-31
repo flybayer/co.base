@@ -1,6 +1,6 @@
 import { uuid, checksum, getAuthDocName } from '@aven/cloud-utils';
 import { Err, createDispatcher } from '@aven/utils';
-import { createProducerStream } from '@aven/cloud-core';
+import { createProducerStream } from '@aven/stream';
 
 export default function createProtectedSource({
   source,

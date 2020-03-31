@@ -1,4 +1,3 @@
-export * from './createMemoryStream';
 export * from './Kite';
 export * from './KiteReact';
 export * from './maxBlockRefCount';

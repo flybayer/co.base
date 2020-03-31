@@ -2,7 +2,7 @@
 
 In cloud-core, there is a built-in stream library.
 
-The source code is in `src/aven/cloud-core/createMemoryStream.js`
+The source code is in `src/aven/stream/Stream.js`
 
 ```js
 import {
@@ -15,14 +15,12 @@ import {
   streamOfValue,
   streamOf,
   streamNever,
-} from '@aven/cloud-core'
+} from '@aven/stream';
 ```
 
 ## Creating a stream
 
 ### state streams - streamOfValue, streamOf, streamNever
-
-
 
 ### producer stream
 
@@ -42,4 +40,3 @@ stream.compose
 stream.spy
 stream.cacheFirst
 stream.dropRepeats
-

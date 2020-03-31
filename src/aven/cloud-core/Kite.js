@@ -10,7 +10,7 @@ import {
   streamOfValue,
   streamNever,
   combineStreams,
-} from './createMemoryStream';
+} from '@aven/stream';
 
 function getNow() {
   return Math.floor(new Date().getTime() / 1000);

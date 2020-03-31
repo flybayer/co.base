@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs-compat';
 import { createGenericDataSource } from '@aven/cloud-core';
 import { Err, getIdOfValue } from '@aven/utils';
-import { streamOf } from '@aven/cloud-core';
+import { streamOf } from '@aven/stream';
 
 const fs = require('fs-extra');
 const pathJoin = require('path').join;

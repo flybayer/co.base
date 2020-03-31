@@ -1,6 +1,6 @@
 import createGenericDataSource from './createGenericDataSource';
 import { getIdOfValue } from '@aven/utils';
-import { streamOfValue } from './createMemoryStream';
+import { streamOfValue } from '@aven/stream';
 
 export default function createMemoryStorageSource(opts = {}) {
   const primaryDomain = opts.domain;

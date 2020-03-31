@@ -1,11 +1,7 @@
 import Knex from 'knex';
 import cuid from 'cuid';
-import {
-  getMaxListDocs,
-  bindCommitDeepBlock,
-  streamOf,
-  createProducerStream,
-} from '@aven/cloud-core';
+import { getMaxListDocs, bindCommitDeepBlock } from '@aven/cloud-core';
+import { streamOf, createProducerStream } from '@aven/stream';
 import { Err, createDispatcher, getIdOfValue } from '@aven/utils';
 
 const pgFormat = require('pg-format');

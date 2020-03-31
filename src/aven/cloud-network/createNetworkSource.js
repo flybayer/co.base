@@ -1,6 +1,6 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { Err } from '@aven/utils';
-import { streamOf, createProducerStream } from '@aven/cloud-core';
+import { streamOf, createProducerStream } from '@aven/stream';
 
 let idIndex = 0;
 const idBase = Date.now();
