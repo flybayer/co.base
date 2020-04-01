@@ -6,6 +6,7 @@ import { createEmailAuthProvider } from '@aven/cloud-auth-email';
 import { createProtectedSource } from '@aven/cloud-auth';
 import { EmailAgent } from '@aven/email-agent-sendgrid';
 import { SMSAgent } from '@aven/sms-agent-twilio';
+import * as appConfig from './app.json';
 
 const appConfig = require('./app.json');
 const homedir = require('os').homedir();
@@ -14,13 +15,13 @@ const serverListenLocation = process.env.LISTEN_PATH || '8080';
 
 export default async function runServer() {
   const storageSource = await startFSStorageSource({
-    domain: 'pilot.aven.io',
+    domain: appConfig.domain,
     dataDir: homedir + '/db',
   });
 
   const privateCloud = createSessionClient({
     source: storageSource,
-    domain: 'todo.aven.io',
+    domain: appConfig.domain,
     auth: null,
   });
 

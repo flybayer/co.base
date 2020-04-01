@@ -2,6 +2,7 @@ import { startWebClient } from '@aven/web-browser';
 import App from './WingApp';
 import { createBrowserNetworkSource } from '@aven/cloud-browser';
 import { createClient, CloudContext } from '@aven/cloud-core';
+import * as appConfig from './app.json';
 
 const networkSource = createBrowserNetworkSource({
   authority: null, // this means to inherit from the server
@@ -10,7 +11,7 @@ const networkSource = createBrowserNetworkSource({
 
 const client = createClient({
   source: networkSource,
-  domain: 'pilot.aven.io',
+  domain: appConfig.domain,
 });
 
 const context = new Map();

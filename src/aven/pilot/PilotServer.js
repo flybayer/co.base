@@ -1,22 +1,22 @@
 import App from './PilotApp';
-import { createSessionClient } from '@aven/cloud-core';
+import { createCloud } from '@aven/cloud-core';
 import { startFSStorageSource } from '@aven/cloud-fs';
 import { attachWebServer } from '@aven/web-server';
+import * as appConfig from './app.json';
 
-const appConfig = require('./app.json');
 const homedir = require('os').homedir();
 
 const serverListenLocation = process.env.LISTEN_PATH || '8080';
 
 export default async function runServer() {
   const storageSource = await startFSStorageSource({
-    domain: 'pilot.aven.io',
+    domain: appConfig.domain,
     dataDir: homedir + '/db',
   });
 
-  const source = createSessionClient({
+  const source = createCloud({
     source: storageSource,
-    domain: 'todo.aven.io',
+    domain: appConfig.domain,
     auth: null,
   });
 
