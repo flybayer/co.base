@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from '@rn';
 import { createFullscreenSwitchNavigator } from '@aven/navigation-web';
-import { useCloudClient } from '@aven/cloud-core';
+import { useCloudClient } from '@aven/cloud';
 import { useFocus, useNavigation } from '@aven/navigation-hooks';
 import { Button, Stack, TextInput } from '@aven/plane';
 import { Link } from '@aven/navigation-web';

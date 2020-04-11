@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@aven/cloud": ["./src/aven/cloud"],
       "@aven/cloud-auth": ["./src/aven/cloud-auth"],
       "@aven/cloud-auth-email": ["./src/aven/cloud-auth-email"],
       "@aven/cloud-auth-message": ["./src/aven/cloud-auth-message"],

@@ -1,5 +1,5 @@
 import App from './WingApp';
-import { createSessionClient } from '@aven/cloud-core';
+import { createCloud } from '@aven/cloud-core';
 import { startFSStorageSource } from '@aven/cloud-fs';
 import { attachWebServer } from '@aven/web-server';
 import { createEmailAuthProvider } from '@aven/cloud-auth-email';
@@ -8,7 +8,6 @@ import { EmailAgent } from '@aven/email-agent-sendgrid';
 import { SMSAgent } from '@aven/sms-agent-twilio';
 import * as appConfig from './app.json';
 
-const appConfig = require('./app.json');
 const homedir = require('os').homedir();
 
 const serverListenLocation = process.env.LISTEN_PATH || '8080';
@@ -19,7 +18,7 @@ export default async function runServer() {
     dataDir: homedir + '/db',
   });
 
-  const privateCloud = createSessionClient({
+  const storageCloud = createCloud({
     source: storageSource,
     domain: appConfig.domain,
     auth: null,
@@ -51,14 +50,14 @@ export default async function runServer() {
     },
   });
 
-  const source = createProtectedSource({
-    source: privateCloud,
+  const protectedCloud = createProtectedSource({
+    source: storageCloud,
     providers: [emailAuthProvider],
   });
 
   const webService = await attachWebServer({
     App,
-    source,
+    source: protectedCloud,
     appConfig,
     serverListenLocation,
   });
@@ -66,7 +65,8 @@ export default async function runServer() {
   return {
     close: async () => {
       await webService.close();
-      await source.close();
+      await storageCloud.close();
+      await protectedCloud.close();
     },
   };
 }

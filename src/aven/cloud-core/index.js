@@ -1,10 +1,5 @@
-export * from './Kite';
-export * from './KiteReact';
 export * from './maxBlockRefCount';
 export * from './maxListDocs';
-export * from './HostContext';
-export { default as CloudContext } from './CloudContext';
-export { default as useCloudState } from './useCloudState';
 export { default as authenticateSource } from './authenticateSource';
 export { default as monitorSource } from './monitorSource';
 export { default as createGenericDataSource } from './createGenericDataSource';
@@ -12,3 +7,10 @@ export { default as createMemoryStorageSource } from './createMemoryStorageSourc
 export { default as bindCommitDeepBlock } from './bindCommitDeepBlock';
 export { default as defineCloudFunction } from './defineCloudFunction';
 export { default as defineCloudReducer } from './defineCloudReducer';
+export { default as createClient } from './createClient';
+export { default as createReducedDoc } from './createReducedDoc';
+export { default as createSyntheticDoc } from './createSyntheticDoc';
+export { default as createStreamDoc } from './createStreamDoc';
+export { default as createReducerStream } from './createReducerStream';
+export { default as createLocalSessionClient } from './createLocalSessionClient';
+export { default as createCloud } from './createCloud';

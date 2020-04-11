@@ -1,19 +1,5 @@
 import React from 'react';
 
-export const CloudContext = React.createContext(null);
-
-export function useCloudClient() {
-  return React.useContext(CloudContext);
-}
-
-export function useCloud() {
-  const cloudClient = useCloudClient();
-  if (!cloudClient) {
-    throw new Error('No Cloud Client found in context!');
-  }
-  return cloudClient.getCloud ? cloudClient.getCloud() : cloudClient; // hacky temp.. should always .getCloud on a real client..
-}
-
 export function useStream(stream) {
   const isStream = !!stream && !!stream.addListener;
 
@@ -62,37 +48,4 @@ export function useStream(stream) {
   }
 
   return value;
-}
-export function useCloudValue(cloudValueInput) {
-  let cloudVal = cloudValueInput;
-  const cloud = useCloud();
-  if (typeof cloudValueInput === 'string') {
-    const doc = cloud.get(cloudValueInput);
-    cloudVal = doc.value;
-  }
-  if (cloudVal === null) {
-    return null;
-  }
-  if (!cloudVal) {
-    throw new Error('Cloud value must have a stream');
-  }
-  return useStream(cloudVal);
-}
-
-export function defineCloudFunction(name, fn, versionId) {
-  return {
-    type: 'CloudFunction',
-    name,
-    fn,
-    versionId,
-  };
-}
-
-export function defineCloudReducer(reducerName, reducerFn, initialState) {
-  return {
-    type: 'CloudReducer',
-    reducerName,
-    reducerFn,
-    initialState,
-  };
 }

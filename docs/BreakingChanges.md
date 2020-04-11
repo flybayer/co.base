@@ -49,3 +49,28 @@ They have been moved to:
 ## 2020 3 30 - useObervable has been removed
 
 This hook was used with rxjs in the past, which has since been removed from the framework. The best alternative is probably [rxjs-hooks](https://github.com/LeetCode-OpenSource/rxjs-hooks).
+
+## 2020 3 31 - Renaming cloud clients, moving React utils to @aven/cloud
+
+`import { createSessionClient } from '@aven/cloud-core';`
+Has been moved to:
+`import { createCloud } from '@aven/cloud';`
+
+`import { createLocalSessionClient } from '@aven/cloud-core';`
+Has been moved to:
+`import { createPersistedCloud } from '@aven/cloud';`
+
+The following modules would previously be imported from `@aven/cloud-core`, and they are now under `@aven/cloud`:
+
+```js
+import {
+  useCloud,
+  useCloudClient,
+  useCloudState,
+  useCloudValue,
+  useStream
+  CloudContext,
+  HostContext,
+  HostContextContainer,
+} from '@aven/cloud';
+```

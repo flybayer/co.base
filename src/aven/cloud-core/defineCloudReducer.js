@@ -1,3 +1,12 @@
-import { defineCloudReducer } from './KiteReact';
-
-export default defineCloudReducer;
+export default function defineCloudReducer(
+  reducerName,
+  reducerFn,
+  initialState,
+) {
+  return {
+    type: 'CloudReducer',
+    reducerName,
+    reducerFn,
+    initialState,
+  };
+}

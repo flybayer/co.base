@@ -4,7 +4,7 @@ Here we describe the main tools for accessing data from your application.
 
 ## Authenticated and non-authenticated clients
 
-createSessionClient produces a client for a given session (auth object, which can be null). createClient allows you to log in, and it will automatically maintain the session client on your behalf.
+createCloud produces a client for a given session (auth object, which can be null). createClient allows you to log in, and it will automatically maintain the cloud on your behalf.
 
 ## Cloud API
 

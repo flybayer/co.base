@@ -8,6 +8,7 @@
           "@rn": "./src/aven/infra/ReactNative",
 
           "@aven/browser": "./src/aven/browser",
+          "@aven/cloud": "./src/aven/cloud",
           "@aven/cloud-auth": "./src/aven/cloud-auth",
           "@aven/cloud-auth-sms": "./src/aven/cloud-auth-sms",
           "@aven/cloud-auth-email": "./src/aven/cloud-auth-email",
@@ -69,6 +70,7 @@
               "@rn": "react-native-web",
 
               "@aven/browser": "./src/aven/browser",
+              "@aven/cloud": "./src/aven/cloud",
               "@aven/cloud-auth": "./src/aven/cloud-auth",
               "@aven/cloud-auth-sms": "./src/aven/cloud-auth-sms",
               "@aven/cloud-auth-email": "./src/aven/cloud-auth-email",
@@ -130,6 +132,7 @@
               "@rn": "react-native-web",
 
               "@aven/browser": "./src/aven/browser",
+              "@aven/cloud": "./src/aven/cloud",
               "@aven/cloud-auth": "./src/aven/cloud-auth",
               "@aven/cloud-auth-sms": "./src/aven/cloud-auth-sms",
               "@aven/cloud-auth-email": "./src/aven/cloud-auth-email",
