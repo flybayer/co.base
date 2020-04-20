@@ -7,7 +7,7 @@ export default function createStreamDoc(
   onCreateChild,
 ) {
   const value = idAndValueStream
-    .map(valuePluck)
+    .map(idAndValue => idAndValue.value)
     .filter(v => v !== undefined, 'StreamDocValueFilterUndefined');
   return {
     type: 'StreamDoc',
