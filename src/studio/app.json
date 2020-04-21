@@ -1,0 +1,6 @@
+{
+  "name": "studio",
+  "clientEntry": "StudioClient.js",
+  "serverEntry": "StudioServer.js",
+  "domain": "studio.aven.io"
+}

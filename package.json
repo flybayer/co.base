@@ -13,7 +13,8 @@
     "run-ios": "node scripts/run-ios.js",
     "pilot:xcode": "open src/aven/pilot-mobile/ios/pilot.xcworkspace",
     "pilot:run-ios": "yarn react-native run-ios --project-path src/aven/pilot-mobile/ios",
-    "pilot:pods": "cd src/aven/pilot-mobile/ios && pod install && cd -"
+    "pilot:pods": "cd src/aven/pilot-mobile/ios && pod install && cd -",
+    "studio:electron": "electron src/studio-controller/"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -62,6 +63,7 @@
     "create-react-context": "^0.2.3",
     "crypto-js": "^3.1.9-1",
     "cuid": "^2.1.6",
+    "electron": "^8.2.1",
     "ethernet-ip": "^1.2.2",
     "expo-av": "^8.0.0",
     "expo-permissions": "^8.0.0",
