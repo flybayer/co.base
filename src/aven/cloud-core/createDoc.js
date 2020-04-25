@@ -6,6 +6,10 @@ import { createProducerStream, streamOfValue, streamNever } from '@aven/stream';
 
 import cuid from 'cuid';
 
+function getNow() {
+  return Math.floor(new Date().getTime() / 1000);
+}
+
 export default function createDoc({
   source,
   domain,
