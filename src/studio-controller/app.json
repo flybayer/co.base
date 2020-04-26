@@ -1,0 +1,6 @@
+{
+  "name": "studio-controller",
+  "type": "electron",
+  "electronEntry": "StudioController.js",
+  "clientEntry": "StudioControllerClient.js"
+}
