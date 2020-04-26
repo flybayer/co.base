@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function useStream(stream) {
+export default function useStream(stream) {
   const isStream = !!stream && !!stream.addListener;
 
   const [value, setValue] = React.useState(

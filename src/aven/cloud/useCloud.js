@@ -1,4 +1,4 @@
-import React from 'react';
+import useCloudClient from './useCloudClient';
 
 export default function useCloud() {
   const cloudClient = useCloudClient();

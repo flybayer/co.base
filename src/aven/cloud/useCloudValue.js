@@ -1,3 +1,6 @@
+import useStream from './useStream';
+import useCloud from './useCloud';
+
 export default function useCloudValue(cloudValueInput) {
   let cloudVal = cloudValueInput;
   const cloud = useCloud();
