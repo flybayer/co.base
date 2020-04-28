@@ -23,3 +23,6 @@ testdb.sqlite
 codepush-build
 
 public
+public2
+
+.env
