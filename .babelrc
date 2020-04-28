@@ -67,7 +67,7 @@
         [
           "module-resolver",
           {
-            "extensions": [".web.js", ".js", ".json"],
+            "extensions": [".web.js", ".js", ".ts", ".tsx", ".json"],
             "alias": {
               "@rn": "react-native-web",
 
@@ -131,7 +131,7 @@
         [
           "module-resolver",
           {
-            "extensions": [".web.js", ".js", ".json"],
+            "extensions": [".web.js", ".js", ".ts", ".tsx", ".json"],
             "alias": {
               "@rn": "react-native-web",
 

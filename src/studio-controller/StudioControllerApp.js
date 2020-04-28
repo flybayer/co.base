@@ -18,7 +18,6 @@ function TestForm() {
   return (
     <View style={{ marginVertical: 20 }}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        Email address:
         <input
           name="email"
           ref={register({
@@ -49,7 +48,6 @@ export default function App() {
         justifyContent: 'center',
       }}
     >
-      Current email address:
       <Text style={{ fontSize: 32, textAlign: 'center' }}>{testVal}</Text>
       <TestForm />
     </View>

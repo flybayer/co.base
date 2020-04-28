@@ -1,9 +1,15 @@
-import { startFSStorageSource } from '@aven/cloud-fs';
+import {
+  startFSStorageSource,
+  connectSourceGit,
+  saveDirectory,
+} from '@aven/cloud-fs';
+import { createCloud } from '@aven/cloud-core';
 import { mountElectronApp } from '@aven/electron';
 import { mainSourceProvider } from '@aven/cloud-electron';
 import * as appConfig from './app.json';
 
 const { app, BrowserWindow } = require('electron');
+const path = require('path');
 
 // suppress a warning:
 app.allowRendererProcessReuse = true;
@@ -15,9 +21,19 @@ async function startApp() {
     dataDir: process.env['DATA_DIR'] || 'studio.data',
     domain: 'studio.aven.io',
   });
-  mainSourceProvider('StudioSource', () => mainWindow, storageSource);
+  const cloud = createCloud({
+    source: storageSource,
+    domain: 'studio.aven.io',
+  });
+  mainSourceProvider('StudioSource', () => mainWindow, cloud);
   createMainWindow();
-
+  await saveDirectory(process.cwd(), cloud.get('AvenRepo'));
+  // await connectSourceGit(
+  //   storageSource,
+  //   'studio.aven.io',
+  //   'AvenRepo',
+  //   process.cwd(),
+  // );
   // Open the DevTools:
   // mainWindow.webContents.openDevTools();
   return () => {
