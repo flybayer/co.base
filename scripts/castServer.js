@@ -1,5 +1,5 @@
-import { startFSStorageSource } from '@aven/cloud-fs';
-import { createCloud } from '@aven/cloud-core';
+// import { startFSStorageSource } from '@aven/cloud-fs';
+// import { createCloud } from '@aven/cloud-core';
 
 require('dotenv').config();
 const fetch = require('node-fetch');
@@ -32,12 +32,13 @@ async function doV2QueryAll(query, getPageData) {
 }
 const droplets = {
   get: () => doV2QueryAll('droplets?', res => res.droplets),
+  create: ({ name, region, size, image }) => {},
 };
 const regions = {
   get: () => doV2QueryAll('regions?', res => res.regions),
 };
 const images = {
-  get: () => doV2QueryAll('images?type=distribution', res => res.images),
+  get: () => doV2QueryAll('images?type=distribution&', res => res.images),
 };
 const databases = {
   get: () => doV2QueryAll('databases?', res => res.databases),
@@ -51,14 +52,14 @@ const sshKeys = {
 };
 
 export default async function main() {
-  const storageSource = await startFSStorageSource({
-    domain: 'stageca.st',
-    dataDir: 'cloud.data',
-  });
-  const cloud = createCloud({
-    source: storageSource,
-    domain: 'stageca.st',
-  });
+  // const storageSource = await startFSStorageSource({
+  //   domain: 'stageca.st',
+  //   dataDir: 'cloud.data',
+  // });
+  // const cloud = createCloud({
+  //   source: storageSource,
+  //   domain: 'stageca.st',
+  // });
   const res = {
     droplets: await droplets.get(),
     databases: await databases.get(),
@@ -67,9 +68,15 @@ export default async function main() {
     regions: await regions.get(),
     images: await images.get(),
   };
-  console.log(
-    (await images.get()).map(a => a.name).filter(f => f.match('ebian')),
-  );
+  console.log(res.droplets);
+  // console.log((await images.get()).find(a => a.slug === 'debian-10-x64'));
+  const createdDrop = await droplets.create({
+    name: 'media0.stageca.st',
+    image: 'debian-10-x64',
+    region: 'sfo3',
+    ssh_keys: [27117993],
+  });
+  console.log('createdDrop', createdDrop);
 }
 
 main()
