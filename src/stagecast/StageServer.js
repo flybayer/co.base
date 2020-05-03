@@ -1,6 +1,6 @@
 import App from './StageApp';
 import { createCloud } from '@aven/cloud-core';
-import { startFSStorageSource } from '@aven/cloud-fs';
+import { startPostgresStorageSource } from '@aven/cloud-postgres';
 import { attachWebServer } from '@aven/web-server';
 import { createEmailAuthProvider } from '@aven/cloud-auth-email';
 import { createSMSAuthProvider } from '@aven/cloud-auth-sms';
@@ -8,15 +8,30 @@ import { createProtectedSource } from '@aven/cloud-auth';
 import { EmailAgent } from '@aven/email-agent-sendgrid';
 import { SMSAgent } from '@aven/sms-agent-twilio';
 import * as appConfig from './app.json';
+import dotenv from 'dotenv';
 
-const homedir = require('os').homedir();
+dotenv.config();
 
 const serverListenLocation = process.env.LISTEN_PATH || '8080';
 
 export default async function runServer() {
-  const storageSource = await startFSStorageSource({
-    domain: appConfig.domain,
-    dataDir: homedir + '/db',
+  const storageSource = await startPostgresStorageSource({
+    domains: [appConfig.domain],
+    config: {
+      client: 'pg',
+      connection: {
+        ssl: process.env.AVEN_SQL_USE_SSL
+          ? {
+              rejectUnauthorized: false,
+            }
+          : false,
+        user: process.env.AVEN_SQL_USER,
+        password: process.env.AVEN_SQL_PASSWORD,
+        database: process.env.AVEN_SQL_DATABASE,
+        host: process.env.AVEN_SQL_HOST,
+        port: process.env.AVEN_SQL_PORT,
+      },
+    },
   });
 
   const storageCloud = createCloud({
@@ -28,15 +43,15 @@ export default async function runServer() {
   const emailAgent = EmailAgent({
     defaultFromEmail: 'StageCast <admin@stageca.st>',
     config: {
-      sendgridAPIKey: process.env.SENDGRID_API_KEY,
+      sendgridAPIKey: process.env.STAGECAST_SENDGRID_API_KEY,
     },
   });
 
   const smsAgent = SMSAgent({
-    defaultFromNumber: process.env.TWILIO_FROM_NUMBER,
+    defaultFromNumber: process.env.STAGECAST_TWILIO_FROM_NUMBER,
     config: {
-      accountSid: process.env.TWILIO_ACCOUNT_SID,
-      authToken: process.env.TWILIO_AUTH_TOKEN,
+      accountSid: process.env.STAGECAST_TWILIO_ACCOUNT_SID,
+      authToken: process.env.STAGECAST_TWILIO_AUTH_TOKEN,
     },
   });
 

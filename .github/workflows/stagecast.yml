@@ -1,0 +1,47 @@
+name: StageCast
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  production:
+    name: Production Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Latest
+        uses: AvenCloud/actions/checkout@v1
+
+      - name: Build Application
+        # https://github.com/guard/listen/wiki/Increasing-the-amount-of-inotify-watchers#the-technical-details
+        run: |
+          sudo sysctl fs.inotify.max_user_watches=524288
+          sudo sysctl -p
+
+          yarn build stagecast
+
+      - name: Deploy to Runtime Server
+        uses: AvenCloud/actions/deploy@v1
+        with:
+          domains: stageca.st
+          start-server-command: /usr/bin/yarn start stagecast
+          runtime-server-timezone: America/Los_Angeles
+          deploy-key: ${{ secrets.STAGECAST_DEPLOY_KEY }}
+          service-configs: |
+            Environment=NODE_ENV="production"
+            Environment=AVEN_SQL_USE_SSL="yes"
+            Environment=AVEN_SQL_HOST="data.aven.io"
+            Environment=AVEN_SQL_DATABASE="defaultdb"
+            Environment=AVEN_SQL_USER="doadmin"
+            Environment=AVEN_SQL_PASSWORD=${{ toJSON(secrets.AVEN_SQL_PASSWORD) }}
+            Environment=AVEN_SQL_PORT="25060"          
+
+  test-live:
+    needs: [production]
+    name: Test Live Server for errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Smoke Test
+        run: wget --spider --recursive --no-directories --no-verbose --reject-regex "&quot;data:image/png;base64" --execute robots=off --level=0 --span-hosts -D "*.aven.io" -D aven.io https://stageca.st/

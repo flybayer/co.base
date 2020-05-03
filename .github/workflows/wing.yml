@@ -27,7 +27,7 @@ jobs:
           domains: wing.aven.io
           start-server-command: /usr/bin/yarn start aven/wing
           runtime-server-timezone: America/Los_Angeles
-          deploy-key: ${{ secrets.DEPLOY_KEY }}
+          deploy-key: ${{ secrets.WING_DEPLOY_KEY }}
 
   test-live:
     needs: [production]
