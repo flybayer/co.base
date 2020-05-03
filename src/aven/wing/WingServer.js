@@ -28,15 +28,15 @@ export default async function runServer() {
   const emailAgent = EmailAgent({
     defaultFromEmail: 'Aven Support <admin@aven.io>',
     config: {
-      sendgridAPIKey: process.env.SENDGRID_API_KEY,
+      sendgridAPIKey: process.env.AVEN_SENDGRID_API_KEY,
     },
   });
 
   const smsAgent = SMSAgent({
-    defaultFromNumber: process.env.TWILIO_FROM_NUMBER,
+    defaultFromNumber: process.env.AVEN_TWILIO_FROM_NUMBER,
     config: {
-      accountSid: process.env.TWILIO_ACCOUNT_SID,
-      authToken: process.env.TWILIO_AUTH_TOKEN,
+      accountSid: process.env.AVEN_TWILIO_ACCOUNT_SID,
+      authToken: process.env.AVEN_TWILIO_AUTH_TOKEN,
     },
   });
 
