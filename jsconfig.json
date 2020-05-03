@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@aven/auth": ["./src/aven/auth"],
       "@aven/cloud": ["./src/aven/cloud"],
       "@aven/cloud-auth": ["./src/aven/cloud-auth"],
       "@aven/cloud-auth-email": ["./src/aven/cloud-auth-email"],
@@ -19,6 +20,7 @@
       "@aven/cloud-schema": ["./src/aven/cloud-schema"],
       "@aven/cloud-server": ["./src/aven/cloud-server"],
       "@aven/cloud-utils": ["./src/aven/cloud-utils"],
+      "@aven/content": ["./src/aven/content"],
       "@aven/email-agent-sendgrid": ["./src/aven/email-agent-sendgrid"],
       "@aven/electron": ["./src/aven/electron"],
       "@aven/file-upload": ["./src/aven/file-upload"],

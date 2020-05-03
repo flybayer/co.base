@@ -166,11 +166,20 @@ export default function createAuthNavigator(PageWrapper) {
     const { navigate, getParam, setParams } = useNavigation();
     const method = getParam('method');
     const clientState = useStream(client.clientState);
+    const routeEmail = getParam('email');
+    const routeCode = getParam('code');
+    // React.useEffect(() => {
+    //   if () {
+    //     client.verifyLogin({ code: routeCode })
+    //     client.verifyLogin({ code: routeCode })
+    //   }
+    // }, [])
     React.useEffect(() => {
       if (clientState?.session) {
         navigate('AuthAccount');
       }
     }, [clientState, navigate]);
+
     if (clientState?.session) {
       return null;
     }
