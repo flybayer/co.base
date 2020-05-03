@@ -2002,6 +2002,11 @@ agent-base@6:
   dependencies:
     debug "4"
 
+agora-rtc-sdk@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/agora-rtc-sdk/-/agora-rtc-sdk-3.1.0.tgz#1a5abbe8e73fe7baa0b25b07521c3ea80ef7e751"
+  integrity sha512-eUKo+o/mEHRMnXVaJNSX4FH9hKxy24XPiY6UCNir/f5oul9dOsaLvTaExuEJo1Kc5+5NrmPKUgITYoY7NJEUvQ==
+
 airtable@^0.5.7:
   version "0.5.10"
   resolved "https://registry.yarnpkg.com/airtable/-/airtable-0.5.10.tgz#89ea398393fac46f04a1ea810b97bfcf6bf07012"
