@@ -1,0 +1,6 @@
+{
+  "name": "stagecast",
+  "domain": "stageca.st",
+  "clientEntry": "StageClient.js",
+  "serverEntry": "StageServer.js"
+}
