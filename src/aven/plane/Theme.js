@@ -14,7 +14,7 @@ export const baseTheme = {
 
   colorForeground: '#333',
   colorBackground: '#f7f7f7',
-  colorPrimary: '#005252',
+  colorPrimary: '#355175',
 
   darkMode: false,
 
