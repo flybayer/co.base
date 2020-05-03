@@ -6,7 +6,7 @@ const srcDir = pathJoin(__dirname, '../src');
 const appConfigPath = appName && pathJoin(srcDir, appName, 'app.json');
 const appSrcDir = appName && pathJoin(srcDir, appName);
 const buildDir = pathJoin(__dirname, '../build');
-const appBuildDir = pathJoin(buildDir, appName);
+const appBuildDir = appName && pathJoin(buildDir, appName);
 
 const appConfig = appConfigPath && JSON.parse(fs.readFileSync(appConfigPath));
 
