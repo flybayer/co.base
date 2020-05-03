@@ -29,7 +29,7 @@ export default async function runServer() {
         password: process.env.AVEN_SQL_PASSWORD,
         database: process.env.AVEN_SQL_DATABASE,
         host: process.env.AVEN_SQL_HOST,
-        port: process.env.AVEN_SQL_PORT,
+        port: Number(process.env.AVEN_SQL_PORT),
       },
     },
   });

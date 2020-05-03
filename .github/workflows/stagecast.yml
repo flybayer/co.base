@@ -43,6 +43,17 @@ jobs:
             Environment=STAGECAST_TWILIO_AUTH_TOKEN=${{ toJSON(secrets.STAGECAST_TWILIO_AUTH_TOKEN) }}
             Environment=STAGECAST_TWILIO_FROM_NUMBER=${{ toJSON(secrets.STAGECAST_TWILIO_FROM_NUMBER) }}
 
+      - name: Migrate DB Forward
+        run: |
+          yarn migrate-pg
+        env:
+          SQL_USE_SSL: yes
+          SQL_HOST: data.aven.io
+          SQL_PORT: 25060
+          SQL_USER: doadmin
+          SQL_PASSWORD: ${{ secrets.AVEN_SQL_PASSWORD }}
+          SQL_DATABASE: defaultdb
+
   test-live:
     needs: [production]
     name: Test Live Server for errors
