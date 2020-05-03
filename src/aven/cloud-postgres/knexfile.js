@@ -1,16 +1,18 @@
-function getEnv(n) {
-  return process.env[n];
-}
 
 module.exports = {
   production: {
     client: 'pg',
     connection: {
-      ssl: !!getEnv('SQL_USE_SSL'),
-      user: getEnv('SQL_USER'),
-      password: getEnv('SQL_PASSWORD'),
-      database: getEnv('SQL_DATABASE'),
-      host: getEnv('SQL_HOST'),
+      ssl: !!process.env.SQL_USE_SSL
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
+      user: process.env.SQL_USER,
+      password: process.env.SQL_PASSWORD,
+      database: process.env.SQL_DATABASE,
+      host: process.env.SQL_HOST,
+      port: process.env.SQL_PORT,
     },
   },
 };
