@@ -1,166 +1,129 @@
 import React from 'react';
-import { View, Text } from '@rn';
+import { View, Text, ScrollView } from '@rn';
 import { createFullscreenSwitchNavigator } from '@aven/navigation-web';
 import { useCloudClient } from '@aven/cloud';
 import { useFocus, useNavigation } from '@aven/navigation-hooks';
 import { Button, Stack, TextInput } from '@aven/plane';
 import { Link } from '@aven/navigation-web';
+import createAuthNavigator from './createAuthNavigator';
+import createContentPage from './createContentPage';
 
 function Home() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center' }}>
+    <SimplePage>
       <Text>Welcome!</Text>
       <Link routeName="AuthLogin">Log in</Link>
+    </SimplePage>
+  );
+}
+Home.navigationOptions = { title: 'Welcome' };
+
+function PageStructure({ children, header, footer, center }) {
+  return (
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: '#fafafa',
+        justifyContent: 'center',
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: '#fff',
+          maxWidth: 800,
+          alignSelf: 'stretch',
+          flex: 1,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 0,
+          },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+        }}
+      >
+        {header}
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              flex: 1,
+              justifyContent: center ? 'center' : 'flex-start',
+              alignItems: center ? 'center' : 'stretch',
+            }}
+          >
+            {children}
+          </ScrollView>
+        </View>
+
+        {footer}
+      </View>
     </View>
   );
 }
-function SMSCollectForm({ onSubmit }) {
-  const [phoneNumber, setPhoneNumber] = React.useState('');
-  function handleSubmit() {
-    onSubmit({ phoneNumber });
-  }
-  const { inputs } = useFocus({
-    onSubmit: handleSubmit,
-    inputRenderers: [
-      props => (
-        <TextInput
-          {...props}
-          type={'phone'}
-          label={'phone number'}
-          value={phoneNumber}
-          onValue={setPhoneNumber}
-        />
-      ),
-    ],
-  });
 
-  return (
-    <>
-      {inputs}
-      <Button title="Submit" onPress={handleSubmit} />
-    </>
-  );
-}
-function EmailCollectForm({ onSubmit }) {
-  const [email, setEmail] = React.useState('');
-  function handleSubmit() {
-    onSubmit({ email });
-  }
-  const { inputs } = useFocus({
-    onSubmit: handleSubmit,
-    inputRenderers: [
-      props => (
-        <TextInput
-          {...props}
-          type={'email'}
-          label={'email'}
-          value={email}
-          onValue={setEmail}
-        />
-      ),
-    ],
-  });
-
-  return (
-    <>
-      {inputs}
-      <Button title="Submit" onPress={handleSubmit} />
-    </>
-  );
-}
-
-function AuthLoginScreen() {
+function FooterLink({ label, routeName }) {
   return (
     <View>
-      <AuthLogin />
+      <Link routeName={routeName}>
+        <Text
+          style={{
+            fontSize: 12,
+            fontFamily: 'Helvetica',
+            paddingHorizontal: 8,
+            paddingVertical: 22,
+          }}
+        >
+          {label}
+        </Text>
+      </Link>
     </View>
   );
 }
 
-function AuthLogin() {
-  const client = useCloudClient();
-  const { getParam, setParams } = useNavigation();
-  const method = getParam('method');
-
-  if (!method) {
-    return (
-      <Stack>
-        <Button
-          title="Email"
-          onPress={() => {
-            setParams({ method: 'email' });
+function SimplePage({ children, center }) {
+  return (
+    <PageStructure
+      header={
+        <View style={{ backgroundColor: '#e5e5ef', height: 80 }}>
+          <Link routeName="Home">
+            <Text>Aven Home</Text>
+          </Link>
+        </View>
+      }
+      footer={
+        <View
+          style={{
+            backgroundColor: '#e5e5ef',
+            height: 50,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
           }}
-        />
-
-        <Button
-          title="Phone Number"
-          onPress={() => {
-            setParams({ method: 'phone' });
-          }}
-        />
-      </Stack>
-    );
-  }
-  if (method === 'email') {
-    return (
-      <>
-        <Text>Log in with Email</Text>
-
-        <EmailCollectForm
-          onSubmit={({ email }) => {
-            client
-              .login({
-                verificationInfo: {
-                  email,
-                },
-              })
-              .then()
-              .catch();
-          }}
-        />
-      </>
-    );
-  }
-  if (method === 'phone') {
-    return (
-      <>
-        <Text>Log in with phone</Text>
-
-        <SMSCollectForm
-          onSubmit={({ phoneNumber }) => {
-            client
-              .login({
-                verificationInfo: {
-                  phoneNumber,
-                },
-              })
-              .then()
-              .catch();
-          }}
-        />
-      </>
-    );
-  }
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              fontFamily: 'Helvetica',
+              paddingHorizontal: 8,
+              paddingVertical: 22,
+            }}
+          >
+            &copy; {new Date().getFullYear()} Aven, LLC. All Rights Reserved.
+          </Text>
+          <View style={{ flex: 1 }} />
+          <FooterLink label="Terss asdf sms" routeName="LegalTerms" />
+          <FooterLink label="Tera sdfms" routeName="LegalTerms" />
+          <FooterLink label="Teasdf rms" routeName="LegalTerms" />
+          <FooterLink label="Privacy" routeName="LegalPrivacy" />
+        </View>
+      }
+      center={center}
+    >
+      {children}
+    </PageStructure>
+  );
 }
-
-function AuthHomeScreen() {
-  const navigation = useNavigation();
-  React.useEffect(() => {
-    navigation.navigate('AuthLogin');
-  }, [navigation]);
-  return null;
-}
-
-const AuthNavigator = createFullscreenSwitchNavigator({
-  AuthHome: {
-    path: '',
-    screen: AuthHomeScreen,
-  },
-  AuthLogin: {
-    path: 'login',
-    screen: AuthLoginScreen,
-  },
-});
 
 export default createFullscreenSwitchNavigator({
   Home: {
@@ -169,6 +132,14 @@ export default createFullscreenSwitchNavigator({
   },
   Auth: {
     path: 'auth',
-    screen: AuthNavigator,
+    screen: createAuthNavigator(SimplePage),
+  },
+  LegalTerms: {
+    path: 'legal/terms',
+    screen: createContentPage(SimplePage, 'Content/LegalTerms'),
+  },
+  LegalPrivacy: {
+    path: 'legal/privacy',
+    screen: createContentPage(SimplePage, 'Content/LegalPrivacy'),
   },
 });

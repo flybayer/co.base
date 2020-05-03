@@ -1,7 +1,9 @@
 import { startWebClient } from '@aven/web-browser';
 import App from './WingApp';
-import { createBrowserNetworkSource } from '@aven/cloud-browser';
-import { createClient } from '@aven/cloud-core';
+import {
+  createBrowserNetworkSource,
+  createBrowserClient,
+} from '@aven/cloud-browser';
 import { CloudContext } from '@aven/cloud';
 import * as appConfig from './app.json';
 
@@ -10,7 +12,7 @@ const networkSource = createBrowserNetworkSource({
   useSSL: null,
 });
 
-const client = createClient({
+const client = createBrowserClient({
   source: networkSource,
   domain: appConfig.domain,
 });

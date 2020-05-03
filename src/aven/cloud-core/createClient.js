@@ -91,6 +91,15 @@ export default function createClient({
     });
   }
 
+  async function cancelLogin() {
+    setClientState({
+      ...clientState.get(),
+      verification: null,
+      verificationInfo: null,
+      verificationAccountId: null,
+    });
+  }
+
   async function destroyAccount() {
     const state = clientState.get();
     if (state.session) {
@@ -145,6 +154,7 @@ export default function createClient({
     logout,
     destroyAccount,
     verifyLogin,
+    cancelLogin,
     clientState,
     get: docName => sessionClient.get(docName),
   };

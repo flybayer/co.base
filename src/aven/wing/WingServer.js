@@ -3,6 +3,7 @@ import { createCloud } from '@aven/cloud-core';
 import { startFSStorageSource } from '@aven/cloud-fs';
 import { attachWebServer } from '@aven/web-server';
 import { createEmailAuthProvider } from '@aven/cloud-auth-email';
+import { createSMSAuthProvider } from '@aven/cloud-auth-sms';
 import { createProtectedSource } from '@aven/cloud-auth';
 import { EmailAgent } from '@aven/email-agent-sendgrid';
 import { SMSAgent } from '@aven/sms-agent-twilio';
@@ -44,15 +45,33 @@ export default async function runServer() {
     getMessage: async (authCode, verifyInfo, accountId) => {
       const subject = 'Welcome to Aven';
 
-      const message = `To log in, your code is ${authCode}`;
+      const message = `To log in, your code is ${authCode}. Or, click the link: http://localhost:8080/auth/login?method=email&email=${
+        verifyInfo.email
+      }&code=${authCode}`;
 
       return { subject, message };
     },
   });
 
+  const smsAuthProvider = createSMSAuthProvider({
+    agent: smsAgent,
+    getMessage: (authCode, verifyInfo, accountId) => {
+      return `auth code is: ${authCode}`;
+    },
+  });
+
   const protectedCloud = createProtectedSource({
     source: storageCloud,
-    providers: [emailAuthProvider],
+    providers: [emailAuthProvider, smsAuthProvider],
+    staticPermissions: {
+      [appConfig.domain]: {
+        Content: {
+          children: {
+            defaultRule: { canRead: true },
+          },
+        },
+      },
+    },
   });
 
   const webService = await attachWebServer({
