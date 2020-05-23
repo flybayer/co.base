@@ -80,6 +80,11 @@ export default async function runServer() {
     providers: [emailAuthProvider, smsAuthProvider],
     staticPermissions: {
       [appConfig.domain]: {
+        Orgs: {
+          accountRules: {
+            canPost: true,
+          },
+        },
         Content: {
           children: {
             defaultRule: { canRead: true },

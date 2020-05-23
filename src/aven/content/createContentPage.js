@@ -14,15 +14,20 @@ function PageEditButton() {
 export default function createContentPage(PageWrapper, contentDocName) {
   function ContentPage() {
     const val = useCloudValue(contentDocName);
-    console.log('aaaaaa', { val });
+    const authVal = useCloudValue(`${contentDocName}/_auth`);
+    console.log('aaaaaa', { val, authVal });
     return (
       <PageWrapper>
-        <PageEditButton onEdit={() => {}} onSave={() => {}} />
         <View style={{ flex: 1 }}>
-          <Text>herroo {contentDocName}</Text>
+          <Text>{contentDocName}</Text>
         </View>
       </PageWrapper>
     );
   }
+  ContentPage.navigationOptions = ({ screenProps }) => ({
+    loadData: async () => {
+      return [await screenProps.cloud.get(contentDocName).load()];
+    },
+  });
   return ContentPage;
 }

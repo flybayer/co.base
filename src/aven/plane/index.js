@@ -8,6 +8,7 @@ export { default as TagButton } from './TagButton';
 export { default as MultiSelect } from './MultiSelect';
 export { default as Stack } from './Stack';
 export { default as SmallTag } from './SmallTag';
+export { default as SmallForm } from './SmallForm';
 export { default as KeyboardPopover } from './KeyboardPopover';
 export { default as Spinner } from './Spinner';
 export { default as SpinnerButton } from './SpinnerButton';

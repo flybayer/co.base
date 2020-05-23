@@ -1,5 +1,10 @@
 User
 
+- Display Name
+- Profile Photo
+- Public LinkedIn URL
+- Public GitHub URL
+
 Organization
 
 - Short name:

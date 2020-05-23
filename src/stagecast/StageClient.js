@@ -7,6 +7,8 @@ import {
 import { CloudContext } from '@aven/cloud';
 import * as appConfig from './app.json';
 
+window.videojs = require('videojs-record');
+
 const networkSource = createBrowserNetworkSource({
   authority: null, // this means to inherit from the server
   useSSL: null,
