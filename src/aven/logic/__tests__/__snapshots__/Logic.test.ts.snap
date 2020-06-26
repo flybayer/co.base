@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`a function that takes and returns a number 1`] = `
+Object {
+  "description": undefined,
+  "input": Object {
+    "description": undefined,
+    "literalValue": undefined,
+    "type": "LogicNumber",
+  },
+  "output": Object {
+    "description": undefined,
+    "name": "multiplied",
+    "type": "LogicRef",
+  },
+  "statements": Array [
+    Object {
+      "description": undefined,
+      "ref": "multiplied",
+      "type": "LogicAssignmentStatement",
+      "value": Object {
+        "description": undefined,
+        "terms": Array [
+          Object {
+            "description": undefined,
+            "literalValue": 2,
+            "type": "LogicNumber",
+          },
+          Object {
+            "description": undefined,
+            "name": "input",
+            "type": "LogicRef",
+          },
+        ],
+        "type": "LogicMultiplyExpression",
+      },
+    },
+  ],
+  "type": "LogicFunction",
+}
+`;
+
+exports[`a function that takes and returns a number 2`] = `
+Object {
+  "description": undefined,
+  "fun": Object {
+    "description": undefined,
+    "input": Object {
+      "description": undefined,
+      "literalValue": undefined,
+      "type": "LogicNumber",
+    },
+    "output": Object {
+      "description": undefined,
+      "name": "multiplied",
+      "type": "LogicRef",
+    },
+    "statements": Array [
+      Object {
+        "description": undefined,
+        "ref": "multiplied",
+        "type": "LogicAssignmentStatement",
+        "value": Object {
+          "description": undefined,
+          "terms": Array [
+            Object {
+              "description": undefined,
+              "literalValue": 2,
+              "type": "LogicNumber",
+            },
+            Object {
+              "description": undefined,
+              "name": "input",
+              "type": "LogicRef",
+            },
+          ],
+          "type": "LogicMultiplyExpression",
+        },
+      },
+    ],
+    "type": "LogicFunction",
+  },
+  "input": Object {
+    "description": undefined,
+    "literalValue": 3,
+    "type": "LogicNumber",
+  },
+  "type": "LogicCall",
+}
+`;
+
+exports[`assignment statement is serialized properly to JS and JSON 1`] = `
+Object {
+  "description": undefined,
+  "ref": "varA",
+  "type": "LogicAssignmentStatement",
+  "value": Object {
+    "description": undefined,
+    "literalValue": 2,
+    "type": "LogicNumber",
+  },
+}
+`;
+
+exports[`multiplication expression serializes 1`] = `
+Object {
+  "description": "times, this!",
+  "terms": Array [
+    Object {
+      "description": undefined,
+      "literalValue": 3,
+      "type": "LogicNumber",
+    },
+    Object {
+      "description": undefined,
+      "literalValue": 5,
+      "type": "LogicNumber",
+    },
+  ],
+  "type": "LogicMultiplyExpression",
+}
+`;
+
+exports[`variable ref is serialized properly to JS and JSON 1`] = `
+Object {
+  "description": undefined,
+  "name": "varA",
+  "type": "LogicRef",
+}
+`;

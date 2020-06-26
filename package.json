@@ -139,16 +139,12 @@
     "extendsSrcModule": "@aven-cloud/aven"
   },
   "jest": {
-    "testRegex": "/__tests__/[^/]+-test\\.(js|tsx)?$",
+    "rootDir": "src",
+    "testRegex": "__tests__/[^/]+\\.test\\.(js|ts|tsx)?$",
     "transformIgnorePatterns": [
       "node_modules/(?!(jest-)?react-native|react-clone-referenced-element)"
     ],
-    "modulePathIgnorePatterns": [
-      "<rootDir>/example/",
-      "<rootDir>/env-kiosk/",
-      "<rootDir>/env-blitz-ios/",
-      "<rootDir>/node_modules/"
-    ],
+    "modulePathIgnorePatterns": [],
     "globals": {
       "__DEV__": true
     }
