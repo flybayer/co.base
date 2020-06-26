@@ -24,7 +24,7 @@ jobs:
       - name: Deploy to Runtime Server
         uses: AvenCloud/actions/deploy@v1
         with:
-          domains: wing.aven.io
+          domains: aven.io
           start-server-command: /usr/bin/yarn start aven/wing
           runtime-server-timezone: America/Los_Angeles
           deploy-key: ${{ secrets.WING_DEPLOY_KEY }}
@@ -57,4 +57,4 @@ jobs:
 
     steps:
       - name: Smoke Test
-        run: wget --spider --recursive --no-directories --no-verbose --reject-regex "&quot;data:image/png;base64" --execute robots=off --level=0 --span-hosts -D "*.aven.io" -D aven.io https://wing.aven.io
+        run: wget --spider --recursive --no-directories --no-verbose --reject-regex "&quot;data:image/png;base64" --execute robots=off --level=0 --span-hosts -D "*.aven.io" -D aven.io https://aven.io
