@@ -1,6 +1,6 @@
 {
   "name": "aven/wing",
-  "domain": "wing.aven.io",
+  "domain": "aven.io",
   "clientEntry": "WingClient.js",
   "serverEntry": "WingServer.js"
 }

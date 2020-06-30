@@ -25,6 +25,7 @@
       "@aven/electron": ["./src/aven/electron"],
       "@aven/file-upload": ["./src/aven/file-upload"],
       "@aven/infra": ["./src/aven/infra"],
+      "@aven/logic": ["./src/aven/logic"],
       "@aven/logger": ["./src/aven/logger"],
       "@aven/navigation-core": ["./src/aven/navigation-core"],
       "@aven/navigation-fade-navigator": [

@@ -3,10 +3,12 @@ import { View, Text, ScrollView } from '@rn';
 import { createFullscreenSwitchNavigator } from '@aven/navigation-web';
 import { useCloudClient } from '@aven/cloud';
 import { useFocus, useNavigation } from '@aven/navigation-hooks';
-import { Button, Stack, TextInput } from '@aven/plane';
+import { Button, Stack, TextInput, useKeyboardPopover } from '@aven/plane';
+import { PopoverContainer } from '@aven/views';
 import { Link } from '@aven/navigation-web';
 import { createAuthNavigator } from '@aven/auth';
 import { createContentPage } from '@aven/content';
+import * as Logic from '@aven/logic';
 
 function Home() {
   return (
@@ -124,11 +126,55 @@ function SimplePage({ children, center }) {
     </PageStructure>
   );
 }
+const isServer = !!process.env.NODE;
 
-export default createFullscreenSwitchNavigator({
+function ItemList() {
+  return (
+    <ScrollView style={{ flex: 1 }}>
+      <View style={{}}>
+        <Text>Thing</Text>
+      </View>
+    </ScrollView>
+  );
+}
+
+function AdminPanel() {
+  const cc = Logic.createBlockContext();
+  const { onPopover } = useKeyboardPopover(({ onClose }) => <Text>Hiho</Text>);
+  return (
+    <View style={{ flex: 1, flexDirection: 'row' }}>
+      <View
+        style={{ flex: 1, borderWidth: 1, borderColor: '#ccc', maxWidth: 320 }}
+      >
+        <ItemList />
+
+        <Button
+          title="create"
+          onPress={() => {
+            onPopover();
+          }}
+        />
+      </View>
+      <View style={{ flex: 1 }} />
+    </View>
+  );
+}
+
+function AdminScreen() {
+  if (isServer) {
+    return null;
+  }
+  return <AdminPanel />;
+}
+
+const NavApp = createFullscreenSwitchNavigator({
   Home: {
     path: '',
     screen: Home,
+  },
+  Admin: {
+    path: 'admin',
+    screen: AdminScreen,
   },
   Auth: {
     path: 'auth',
@@ -143,3 +189,13 @@ export default createFullscreenSwitchNavigator({
     screen: createContentPage(SimplePage, 'Content/LegalPrivacy'),
   },
 });
+
+export default function App({ navigation }) {
+  return (
+    <PopoverContainer>
+      <NavApp navigation={navigation} />
+    </PopoverContainer>
+  );
+}
+App.router = NavApp.router;
+App.navigationOptions = NavApp.navigationOptions;
