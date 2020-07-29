@@ -14,4 +14,5 @@ jobs:
           SKY_DEPLOY_KEY: ${{ secrets.SKY_DEPLOY_KEY }}
         run: |
           echo "$SKY_DEPLOY_KEY" | base64 --decode > deploy_key
+          echo "sky.aven.io,88.198.34.150 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKQl3ounloUClxrJFJMOOioHdxnrY9UqD2lQVCJjzlBHCscxo9vGvHDZCUCwkxOfBJlEIAEZ1xCuc4C71PWS+X8=" >> ~/.ssh/known_hosts
           ssh -i deploy_key root@sky.aven.io "/var/www/sky/scripts/deploy.sh"
