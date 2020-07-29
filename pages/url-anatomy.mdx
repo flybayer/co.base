@@ -1,0 +1,53 @@
+---
+title: 'URL Anatomy'
+publishedAt: '2020-07-28'
+summary: 'Anatomy of a URL, the protocol, host, path, and query'
+---
+
+A full url on the web takes the following format:
+
+`protocol://host:port/path?query#fragment`
+
+Only the protocol and host are mandatory, so you may also see formats such as:
+
+`protocol://host/`
+`protocol://host/path?query#fragment`
+
+# Protocol
+
+In web browsers, usually http for unsecured web page, and https for web sites secured with ssl certificates.
+
+# Host
+
+The domain name of the server you're connecting to.
+
+May also be an IP address, in case your server does not have a domain name.
+
+# Port
+
+Override the port that is being looked at on the server. By default, this is port 80 for http, and port 443 for https.
+
+# Path
+
+Generally the path refers to the location of the file you are browsing to, such as an html file. The default path is `/`
+
+When the path refers to a folder, the file that gets sent is the `index` file in that directory, such as `index.html` 
+
+# Query
+
+`?key=1&value=2`
+
+The query is the part of the URL after the `?`, and it usually contains parameters about how the page should be viewed. Each parameter takes the format `param=value`, and they are seperated with `&` characters.
+
+# Document Fragment
+
+The last part of the URL is special because the browser does not send this value to the server. It is usually used to jump to a part of the page.
+
+
+# Absolute and relative URLs
+
+An absolute URL is one which contains the host, while relative URLs may leave out the host or even part of the path.
+
+Example1. `/about` refers to the "/about" path on the current domain and protocol.
+
+Example2. `details` refers to the relative path. On the `/account` page, it would link to `/account/details`

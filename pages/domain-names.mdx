@@ -1,0 +1,28 @@
+---
+title: 'Domain Names - The address resolution system of the web'
+publishedAt: '2020-07-28'
+summary: 'How domain names work, what are name servers, and how to set up your domain'
+---
+
+
+# How are domain names resolved?
+
+Your web browser needs to know the IP address of the HTTP server before it can connect over TCP/IP. But the user only remembers a domain name, such as `google.com`
+
+If your web browser does not remember an IP address for this domain name, it must refer to the domain resolver server provided by your ISP. The resolver talks to a network of Domain Name System (DNS) servers to find the IP for the exact domain requested.
+
+# Domain Registrar
+
+A registrar is the company responsible for setting up the top-level domain with your DNS information. For example, if you want "mygreatwebsite.com", a registrar such as Gandi.net may charge a $15/year fee to register your current domain name server with the "com" top-level domain name server.
+
+# Domain Name Server
+
+The domain name server is responsible for providing your web server's current IP address to the 
+
+# How to set up your domain name
+
+- Get the IP address of your HTTP server
+- Buy a domain with a registry
+- Configure DNS servers that your registrar
+- OR, configure different DNS servers (such as CloudFlare)
+- Add an "A" record to your DNS server, with the URL of the HTTP server
