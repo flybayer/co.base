@@ -1,0 +1,17 @@
+name: Deploy
+
+on:
+  push:
+    branches: main
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        env:
+          SKY_DEPLOY_KEY: ${{ secrets.SKY_DEPLOY_KEY }}
+        run: |
+          echo "$SKY_DEPLOY_KEY" | base64 --decode > deploy_key
+          ssh -i deploy_key root@sky.aven.io "/var/www/sky/scripts/deploy.sh"
