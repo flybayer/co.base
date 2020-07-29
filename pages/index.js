@@ -3,11 +3,23 @@ import styles from "../styles/Home.module.css";
 
 export default function Home() {
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>Coming Soon</h1>
-      </main>
-    </div>
+    <>
+      <style jsx>{`
+        main {
+          padding: 5rem 0;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+      `}</style>
+      <div className={styles.container}>
+        <main>
+          <h1 className={styles.title}>Coming Soon</h1>
+        </main>
+      </div>
+    </>
   );
 }
 
