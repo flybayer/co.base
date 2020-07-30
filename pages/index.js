@@ -16,7 +16,7 @@ export default function Home() {
       `}</style>
       <div className={styles.container}>
         <main>
-          <h1 className={styles.title}>Aven: Coming Soon</h1>
+          <h1 className={styles.title}>Coming Soon</h1>
         </main>
       </div>
     </>
