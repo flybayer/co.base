@@ -1025,7 +1025,7 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@mdx-js/loader@^1.6.1", "@mdx-js/loader@^1.6.14":
+"@mdx-js/loader@^1.6.1":
   version "1.6.14"
   resolved "https://registry.yarnpkg.com/@mdx-js/loader/-/loader-1.6.14.tgz#db9b0f719ccb893ef60a03efccac88a59b986716"
   integrity sha512-22GBci68mhh/f88aMcRP2VjhZkiPJYA0TNIroW7jP7ugWN0lqFIrzrL80ZtwkGpvZuv7mKjFPc4nUBAXB6fNng==
@@ -1068,11 +1068,6 @@
   version "1.6.14"
   resolved "https://registry.yarnpkg.com/@mdx-js/util/-/util-1.6.14.tgz#e3c14aef1c721b79ca7afa4d54ed7b5817a973c7"
   integrity sha512-JyhjH3ffP4KQuqnUSBSSF28mToGGSc2jFI0XIXSEqiN+FaPlgzOSd3U350gXi8FYQxXzEygHCOtzOIfTjFf+4w==
-
-"@next/mdx@^9.5.0":
-  version "9.5.0"
-  resolved "https://registry.yarnpkg.com/@next/mdx/-/mdx-9.5.0.tgz#c2bd7ed76b16294171db830b7714a0133b89756f"
-  integrity sha512-ixBgQTSpStGh+KiMal9q+g1m/6UhpBq1dhaXGbACjmUF2wGny+J08BJtoPlx2QtNM87dRJ32PZf4i8tYkWxdTw==
 
 "@next/react-dev-overlay@9.5.0":
   version "9.5.0"
