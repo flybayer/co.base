@@ -14,7 +14,6 @@ function Page({ children, meta }) {
   return (
     <>
       <Head>
-        <title>{meta?.title || "Aven"}</title>
         <link
           rel="apple-touch-icon"
           sizes="180x180"
