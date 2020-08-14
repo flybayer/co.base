@@ -1,7 +1,7 @@
 import React from "react";
 import MainWidth from "./MainWidth";
 
-export default function VideoSection({ vimeoId }) {
+export default function VideoSection({ vimeoId, videoTitle }) {
   return (
     <div
       style={{
@@ -26,6 +26,7 @@ export default function VideoSection({ vimeoId }) {
             }}
           >
             <iframe
+              title={`Video: ${videoTitle}`}
               src={`https://player.vimeo.com/video/${vimeoId}`}
               frameBorder="0"
               allow="autoplay; fullscreen"

@@ -42,7 +42,6 @@ export default function createLayout(
             #__next {
               display: flex;
               flex-grow: 1;
-              background: green;
               align-self: stretch;
               flex-direction: column;
             }
@@ -142,6 +141,20 @@ export default function createLayout(
               text-shadow: none;
               border-bottom-color: transparent;
               text-decoration: none;
+            }
+            @media only screen and (max-width: 500px) {
+              h1 {
+                font-size: 48;
+              }
+              h2 {
+                font-size: 40;
+              }
+              h3 {
+                font-size: 36;
+              }
+              h4 {
+                font-size: 38;
+              }
             }
           `}
         />
