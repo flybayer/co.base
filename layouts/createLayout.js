@@ -14,8 +14,9 @@ const Article = styled.article`
   flex-grow: 1;
   max-width: 950px;
   margin: 0 auto;
+  padding-top: 40px;
   padding-bottom: 40px;
-  @media only screen and (max-width: 990px) {
+  @media only screen and (max-width: 1030px) {
     padding-left: 40px;
     padding-right: 40px;
   }
@@ -90,6 +91,12 @@ export default function createLayout(
               border-top: 1px dashed #556678;
               border-bottom: none;
             }
+            pre,
+            code {
+              background-color: rgba(255, 255, 255, 0.9);
+              padding: 6px;
+              border-radius: 2px;
+            }
             h1 {
               color: #374453;
               font-family: "Young Serif";
@@ -115,11 +122,13 @@ export default function createLayout(
               margin: 26px 0 10px;
             }
             p {
+              font-family: "Fira Sans";
               color: #374453;
               font-size: 18px;
               margin: 10px 0 10px;
             }
             li {
+              font-family: "Fira Sans";
               color: #374453;
               margin: 12px 0 0 0;
               font-size: 18px;
@@ -142,18 +151,18 @@ export default function createLayout(
               border-bottom-color: transparent;
               text-decoration: none;
             }
-            @media only screen and (max-width: 500px) {
+            @media only screen and (max-width: 700px) {
               h1 {
-                font-size: 48;
+                font-size: 48px;
               }
               h2 {
-                font-size: 40;
+                font-size: 40px;
               }
               h3 {
-                font-size: 36;
+                font-size: 36px;
               }
               h4 {
-                font-size: 38;
+                font-size: 38px;
               }
             }
           `}

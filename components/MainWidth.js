@@ -6,11 +6,11 @@ const Outer = styled.div({
   maxWidth: 1280,
 });
 
-const Inner = styled.div({
-  margin: "0",
-});
+export default function MainWidth({ children, hMargin }) {
+  const Inner = styled.div({
+    margin: `0 ${hMargin}px`,
+  });
 
-export default function MainWidth({ children }) {
   return (
     <Outer>
       <Inner>{children}</Inner>

@@ -10,7 +10,6 @@ const mdComponents = {
 };
 
 function Page({ children, meta }) {
-  console.log(meta);
   return (
     <>
       <Head>
@@ -45,7 +44,6 @@ export default function getMDXPageComponent({ Component, pageProps }) {
   if (Component.renderStandalone) {
     return <Component {...pageProps} />;
   }
-  console.log("har", Component.meta);
   return (
     <Page meta={Component.meta}>
       <MDXProvider components={mdComponents}>

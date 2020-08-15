@@ -21,7 +21,7 @@ const LinkImage = styled.img`
 export default function SiteHeader() {
   return (
     <ImageFill>
-      <MainWidth>
+      <MainWidth hMargin={40}>
         <Link href="/preview">
           <LinkImage src="/img/AvenPrimary.svg" alt="Aven" />
         </Link>

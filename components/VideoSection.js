@@ -5,26 +5,19 @@ export default function VideoSection({ vimeoId, videoTitle }) {
   return (
     <div
       style={{
-        backgroundColor: "#111",
+        backgroundColor: "#222",
         padding: "10px 0",
       }}
     >
       <MainWidth>
-        <div
-          style={
-            {
-              // maxWidth: 1280,
-              // maxHeight: 720,
-              // margin: "0 auto",
-            }
-          }
-        >
+        <div style={{}}>
           <div
             style={{
               padding: "56.25% 0 0 0",
               position: "relative",
             }}
           >
+            <link rel="preconnect" href="https://i.vimeocdn.com" />
             <iframe
               title={`Video: ${videoTitle}`}
               src={`https://player.vimeo.com/video/${vimeoId}`}
