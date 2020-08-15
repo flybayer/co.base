@@ -9,7 +9,7 @@ export default function SiteFooter() {
           borderTop: "1px solid #b1c8db",
           backgroundColor: "#d6e2ed",
           minHeight: 150,
-          background: "url('/img/CloudFooter.jpg')",
+          background: "url('/img/CloudFooter.webp')",
           backgroundRepeat: "no-repeat",
           backgroundSize: "fill",
         }}

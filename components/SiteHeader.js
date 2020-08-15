@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import Link from "next/link";
 
 const ImageFill = styled.div({
-  background: "url('/img/CloudHeader.jpg')",
+  background: "url('/img/CloudHeader.webp')",
   backgroundRepeat: "no-repeat",
   backgroundSize: "fill",
   minHeight: 108,
