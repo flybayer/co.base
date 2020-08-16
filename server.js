@@ -25,8 +25,7 @@ async function startServer() {
   console.log("Setting up web server..");
   const server = express();
   const handle = app.getRequestHandler();
-  server.get(
-    "/",
+  server.use(
     express.static(__dirname + "/public", {
       maxAge: "14d",
     })
