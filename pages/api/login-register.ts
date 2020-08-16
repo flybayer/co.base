@@ -1,7 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
+import { sendEmail } from "../../data/email";
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
+  sendEmail(req.body.email, "Register to Aven", "hello email");
   database.user
     .create({
       data: {
