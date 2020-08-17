@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "docker-compose up -d && DATABASE_URL='postgresql://user:pw@localhost:5432/db' node server.js",
+    "dev": "DATABASE_URL='postgresql://user:pw@localhost:5432/db' node server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
+    "@blueprintjs/core": "^3.31.0",
     "@emotion/core": "^10.0.34",
     "@emotion/react": "^11.0.0-next.14",
     "@emotion/styled": "^10.0.27",

@@ -8,15 +8,26 @@ const app = next({ dev });
 
 const port = dev ? 3001 : 3000;
 
+if (dev && !process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "postgresql://user:pw@localhost:5432/db";
+}
+
+async function prepareDocker() {
+  console.log(await spawn("docker-compose", ["up", "-d"], { cwd: __dirname }));
+}
+
 async function prepareDatabase() {
   console.log("Migrating database..");
   await spawn(
     "node_modules/@prisma/cli/build/index.js",
     ["migrate", "up", "--experimental"],
     {
-      // env: {// relying on dotenv to pull this from .env.production.local
-      //   DATABASE_URL: process.env.DATABASE_URL,
-      // }
+      env: {
+        // relying on dotenv to pull this from .env.production.local
+        ...process.env,
+        DATABASE_URL:
+          process.env.DATABASE_URL || "postgresql://user:pw@localhost:5432/db",
+      },
     }
   );
 }
@@ -42,6 +53,7 @@ async function startServer() {
 }
 
 async function runServer() {
+  await prepareDocker();
   await prepareDatabase();
   await app.prepare();
   await startServer();

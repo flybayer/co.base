@@ -17,7 +17,8 @@ export default function VideoSection({ vimeoId, videoTitle }) {
               position: "relative",
             }}
           >
-            <link rel="preconnect" href="https://i.vimeocdn.com" />
+            {/* <link rel="preconnect" href="https://i.vimeocdn.com" /> */}
+            <link rel="preconnect" href="https://fresnel.vimeocdn.com" />
             <iframe
               title={`Video: ${videoTitle}`}
               src={`https://player.vimeo.com/video/${vimeoId}`}

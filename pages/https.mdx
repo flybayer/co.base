@@ -1,0 +1,15 @@
+This protocol uses SSL to provide a secure HTTP protocol for web servers and browsers.
+
+Basically, `SSL + HTTP = HTTPS`
+
+## SSL Certificate
+
+To verify the identity of a web site, a HTTP server provides a certificate to the client.
+
+### Certificate Chain
+
+Your browser has a few "root" certificates installed. These are used by various agencies to create more certificates that your browser will then trust.
+
+## Lets Encrypt
+
+Historically you had to purchase a SSL Certificate, but the easiest solution these days is to use [Lets Encrypt](https://letsencrypt.org/) to get a free certificate that is trusted by all major browsers.

@@ -1,0 +1,31 @@
+---
+title: "Run Aven Sky"
+publishedAt: "2020-08-16"
+summary: "Run the Aven test site on your computer"
+---
+
+## Basic Setup
+
+Make sure you have NodeJS 12 or 14, and Yarn.
+
+To run Aven Sky (this site) we are going to:
+
+- Check out the repo: https://github.com/avencloud/sky
+- Install Dependencies
+- Start the app
+- Open the app in our web browser
+
+```
+git clone git@github.com:AvenCloud/sky.git
+cd sky
+yarn
+yarn start
+```
+
+## Full Site Setup
+
+To test the full-blown site on your computer, you will need docker to host an instance of PostgreSQL, as well as credentials to SendGrid and Stripe.
+
+If any of these things are missing, we should fall back elegantly (although, this is a work in progress).
+
+<!--- © Eric Vicenti 2020. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->
