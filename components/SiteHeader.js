@@ -22,7 +22,7 @@ export default function SiteHeader() {
   return (
     <ImageFill>
       <MainWidth hMargin={40}>
-        <Link href="/preview">
+        <Link href="/">
           <LinkImage src="/img/AvenPrimary.svg" alt="Aven" />
         </Link>
       </MainWidth>
