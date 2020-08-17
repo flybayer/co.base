@@ -12,8 +12,13 @@ if (dev && !process.env.DATABASE_URL) {
   process.env.DATABASE_URL = "postgresql://user:pw@localhost:5432/db";
 }
 
-async function prepareDocker() {
-  console.log(await spawn("docker-compose", ["up", "-d"], { cwd: __dirname }));
+async function prepareDockerDev() {
+  if (!dev) return;
+  console.log("Docker startup..");
+  const { output } = await spawn("docker-compose", ["up", "-d"], {
+    cwd: __dirname,
+  });
+  console.log(output.join("\n"));
 }
 
 async function prepareDatabase() {
@@ -53,7 +58,7 @@ async function startServer() {
 }
 
 async function runServer() {
-  await prepareDocker();
+  await prepareDockerDev();
   await prepareDatabase();
   await app.prepare();
   await startServer();
