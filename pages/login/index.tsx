@@ -24,7 +24,7 @@ function ControlledInputGroup({
           value={value}
           name={name}
           onBlur={onBlur}
-          onChange={(e) => {
+          onChange={(e: any) => {
             onChange(e.nativeEvent.target.value);
           }}
         />
