@@ -43,7 +43,7 @@ async function startServer() {
   const handle = app.getRequestHandler();
   server.use(
     express.static(__dirname + "/public", {
-      maxAge: "14d",
+      maxAge: "30d",
     })
   );
   server.use((req, res) => {

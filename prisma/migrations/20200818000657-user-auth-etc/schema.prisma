@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -10,11 +10,9 @@ generator client {
 model Session {
   id               Int      @default(autoincrement()) @id
   createdAt        DateTime @default(now())
-  token            String   @unique
-  logoutToken      String?  @unique
   verifiedUser     User?    @relation(fields: [verifiedUserId], references: [id])
   verifiedUserId   Int?
-  validationToken  String?  @unique
+  validationToken  String?
   unvalidatedEmail String?
 }
 
