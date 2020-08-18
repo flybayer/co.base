@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
   if (session?.verifiedUser) {
-    redirect(context, "/account");
+    redirect(context.res, "/account");
   }
   return { props: {} };
 };

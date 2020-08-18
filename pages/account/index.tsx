@@ -5,6 +5,7 @@ import redirect from "../../api-utils/redirect";
 import { destroyCookie } from "nookies";
 import Router from "next/router";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifiedUser";
+import PostButton from "../../components/PostButton";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -58,11 +59,9 @@ export default function accountPage({ user }: { user: APIUser }) {
           <h3>Email</h3>
           <div>{user.email}</div>
           <h3>Billing</h3>
-          <form method="POST" action="/api/billing-session">
-            <button type="submit" className="bp3-button bp3-intent-primary">
-              <span className="bp3-button-text">Manage billing</span>
-            </button>
-          </form>
+          <PostButton action="/api/billing-session" primary>
+            Manage billing
+          </PostButton>
           <h3>Account</h3>
           <Button
             onClick={() => {
