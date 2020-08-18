@@ -5,16 +5,13 @@ import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import { Error400 } from "../../api-utils/Errors";
 import { apiRespond } from "../../api-utils/apiRespond";
 import setCookie from "../../api-utils/setCookie";
+import getSiteLink from "../../api-utils/getSiteLink";
 
 type Email = string;
 
 export type LoginRegisterPayload = {
   email: Email;
 };
-
-function getSiteLink(path: string): string {
-  return "http://localhost:3001" + path;
-}
 
 function validatePayload(input: any): LoginRegisterPayload {
   if (!input)

@@ -8,7 +8,7 @@ export async function sendEmail(
 ) {
   const msg = {
     to: dest,
-    from: "support@aven.io",
+    from: "Aven Support <support@aven.io>",
     subject: subject,
     text: textContent,
     // html: textContent,
