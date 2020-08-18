@@ -1,13 +1,17 @@
-const withMdxEnhanced = require('next-mdx-enhanced')
+const withMdxEnhanced = require("next-mdx-enhanced");
 
 module.exports = withMdxEnhanced({
-  layoutPath: 'layouts',
+  layoutPath: "layouts",
   defaultLayout: true,
-  fileExtensions: ['mdx'],
+  fileExtensions: ["mdx"],
   remarkPlugins: [],
   rehypePlugins: [],
   extendFrontMatter: {
     process: (mdxContent, frontMatter) => {},
-    phase: 'prebuild|loader|both',
+    phase: "prebuild|loader|both",
   },
-})(/* your normal nextjs config */)
+})({
+  env: {
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+  },
+});

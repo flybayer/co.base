@@ -3,31 +3,38 @@ import { NextApiRequest, NextApiResponse } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifiedUser";
 import redirect from "../../api-utils/redirect";
 import getSiteLink from "../../api-utils/getSiteLink";
+import { apiRespond } from "../../api-utils/apiRespond";
 
-
-
-async function redirectBillingSubscribe(verifiedUser: APIUser | null , res: any) {
+async function redirectBillingSubscribe(
+  verifiedUser: APIUser | null,
+  res: any
+) {
   if (!verifiedUser) {
-    return {}
+    return {};
   }
+  const existingCustomer = verifiedUser.stripeCustomerId
+    ? {
+        customer: verifiedUser.stripeCustomerId,
+      }
+    : {
+        customer_email: verifiedUser.email,
+      };
   const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [{
-      price: 'price_0HH0Sg05C7xNwv0sskcjQvt3',
-      quantity: 1,
-    }],
-    mode: 'subscription',
-    success_url: getSiteLink('/account/welcome'),
-    cancel_url: getSiteLink('/cancel',
-    customer_email: verifiedUser.email,
-    // customer: verifiedUser.stripeCustomerId,
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        // price: "price_0HH0Sg05C7xNwv0sskcjQvt3", // live VIP
+        price: "price_0HHBXS05C7xNwv0sUvV4EcJc", // test product
+        quantity: 1,
+      },
+    ],
+    mode: "subscription",
+    success_url: getSiteLink("/account/welcome"),
+    cancel_url: getSiteLink("/insiders-edition"),
+    ...existingCustomer,
   });
-  console.log("session is", session);
-  if (session && session.url) {
-    redirect(res, session.url);
-  }
+  return session;
 }
-
 
 async function handleAction(req: NextApiRequest, res: NextApiResponse) {
   const verifiedUser = await getVerifiedUser(req);
@@ -40,5 +47,5 @@ async function handleAction(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
-  handleAction(req, res).catch((err) => console.error(err));
+  apiRespond(res, handleAction(req, res));
 };
