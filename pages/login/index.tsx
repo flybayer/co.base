@@ -56,6 +56,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 function LoginForm({}) {
+  const [hasEmailed, setHasEmailed] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { register, handleSubmit, errors, control } = useForm({
     mode: "onBlur",
@@ -63,6 +64,14 @@ function LoginForm({}) {
       email: "",
     },
   });
+  if (hasEmailed) {
+    return (
+      <>
+        <h2>Email Sent.</h2>
+        <h3>Click the link to verify and log in</h3>
+      </>
+    );
+  }
   return (
     <>
       <form
@@ -79,7 +88,7 @@ function LoginForm({}) {
           })
             .then((res) => res.json())
             .then((resp) => {
-              console.log("response: ", resp);
+              setHasEmailed(true);
               setIsSubmitting(false);
             })
             .catch((err) => {
