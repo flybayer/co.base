@@ -16,3 +16,9 @@ async function handleAction(req: NextApiRequest, res: NextApiResponse) {
 export default (req: NextApiRequest, res: NextApiResponse) => {
   handleAction(req, res).catch((err) => console.error(err));
 };
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
