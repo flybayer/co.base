@@ -2,14 +2,14 @@ name: Deploy
 
 on:
   push:
-    branches: main
+    branches: [main]
 
 jobs:
   build:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Set up SSH
+      - name: Set up SSH to production server
         shell: bash
         env:
           SKY_DEPLOY_KEY: ${{ secrets.SKY_DEPLOY_KEY }}
@@ -19,6 +19,6 @@ jobs:
           chmod go-rwx /home/runner/.ssh/id_rsa
           echo "captain.aven.io,64.227.108.59 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBPUCbabA9w7i9S6/CIf+jeeknsBi7t6KbQv8x8FpZyMKJwpbVD7FWBS4fIQWqCHKJso/WayVZHU0R9Jw7WsfRRs=" >> /home/runner/.ssh/known_hosts
       - name: Pull latest on prod server
-          ssh root@captain.aven.io -t "cd /aven/sky-production && git pull"
+        run: ssh root@captain.aven.io -t "cd /aven/sky-production && git pull"
       - name: Run remote deploy script
-          ssh root@captain.aven.io /aven/sky-production/scripts/deploy.sh
+        run: ssh root@captain.aven.io /aven/sky-production/scripts/deploy.sh
