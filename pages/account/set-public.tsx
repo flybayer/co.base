@@ -54,23 +54,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return { props: {} };
 };
 
-function LoginForm({}) {
-  const [hasEmailed, setHasEmailed] = React.useState(false);
+function NameForm({}) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [serverError, setServerError] = React.useState(null);
   const { register, handleSubmit, errors, control } = useForm({
     mode: "onBlur",
     defaultValues: {
-      email: "",
+      name: "",
     },
   });
-  if (hasEmailed) {
-    return (
-      <>
-        <h2>Email Sent.</h2>
-        <h3>Click the link to verify and log in</h3>
-      </>
-    );
-  }
   return (
     <>
       <form
@@ -82,12 +74,11 @@ function LoginForm({}) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              email: data.email,
+              name: data.name,
             }),
           })
             .then((res) => res.json())
             .then((resp) => {
-              setHasEmailed(true);
               setIsSubmitting(false);
             })
             .catch((err) => {
@@ -134,16 +125,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Register or Login</title>
+        <title>Aven Account: Set Name</title>
       </Head>
-      <SiteLayout
-        content={
-          <>
-            <h1>Register or Login</h1>
-            <LoginForm />
-          </>
-        }
-      />
+      <SiteLayout content={<NameForm />} />
     </>
   );
 }

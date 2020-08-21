@@ -4,7 +4,7 @@ summary: "Subscribe to keep Aven alive [look, that rhymes]"
 ---
 
 import SubscribeButton from '../components/SubscribeButton'
-
+import { SubscriptionLevel } from "../data/subscription";
 
 # Insider's Edition
 
@@ -28,8 +28,8 @@ For **$7/month**:
 - Exclusive access to new videos for two weeks before they are publicly released
 
 <SubscribeButton
-  action="/api/billing-subscribe?plan=insider"
-  primary>Join as an Insider</SubscribeButton>
+  level={SubscriptionLevel.Insider}
+/>
 
 ### Become a "Contributor"
 
@@ -39,6 +39,10 @@ For **$27/month**:
 - Access the entire Web Fundamentals course, and private forums
 - Flare on your name in the forums
 
+<SubscribeButton
+  level={SubscriptionLevel.Contributor}
+/>
+
 ### Become a "VIP"
 
 For **$47/month**:
@@ -46,6 +50,10 @@ For **$47/month**:
 - Enjoy the benefits of being a **Contributor**
 - Join VIP forums for insider support
 - Exclusive merchandise in the mail
+
+<SubscribeButton
+  level={SubscriptionLevel.VIP}
+/>
 
 ### Become a "Sponsor"
 

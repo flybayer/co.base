@@ -4,7 +4,7 @@ import SiteLayout from "../../components/SiteLayout";
 import redirect from "../../api-utils/redirect";
 import { destroyCookie } from "nookies";
 import Router from "next/router";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifiedUser";
+import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import PostButton from "../../components/PostButton";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -33,7 +33,9 @@ function NameBox({ user }: { user: APIUser }) {
     <>
       <h3>Name</h3>
       <p>{user.name}</p>
-      <Button onClick={() => {}}>Set Name</Button>
+      <PostButton method="GET" action="/account/set-name">
+        Set Name
+      </PostButton>
     </>
   );
 }
