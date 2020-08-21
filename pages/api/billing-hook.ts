@@ -1,6 +1,7 @@
 import { readSignedWebhook } from "../../api-utils/stripe";
 import { NextApiRequest, NextApiResponse } from "next";
 import { sendEmail } from "../../api-utils/email";
+import bodyParser from "body-parser";
 
 async function handleAction(req: NextApiRequest, res: NextApiResponse) {
   const signature = req.headers["stripe-signature"];
@@ -13,8 +14,12 @@ async function handleAction(req: NextApiRequest, res: NextApiResponse) {
   return {};
 }
 
+const reader = bodyParser.raw({ type: "application/json" });
+
 export default (req: NextApiRequest, res: NextApiResponse) => {
-  handleAction(req, res).catch((err) => console.error(err));
+  reader(req, res, () => {
+    handleAction(req, res).catch((err) => console.error(err));
+  });
 };
 
 export const config = {
