@@ -1,6 +1,7 @@
 const express = require("express");
 const { parse } = require("url");
 const next = require("next");
+const fs = require("fs-extra");
 const spawn = require("@expo/spawn-async");
 
 const dev = process.env.NODE_ENV !== "production";
@@ -10,6 +11,52 @@ const port = dev ? 3001 : 3000;
 
 if (dev && !process.env.DATABASE_URL) {
   process.env.DATABASE_URL = "postgresql://user:pw@localhost:5432/db";
+}
+
+let authRouter = null;
+
+async function prepareAuthRouter() {
+  // are you ready to commit some sins?
+
+  // we should be using the existing next+mdx enhanced infrastructure to read these files and this front matter..
+  const pagesDirList = await fs.readdir("pages");
+  const mdxPages = pagesDirList.filter((p) => p.match(/^(.*).mdx$/));
+  const pages = {};
+  await Promise.all(
+    mdxPages.map(async (mdxFileName) => {
+      const name = mdxFileName.slice(0, -4);
+      const filePath = `pages/${mdxFileName}`;
+      const fileData = await fs.readFile(filePath, {
+        encoding: "utf8",
+      });
+      const frontMatch = fileData.match(/---\n(([^-].*\n)+)---/);
+      const frontData = frontMatch && frontMatch[1];
+      if (!frontData) {
+        return;
+      }
+      const frontLines = frontData.split("\n");
+      const meta = {};
+      frontLines.forEach((line) => {
+        const metaLine = line.match(/([^:]*):\s(.*)$/);
+        if (metaLine) {
+          let value = metaLine[2];
+          try {
+            value = JSON.parse(metaLine[2]);
+          } catch (e) {}
+          meta[metaLine[1]] = value;
+        }
+      });
+      pages[name] = { name, meta };
+    })
+  );
+  console.log(pages);
+  authRouter = (req, res, parsedUrl) => {
+    const reqPage = req.path.slice(1);
+    const page = pages[reqPage];
+    console.log(pageMetadata);
+    // oh jeez, now based on page.meta.accessLevel, we need to check with the db to see if the user is authenticated for this page..
+    return false;
+  };
 }
 
 async function prepareDockerDev() {
@@ -48,6 +95,7 @@ async function startServer() {
   );
   server.use((req, res) => {
     const parsedUrl = parse(req.url, true);
+    if (authRouter && authRouter(req, res, parsedUrl)) return;
     // const { pathname, query } = parsedUrl;
     return handle(req, res, parsedUrl);
   });
@@ -60,6 +108,7 @@ async function startServer() {
 async function runServer() {
   await prepareDockerDev();
   await prepareDatabase();
+  await prepareAuthRouter();
   await app.prepare();
   await startServer();
 }

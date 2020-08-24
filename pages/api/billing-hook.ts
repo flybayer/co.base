@@ -3,12 +3,30 @@ import { NextApiRequest, NextApiResponse } from "next";
 import bodyParser from "body-parser";
 import { apiRespond } from "../../api-utils/apiRespond";
 import { Error400 } from "../../api-utils/Errors";
-import notifyAdministrator from "../../api-utils/notifyAdministrator";
+import {
+  StripeSubscriptionCreatedEvent,
+  syncSubscription,
+  StripeSubscriptionUpdatedEvent,
+} from "../../api-utils/billing";
 
-const eventTypeHandlers: Record<string, (event: any) => any> = {
-  "customer.created": (event: any) => {
+// stripe listen --forward-to localhost:3001/api/billing-hook
+
+const eventTypeHandlers: Record<string, (event: any) => Promise<any>> = {
+  "customer.created": async (event: any) => {
     console.log("Customer created:");
     return {};
+  },
+  "customer.subscription.created": async (
+    event: StripeSubscriptionCreatedEvent
+  ) => {
+    const subscription = event.data.object;
+    await syncSubscription(subscription);
+  },
+  "customer.subscription.updated": async (
+    event: StripeSubscriptionUpdatedEvent
+  ) => {
+    const subscription = event.data.object;
+    await syncSubscription(subscription);
   },
 };
 
@@ -23,11 +41,6 @@ async function handleAction(req: NextApiRequest, res: NextApiResponse) {
     await eventTypeHandlers[event.type](event);
   } else {
     console.log("Unhandled stripe event: ", event.type);
-    console.log(JSON.stringify(event));
-    await notifyAdministrator(
-      "Unknown Stripe Webhook",
-      JSON.stringify(event, null, 2)
-    );
   }
   return {
     message: "Thank you, Stripe.",

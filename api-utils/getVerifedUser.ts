@@ -1,6 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 import { parseCookies } from "nookies";
 import { database } from "../data/database";
+import { resetSubscription } from "./billing";
 
 export type APIUser = {
   id: number;
@@ -34,14 +35,17 @@ export default async function getVerifiedUser(
           subscribedAccess: true,
           passwordSalt: true,
           stripeCustomerId: true,
+          subscriptionEndTime: true,
         },
       },
     },
   });
-  if (!session?.verifiedUser) {
+  const verifiedUser = session?.verifiedUser;
+  if (!verifiedUser) {
     return null;
   }
-  const hasPassword = !!session.verifiedUser.passwordSalt;
+
+  const hasPassword = !!verifiedUser.passwordSalt;
   const {
     id,
     email,
@@ -50,8 +54,8 @@ export default async function getVerifiedUser(
     giftedAccess,
     subscribedAccess,
     stripeCustomerId,
-  } = session.verifiedUser;
-  return {
+  } = verifiedUser;
+  const apiUser = {
     id,
     email,
     name,
@@ -61,4 +65,13 @@ export default async function getVerifiedUser(
     hasPassword,
     stripeCustomerId,
   };
+
+  if (
+    verifiedUser.subscriptionEndTime &&
+    new Date() > verifiedUser.subscriptionEndTime
+  ) {
+    await resetSubscription(apiUser);
+  }
+
+  return apiUser;
 }

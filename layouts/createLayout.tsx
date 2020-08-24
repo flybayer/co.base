@@ -10,10 +10,10 @@ export default function createLayout(
     tailContent,
     bottomContent,
   }: {
-    topContent: ReactNode;
-    headContent: ReactNode;
-    tailContent: ReactNode;
-    bottomContent: ReactNode;
+    topContent?: ReactNode;
+    headContent?: ReactNode;
+    tailContent?: ReactNode;
+    bottomContent?: ReactNode;
   }
 ) {
   return ({ children: content }: React.PropsWithChildren<{}>) => {

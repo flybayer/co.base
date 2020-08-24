@@ -5,36 +5,11 @@ import redirect from "../../api-utils/redirect";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { apiRespond } from "../../api-utils/apiRespond";
 import { Error500 } from "../../api-utils/Errors";
-import { SubscriptionLevel } from "../../data/subscription";
+import {
+  SubscriptionLevel,
+  getPriceIdOfSubscriptionLevel,
+} from "../../data/subscription";
 
-function getPriceIdOfSubscriptionLevel(level: SubscriptionLevel): string {
-  if (process.env.NODE_ENV === "production") {
-    switch (level) {
-      case SubscriptionLevel.Insider:
-        return "price_0HH0OV05C7xNwv0sRGr8iGBD";
-      case SubscriptionLevel.Contributor:
-        return "price_0HH0Q205C7xNwv0s3hhBYypY";
-      case SubscriptionLevel.VIP:
-        return "price_0HH0Sg05C7xNwv0sskcjQvt3";
-      default: {
-        throw new Error500({ message: "Unknown Product" });
-      }
-    }
-  } else {
-    // TEST MODE PRODUCTS:
-    switch (level) {
-      case SubscriptionLevel.Insider:
-        return "price_0HIdNr05C7xNwv0sWxrtaG5p";
-      case SubscriptionLevel.Contributor:
-        return "price_0HIdNH05C7xNwv0skHTdLOgr";
-      case SubscriptionLevel.VIP:
-        return "price_0HHBXS05C7xNwv0sUvV4EcJc";
-      default: {
-        throw new Error500({ message: "Unknown Product" });
-      }
-    }
-  }
-}
 async function redirectBillingSubscribe(
   verifiedUser: APIUser | null,
   level: SubscriptionLevel,
@@ -43,13 +18,18 @@ async function redirectBillingSubscribe(
   if (!verifiedUser) {
     return {};
   }
-  const existingCustomer = verifiedUser.stripeCustomerId
-    ? {
-        customer: verifiedUser.stripeCustomerId,
-      }
-    : {
-        customer_email: verifiedUser.email,
-      };
+  const existingCustomerId = verifiedUser.stripeCustomerId;
+  let newCustomer = null;
+  if (!existingCustomerId) {
+    newCustomer = await stripe.customers.create({
+      email: verifiedUser.email,
+      metadata: {
+        // ideally we would just make one "session.create" request to stripe, which will automatically create a customer. But we need to have a customer.metadata.id, so we make the customer ourself before the checkout session
+        userId: verifiedUser.id,
+      },
+    });
+  }
+  const customerId = existingCustomerId || newCustomer.id;
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
@@ -61,7 +41,7 @@ async function redirectBillingSubscribe(
     mode: "subscription",
     success_url: getSiteLink("/account/welcome"),
     cancel_url: getSiteLink("/insiders-edition"),
-    ...existingCustomer,
+    customer: customerId,
   });
   return session;
 }

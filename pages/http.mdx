@@ -10,23 +10,23 @@ The secure variant uses SSL and a chain of trusted certificates to provide the s
 
 A web browser sends "request" data to the server, who responds with "response" data
 
-# Headers
+### Headers
 
 The headers are a set of keys and values that are attached to the request and response data. There are some headers for the response, some headers on the request, and some headers that may be found in both.
 
-# Method
+### Method
 
 A required header is to specify the "method" of the request. When you type a url in to your browser and press enter, that is a GET request, which is the most common.
 
 The most common method to send data to the server is the "post" method, which is used when you fill out a form on a html page. HTTP supports other methods, such as "put" for modifying the resource at a path, or the "delete" method to request destruction of the path.
 
-# Content-Type
+### Content-Type
 
 The server sends a header called `Content-Type` that informs the browser how to present the file.
 
 Content type usually corresponds to the file extension. HTML files receive the "text/html" content type, `.png` images have the "image/png" type, and JS files have the "text/javascript" type,
 
-# Body
+### Body
 
 The body may be provded as part of the request PUT and POST requests, and a body is part of every response.
 

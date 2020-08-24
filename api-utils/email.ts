@@ -1,6 +1,8 @@
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+const dev = process.env.NODE_ENV !== "production";
+
 export async function sendEmail(
   dest: string,
   subject: string,
@@ -9,7 +11,7 @@ export async function sendEmail(
   const msg = {
     to: dest,
     from: "Aven Support <support@aven.io>",
-    subject: subject,
+    subject: dev ? `${subject} [TEST]` : subject,
     text: textContent,
     // html: textContent,
   };

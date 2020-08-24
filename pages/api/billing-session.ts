@@ -12,6 +12,7 @@ async function redirectBillingSession(user: APIUser, res: NextApiResponse) {
       metadata: {
         userId: user.id,
       },
+      email: user.email,
     });
     await database.user.update({
       where: { id: user.id },

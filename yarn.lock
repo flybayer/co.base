@@ -1264,15 +1264,15 @@
   resolved "https://registry.yarnpkg.com/@next/react-refresh-utils/-/react-refresh-utils-9.5.0.tgz#5d3923bc5520f355c3a70b72673c92d23719cf4b"
   integrity sha512-YaLBsyAQuEDTyzEuTzg/VwwSqpfNkJ5fiQNIBSGY+UmSpg1+1OHIyMRURzLKO1K7ad3w6kZ+ykgGcMLToR33EQ==
 
-"@prisma/cli@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.4.1.tgz#95f6cae48ff19c6177bb9f85816b27e1ffe5af53"
-  integrity sha512-vAOBnouBgCYndXmTcGxanfmhVWUCpwr3akBXiQH+ZKzTYf/pwSsWYpeaXNQfVtUEJEQ0kumfLGdq6ZXnfX//aA==
+"@prisma/cli@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@prisma/cli/-/cli-2.5.1.tgz#fef4da2ed1b7f032b3a9bcce97d0a119b148ceb1"
+  integrity sha512-cu7YiskmiXZ6FXNf/8gfkzB10AjoHiCIHUgBOPNnS6lXJPU1Krh6TQOEXH6tNTB19XeUXO7KetTcqKGW48IkMQ==
 
-"@prisma/client@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.4.1.tgz#840d0905e9d05d84313e333a3e0370df3b9815fe"
-  integrity sha512-13aphZb34ws8GuRxVsmgiQmUJRfcnnb5/Jy78/ZkpLyCk5ZpchO/Rr1KNiF/cfLHprdKOjSvUzthcx+tubaA2A==
+"@prisma/client@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-2.5.1.tgz#90285afad8f309ee0bf8e063543ae65546cb0725"
+  integrity sha512-vIyh6kyNNC7daePZRkrsxTF/xa8uA0bFpR4E9agyknzylGYFJqnjZCMTwtkXz64Vnlc55dMTCONNe/AFJ0UusQ==
   dependencies:
     pkg-up "^3.1.0"
 
@@ -3448,7 +3448,7 @@ from2@^2.1.0:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
 
-fs-extra@^9.0.0:
+fs-extra@^9.0.0, fs-extra@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-9.0.1.tgz#910da0062437ba4c39fedd863f1675ccfefcb9fc"
   integrity sha512-h2iAoN838FqAFJY2/qVpzFXy+EBxfVE220PalAqQLDVsFOHLJrZvut5puAbCdNv6WJk+B8ihI+k0c7JK5erwqQ==
@@ -5338,6 +5338,11 @@ pnp-webpack-plugin@1.6.4:
   integrity sha512-7Wjy+9E3WwLOEL30D+m8TSTF7qJJUJLONBnwQp0518siuMxUQUbgZwssaFX+QKlZkjHZcw/IpZCt/H0srrntSg==
   dependencies:
     ts-pnp "^1.1.6"
+
+pojo-maps@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/pojo-maps/-/pojo-maps-0.3.0.tgz#ee99fa68b92603c5b004b7c2376e74bd4e6486b5"
+  integrity sha512-CJTXkPb5o2qS2IaQMEl5UhUViwUUmilsFqF3xOIvRZVuMwhZLwky2Di6ktEe2VQbvb7iPw00lvCi9LyRa0y3ww==
 
 popper.js@^1.14.4, popper.js@^1.16.1:
   version "1.16.1"
