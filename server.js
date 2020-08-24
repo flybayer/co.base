@@ -16,7 +16,7 @@ if (dev && !process.env.DATABASE_URL) {
 let authRouter = null;
 
 async function prepareAuthRouter() {
-  // are you ready to commit some sins?
+  // are you ready to commit some sins? This is embarrassing..
 
   // we should be using the existing next+mdx enhanced infrastructure to read these files and this front matter..
   const pagesDirList = await fs.readdir("pages");
@@ -49,11 +49,9 @@ async function prepareAuthRouter() {
       pages[name] = { name, meta };
     })
   );
-  console.log(pages);
   authRouter = (req, res, parsedUrl) => {
     const reqPage = req.path.slice(1);
     const page = pages[reqPage];
-    console.log(pageMetadata);
     // oh jeez, now based on page.meta.accessLevel, we need to check with the db to see if the user is authenticated for this page..
     return false;
   };
