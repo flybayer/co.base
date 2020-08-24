@@ -4,7 +4,7 @@ module.exports = withMdxEnhanced({
   layoutPath: "layouts",
   defaultLayout: true,
   fileExtensions: ["mdx"],
-  remarkPlugins: [],
+  remarkPlugins: [require("remark-autolink-headings")],
   rehypePlugins: [],
   extendFrontMatter: {
     process: (mdxContent, frontMatter) => {},
