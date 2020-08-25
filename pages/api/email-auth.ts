@@ -1,8 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
 import { Error400, Error500 } from "../../api-utils/Errors";
-import { getTempUsername } from "../../api-utils/findTempUsername";
+import { findTempUsername } from "../../api-utils/findTempUsername";
 import { parseCookies } from "nookies";
+import setCookie from "../../api-utils/setCookie";
+import { encode } from "../../api-utils/jwt";
 
 async function emailAuth(
   validationToken: string,
@@ -42,21 +44,21 @@ async function emailAuth(
   if (!user) {
     user = await database.user.create({
       data: {
-        username: getTempUsername(),
+        username: await findTempUsername(),
         name: "",
         email: validatedEmail,
       },
     });
     isNewUser = true;
   }
-  await database.session.update({
+
+  await database.session.delete({
     where: { id: sessionToValidate.id },
-    data: {
-      unvalidatedEmail: null,
-      validationToken: null,
-      verifiedUser: { connect: { id: user.id } },
-    },
   });
+
+  const jwt = encode({ sub: user.id });
+
+  setCookie(res, "AvenSession", jwt);
   return {
     validatedEmail,
     username: user.username,

@@ -3,9 +3,10 @@ const { parse } = require("url");
 const next = require("next");
 const fs = require("fs-extra");
 const spawn = require("@expo/spawn-async");
-
+const { decode } = require("jwt-simple");
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
+const cookieParser = require("cookie-parser");
 
 const port = dev ? 3001 : 3000;
 
@@ -53,6 +54,21 @@ async function prepareAuthRouter() {
     const reqPage = req.path.slice(1);
     const page = pages[reqPage];
     // oh jeez, now based on page.meta.accessLevel, we need to check with the db to see if the user is authenticated for this page..
+    if (page && page.meta.accessLevel) {
+      const encodedJwt = req.cookies.AvenSession;
+      let session = null;
+      if (!encodedJwt) {
+        res.redirect("/login");
+      }
+      try {
+        session = decode(encodedJwt, process.env.JWT_SECRET);
+      } catch (e) {
+        console.error(e);
+        res.redirect("/login");
+      }
+      console.log("VALID SESSION: ", session);
+      return false;
+    }
     return false;
   };
 }
@@ -91,10 +107,10 @@ async function startServer() {
       maxAge: "30d",
     })
   );
+  server.use(cookieParser());
   server.use((req, res) => {
     const parsedUrl = parse(req.url, true);
     if (authRouter && authRouter(req, res, parsedUrl)) return;
-    // const { pathname, query } = parsedUrl;
     return handle(req, res, parsedUrl);
   });
   server.listen(port, (err) => {
