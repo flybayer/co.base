@@ -46,14 +46,14 @@ async function loginRegister(
     const validationToken = getRandomLetters(32);
     const token = getRandomLetters(32);
     const logoutToken = getRandomLetters(32);
-    await database.session.create({
-      data: {
-        unvalidatedEmail: email,
-        validationToken,
-        token,
-        logoutToken,
-      },
-    });
+    // await database.session.create({
+    //   data: {
+    //     unvalidatedEmail: email,
+    //     validationToken,
+    //     token,
+    //     logoutToken,
+    //   },
+    // });
     await sendEmail(
       email,
       existingUser ? "Welcome back to Aven" : "Welcome to Aven",

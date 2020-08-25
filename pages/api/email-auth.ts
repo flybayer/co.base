@@ -52,9 +52,9 @@ async function emailAuth(
     isNewUser = true;
   }
 
-  await database.session.delete({
-    where: { id: sessionToValidate.id },
-  });
+  // await database.session.delete({
+  //   where: { id: sessionToValidate.id },
+  // });
 
   const jwt = encode({ sub: user.id });
 

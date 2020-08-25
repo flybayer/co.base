@@ -38,19 +38,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!AvenSessionToken) {
     return { props: {} };
   }
-  const session = await database.session.findOne({
-    where: { token: AvenSessionToken },
-    select: {
-      verifiedUser: {
-        select: {
-          username: true,
-        },
-      },
-    },
-  });
-  if (session?.verifiedUser) {
-    redirect(context.res, "/account");
-  }
+  // const session = await database.session.findOne({
+  //   where: { token: AvenSessionToken },
+  //   select: {
+  //     verifiedUser: {
+  //       select: {
+  //         username: true,
+  //       },
+  //     },
+  //   },
+  // });
+  // if (session?.verifiedUser) {
+  //   redirect(context.res, "/account");
+  // }
   return { props: {} };
 };
 
