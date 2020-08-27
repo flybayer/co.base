@@ -7,35 +7,34 @@ import setCookie from "../../api-utils/setCookie";
 import { encode } from "../../api-utils/jwt";
 
 async function emailAuth(
-  validationToken: string,
+  secret: string,
   parsedCookies: any,
   res: NextApiResponse
 ) {
-  const sessionToValidate = await database.session.findOne({
-    where: { validationToken },
+  const emailValidation = await database.emailValidation.findOne({
+    where: { secret },
   });
-  if (!sessionToValidate) {
+  if (!emailValidation) {
     throw new Error400({ message: "Invalid Token" });
   }
-  const {
-    createdAt,
-    unvalidatedEmail,
-    validationToken: storedValidationToken,
-  } = sessionToValidate;
-  if (!storedValidationToken) {
+  await database.emailValidation.delete({
+    where: { secret },
+  });
+  const { emailTime, email, secret: storedSecret } = emailValidation;
+  if (!storedSecret) {
     throw new Error500({ message: "No validation token to compare" });
   }
-  if (!unvalidatedEmail) {
+  if (!email) {
     throw new Error500({ message: "No email to verify" });
   }
-  if (storedValidationToken !== validationToken) {
+  if (storedSecret !== secret) {
     // this should be caught earlier, but just to be safe:
     throw new Error400({ message: "Invalid Token" });
   }
-  if (Date.now() - 60 * 60 * 1000 > createdAt.getTime()) {
+  if (Date.now() - 60 * 60 * 1000 > emailTime.getTime()) {
     throw new Error400({ message: "Invalid Time" });
   }
-  const validatedEmail = unvalidatedEmail; // the validationToken matched. time is good. verification has passed.
+  const validatedEmail = email; // the validationToken matched. time is good. verification has passed.
   // get user id
   let user = await database.user.findOne({
     where: { email: validatedEmail || undefined },
@@ -51,10 +50,6 @@ async function emailAuth(
     });
     isNewUser = true;
   }
-
-  // await database.session.delete({
-  //   where: { id: sessionToValidate.id },
-  // });
 
   const jwt = encode({ sub: user.id });
 

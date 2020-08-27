@@ -3,11 +3,10 @@ import { FormGroup, InputGroup, Button, Spinner } from "@blueprintjs/core";
 import Link from "next/link";
 import { useForm, Controller, Control } from "react-hook-form";
 import SiteLayout from "../../components/SiteLayout";
-import { parseCookies } from "nookies";
-import { database } from "../../data/database";
 import { GetServerSideProps } from "next";
 import React from "react";
 import redirect from "../../api-utils/redirect";
+import getVerifiedUser from "../../api-utils/getVerifedUser";
 
 function ControlledInputGroup({
   control,
@@ -33,24 +32,10 @@ function ControlledInputGroup({
   );
 }
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookies = parseCookies({ req: context.req });
-  const { AvenSessionToken } = cookies;
-  if (!AvenSessionToken) {
-    return { props: {} };
+  const user = getVerifiedUser(context.req);
+  if (!user) {
+    redirect(context.res, "/account");
   }
-  // const session = await database.session.findOne({
-  //   where: { token: AvenSessionToken },
-  //   select: {
-  //     verifiedUser: {
-  //       select: {
-  //         username: true,
-  //       },
-  //     },
-  //   },
-  // });
-  // if (session?.verifiedUser) {
-  //   redirect(context.res, "/account");
-  // }
   return { props: {} };
 };
 

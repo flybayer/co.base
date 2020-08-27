@@ -67,15 +67,8 @@ export default function accountPage({ user }: { user: APIUser }) {
           <h3>Account</h3>
           <Button
             onClick={() => {
-              destroyCookie(null, "AvenSessionToken");
-              fetch("/api/logout")
-                .then(() => {
-                  Router.push("/login");
-                })
-                .catch((e) => {
-                  console.error(e);
-                  alert("whoops!");
-                });
+              destroyCookie(null, "AvenSession");
+              Router.push("/login");
             }}
           >
             Log Out

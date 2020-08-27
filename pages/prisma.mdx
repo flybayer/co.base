@@ -18,6 +18,17 @@ An ORM helps you write code against a SQL database, and some ORMs such as prisma
 
 ## Schema File
 
+Your [`schema.prisma`]() declares the structure of your current application. It starts off with some configuration:
+
+```
+model EmailValidation {
+  id        Int      @default(autoincrement()) @id
+  emailTime DateTime @default(now())
+  email     String
+  secret    String
+}
+```
+
 ## Development Setup
 
 ## Migration Workflow
@@ -29,6 +40,8 @@ An ORM helps you write code against a SQL database, and some ORMs such as prisma
 - Re-start VSCode
 
 ## TypeScript Usage
+
+
 
 
 <!--- © Eric Vicenti 2020. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

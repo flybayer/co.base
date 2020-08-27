@@ -25,6 +25,9 @@ export default async function getVerifiedUser(
     return null;
   }
   const jwt = decode(AvenSession);
+  if (!jwt) {
+    return null;
+  }
   const verifiedUser = await database.user.findOne({
     where: { id: jwt.sub },
     select: {

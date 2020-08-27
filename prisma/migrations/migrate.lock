@@ -7,3 +7,5 @@
 20200818164437-logout-token
 20200822171833-subs-end
 20200825162459-remove-sessions
+20200825163942-email-validate
+20200826014711-email-token-unique

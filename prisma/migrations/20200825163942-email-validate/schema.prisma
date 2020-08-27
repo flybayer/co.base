@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -22,7 +22,7 @@ model User {
 
 model EmailValidation {
   id        Int      @default(autoincrement()) @id
-  emailTime DateTime @default(now())
   email     String
-  secret    String   @unique
+  secret    String
+  emailTime DateTime @default(now())
 }

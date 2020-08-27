@@ -86,7 +86,7 @@ async function prepareDatabase() {
   console.log("Migrating database..");
   await spawn(
     "node_modules/@prisma/cli/build/index.js",
-    ["migrate", "up", "--experimental"],
+    ["migrate", "up", "--experimental", "--auto-approve"],
     {
       env: {
         // relying on dotenv to pull this from .env.production.local
