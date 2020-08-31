@@ -11,13 +11,8 @@ function Commenting({ comments, page }: { comments: Comment[]; page: string }) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const page: string = (context.req as any).path;
-  console.log("YESS", page);
-  // const comments = await database.comment.findMany({
-  //   where: { page },
-  // });
-  const commentGet = await import("../api-utils/commentGet");
-  const comments = await commentGet();
-  return { props: { comments, page } };
+
+  return { props: { comments: [], page } };
 };
 
 export default function layout(frontMatter: any) {
