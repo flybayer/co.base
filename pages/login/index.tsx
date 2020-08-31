@@ -1,36 +1,14 @@
 import Head from "next/head";
-import { FormGroup, InputGroup, Button, Spinner } from "@blueprintjs/core";
+import { FormGroup, Button, Spinner } from "@blueprintjs/core";
 import Link from "next/link";
-import { useForm, Controller, Control } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import SiteLayout from "../../components/SiteLayout";
 import { GetServerSideProps } from "next";
 import React from "react";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser from "../../api-utils/getVerifedUser";
+import { ControlledInputGroup } from "../../components/ControlledInputGroup";
 
-function ControlledInputGroup({
-  control,
-  name,
-}: { control: Control; name: string } & React.ComponentProps<
-  typeof InputGroup
->) {
-  return (
-    <Controller
-      control={control}
-      name={name}
-      render={({ onChange, onBlur, value, name }) => (
-        <InputGroup
-          value={value}
-          name={name}
-          onBlur={onBlur}
-          onChange={(e: any) => {
-            onChange(e.nativeEvent.target.value);
-          }}
-        />
-      )}
-    />
-  );
-}
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = getVerifiedUser(context.req);
   if (!user) {
@@ -115,7 +93,7 @@ function LoginForm({}) {
   );
 }
 
-export default function Home() {
+export default function LoginPage() {
   return (
     <>
       <Head>
@@ -132,5 +110,3 @@ export default function Home() {
     </>
   );
 }
-
-Home.meta = { title: "Aven" };

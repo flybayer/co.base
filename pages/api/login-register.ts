@@ -45,7 +45,6 @@ async function loginRegister(
   } else {
     const validationToken = getRandomLetters(32);
     const token = getRandomLetters(32);
-    const logoutToken = getRandomLetters(32);
     await database.emailValidation.create({
       data: {
         email,
@@ -60,8 +59,6 @@ async function loginRegister(
 ${getSiteLink(`/api/email-auth?token=${validationToken}`)}
 `
     );
-    setCookie(res, "AvenSessionToken", token);
-    setCookie(res, "AvenSessionLogoutToken", logoutToken);
     return { sessionToken: token, linkSentEmail: email };
   }
 }

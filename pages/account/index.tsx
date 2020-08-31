@@ -23,7 +23,9 @@ function UserName({ user }: { user: APIUser }) {
   return (
     <>
       <h2>Account: {user.username}</h2>
-      <Button onClick={() => {}}>Change Username</Button>
+      <PostButton method="GET" action="/account/set-username">
+        Set Username
+      </PostButton>
     </>
   );
 }

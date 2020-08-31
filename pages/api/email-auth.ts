@@ -64,8 +64,8 @@ async function emailAuth(
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
   const parsedCookies = parseCookies({ req });
-  const validationToken = req.query.token;
-  emailAuth(String(validationToken), parsedCookies, res)
+  const token = req.query.token;
+  emailAuth(String(token), parsedCookies, res)
     .then(() => {
       res.redirect("/account");
     })
