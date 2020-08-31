@@ -6,11 +6,7 @@ import { parseCookies } from "nookies";
 import setCookie from "../../api-utils/setCookie";
 import { encode } from "../../api-utils/jwt";
 
-async function emailAuth(
-  secret: string,
-  parsedCookies: any,
-  res: NextApiResponse
-) {
+export async function verifyEmail(secret: string) {
   const emailValidation = await database.emailValidation.findOne({
     where: { secret },
   });
@@ -34,10 +30,9 @@ async function emailAuth(
   if (Date.now() - 60 * 60 * 1000 > emailTime.getTime()) {
     throw new Error400({ message: "Invalid Time" });
   }
-  const validatedEmail = email; // the validationToken matched. time is good. verification has passed.
   // get user id
   let user = await database.user.findOne({
-    where: { email: validatedEmail || undefined },
+    where: { email: email || undefined },
   });
   let isNewUser = false;
   if (!user) {
@@ -45,14 +40,22 @@ async function emailAuth(
       data: {
         username: await findTempUsername(),
         name: "",
-        email: validatedEmail,
+        email,
       },
     });
     isNewUser = true;
   }
 
   const jwt = encode({ sub: user.id });
+  return { validatedEmail: email, jwt, user, isNewUser };
+}
 
+async function emailAuth(
+  secret: string,
+  parsedCookies: any,
+  res: NextApiResponse
+) {
+  const { validatedEmail, user, jwt, isNewUser } = await verifyEmail(secret);
   setCookie(res, "AvenSession", jwt);
   return {
     validatedEmail,

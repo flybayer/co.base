@@ -56,7 +56,7 @@ async function loginRegister(
       existingUser ? "Welcome back to Aven" : "Welcome to Aven",
       `Click here to log in:
 
-${getSiteLink(`/api/email-auth?token=${validationToken}`)}
+${getSiteLink(`/login/verify?token=${validationToken}`)}
 `
     );
     return { sessionToken: token, linkSentEmail: email };
