@@ -6,14 +6,13 @@ summary: "Run the Aven test site on your computer"
 
 ## Basic Setup
 
-Make sure you have NodeJS 12 or 14, and Yarn.
+Make sure you have Docker, NodeJS 12 or 14, and Yarn.
 
 To run Aven Sky (this site) we are going to:
 
 - Check out the repo: https://github.com/avencloud/sky
 - Install Dependencies
 - Start the app
-- Open the app in our web browser
 
 ```
 git clone git@github.com:AvenCloud/sky.git
@@ -22,9 +21,20 @@ yarn
 yarn start
 ```
 
+When the server starts in `yarn start`, it will automatically set up your Postgres database in docker, then it will run a migration with Prisma migrate to make sure your database schema is up to date.
+
+> Note: Sometimes the Postgres server does not start fast enough and there is an error on the migration. If this happens, you can re-start the server and the database should be ready
+
+
+```
+> Ready on http://localhost:3001
+```
+
+Once you see this message, you are ready to open the app in your web browser at [http://localhost:3001](http://localhost:3001)
+
 ## Full Site Setup
 
-To test the full-blown site on your computer, you will need docker to host an instance of PostgreSQL, as well as credentials to SendGrid and Stripe.
+To test the full-blown site on your computer, you will need credentials to [SendGrid](/sendgrid) and [Stripe](/stripe).
 
 If any of these things are missing, we should fall back elegantly (although, this is a work in progress).
 

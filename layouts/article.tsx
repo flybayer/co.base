@@ -1,50 +1,57 @@
-import { GetServerSideProps } from "next";
-import video from "./video";
-// import { database } from "../data/database";
-import Head from "next/head";
+import { GetServerSideProps, GetStaticProps } from "next";
+import React, { ReactNode } from "react";
 import SiteLayout from "../components/SiteLayout";
-import { ReactNode } from "react";
+import { FrontMatter } from "../data/frontMatter";
+import VideoLayout from "./video";
+import SiteHead from "../components/SiteHead";
+import VideoSection from "../components/VideoSection";
 
 function Commenting({ comments, page }: { comments: Comment[]; page: string }) {
-  return <h2>{JSON.stringify(comments)}</h2>;
+  return <h2>comments{JSON.stringify(comments)}</h2>;
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log("DUGH");
   const page: string = (context.req as any).path;
 
   return { props: { comments: [], page } };
 };
 
-export default function layout(frontMatter: any) {
-  let headContent: ReactNode = null;
+export const getStaticProps: GetStaticProps = async (context) => {
+  console.log("heyo!", context.req.path);
+
+  return { props: { foo: "bar" } };
+};
+
+export default function ArticleLayout({
+  children,
+  frontMatter,
+  page,
+  comments,
+  ...restProps
+}: React.PropsWithChildren<{
+  frontMatter: FrontMatter;
+  page: string;
+  comments: Comment[];
+}>) {
+  console.log("wtf", { restProps, comments, page });
+  let topContent: ReactNode = null;
   if (frontMatter.vimeoId) {
-    headContent = video(frontMatter);
-  }
-  return ({
-    children,
-    comments,
-    page,
-  }: React.PropsWithChildren<{ page: string; comments: Comment[] }>) => {
-    return (
-      <>
-        <Head>
-          <title>{frontMatter?.title || "Aven"}</title>
-          {frontMatter?.summary && (
-            <meta name="description" content={frontMatter?.summary} />
-          )}
-          {frontMatter?.title && (
-            <meta property="og:title" content={frontMatter?.title} />
-          )}
-          {frontMatter?.summary && (
-            <meta name="og:description" content={frontMatter?.summary} />
-          )}
-        </Head>
-        <SiteLayout
-          headContent={headContent}
-          content={children}
-          tailContent={<Commenting comments={comments} page={page} />}
-        />
-      </>
+    topContent = (
+      <VideoSection
+        videoTitle={frontMatter.videoTitle}
+        vimeoId={frontMatter.vimeoId}
+      />
     );
-  };
+  }
+  return (
+    <>
+      <SiteHead frontMatter={frontMatter} />
+      <SiteLayout
+        topContent={topContent}
+        content={children}
+        tailContent={<Commenting comments={comments} page={page} />}
+      />
+    </>
+  );
 }

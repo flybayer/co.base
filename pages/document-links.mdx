@@ -1,0 +1,37 @@
+---
+title: "Document Linking"
+publishedAt: "2020-08-16"
+summary: "How to add link to part of the page"
+---
+
+### Hashtag URL
+
+The "document fragment" is the [part of the url](/url-anatomy#document-fragment) that does not get sent to the server. It comes after the hashtag (#) in a URL:
+
+```
+https://example.com/path?query=1#DOCUMENT_FRAGMENT
+```
+
+### Document Link Behavior
+
+The web browser will automatically jump to the element with the corresponding id attribute, once the page has loaded. For example, try zooming in on your browser and typing in "#unique-feature" at the end of the url on this page, to see what happens.
+
+This behavior works because the corresponding html has the id:
+
+```html
+<h3 id="unique-feature">Unique feature</h3>
+```
+
+### JS/TS access
+
+Your code can read and write the document url from your app (with `window.location.hash`).
+
+### MDX
+
+This website [uses remark-autolink-headings](/mdx-linked-headings) to automatically create document ids on each heading, allowing you to link to specific sections on a page.
+
+### Unique feature
+
+Because this part of the URL does not get sent to the server, it may be useful for transmitting secrets to your front-end application.
+
+<!--- © Eric Vicenti 2020. Licensed under Creative Commons CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

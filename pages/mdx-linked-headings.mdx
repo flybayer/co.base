@@ -1,0 +1,50 @@
+---
+title: "MDX"
+publishedAt: "2020-08-16"
+summary: "How to add document-links in MDX with Nextjs"
+---
+
+By default when you use MDX, there are no `id=""` attributes assigned to your html elements. This means there is no way to link to a specific portion on the page with [document links](/document-links).
+
+### Title Linking
+
+The best trick has been on display by GitHub for years. Take the text from headings and convert them to document links.
+
+For example, if you have a gist on github with the markdown heading `## Example Code`, github will render it as `<h2 id="example-code">Example Code</h2>` so that the section can be directly linked to when the url ends with `#example-code`.
+
+## remark-autolink-headings
+
+While setting up aven.io, I spent days trying to figure out why `remark-autolink-headings` did not work when I installed it. Finally I realized it depends on `remark-slug`!
+
+
+### How to install title linking with Next.js
+
+```sh
+yarn add remark-autolink-headings remark-slug
+```
+
+In your `next.config.js`, add the following:
+
+```js
+const remarkPlugins = [
+  require("remark-autolink-headings"),
+  require("remark-slug"),
+];
+```
+
+And use it within your `withMdx` or `withMdxEnhanced`:
+
+```js
+module.exports = withMdxEnhanced({
+  ...
+  remarkPlugins,
+});
+```
+
+See the [`next.config.js`](https://github.com/AvenCloud/sky/blob/main/next.config.js) for this site.
+
+
+Finally restart your server and you can use title links to deep-link to certain content on your page.
+
+
+<!--- © Eric Vicenti 2020. Licensed under Creative Commons CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->
