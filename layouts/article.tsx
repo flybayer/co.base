@@ -18,8 +18,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  console.log("heyo!", context.req.path);
-
   return { props: { foo: "bar" } };
 };
 
