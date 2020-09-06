@@ -4,7 +4,61 @@ publishedAt: 2020-09-04
 summary: "The desktop app for Aven Cloud"
 ---
 
+**This page is a usage guide for a product that has been built yet. Feedback is requested!**
 
+See more [details about the design](/product-design) of this product.
+
+### Installation
+
+Make sure you have NodeJS 12 installed. Run `npx aven-cloud-manager`.
+
+If it does not open automatically, open the manager at `http://localhost:8999/`.
+
+### Configure
+
+Follow the first-time configuration in the web UI. It will warn you that secrets are held in plaintext JSON at `~/.aven-cloud.json`.
+
+The Digital Ocean API key is only required if you will be deploying.
+
+### Create App
+
+In the web UI, click the new app button, specify the name, short name, and local path where it will be stored.
+
+### Open App
+
+Once created, the app will automatically be opened. You can use the web UI to close the app and open another. You can also add a local cloud app that you created yourself or downloaded from GitHub.
+
+When your app has been added or created through the manager, you can also open the app by running `npx aven-cloud-manager` after you `cd` into the directory of your project.
+
+Your open app will prompt you to add the GitHub url, or disable GitHub.
+
+### Run
+
+In your open app, you can press the "run" button to develop the app locally. You will see the terminal output of your application.
+
+Once running you may press the stop or restart buttons.
+
+### Deploy
+
+If you have not deployed before, press "new deployment". Select a domain, or walk through the domain setup process. Select a server, or walk through the server creation process. Specify the name of your deployment.
+
+Now you will have access to this server and deployment from your cloud manager UI.
+
+With the new deployment selected in the open app, you have new buttons and options including the environment variables that will run in this deployment.
+
+Click "manual deploy" in the deployment in your open app. This will cause an error if you have unsaved changes in git, so make sure your code is fully committed. Then your current commit will be copied to the server, built, and deployed at the domain.
+
+### Domain Creation
+
+The domain creation workflow will prompt you to either transfer name servers to digital ocean, or if you select "manual", the UI will output the domain values you need to manually change in your DNS host.
+
+### Server Creation
+
+You will specify a domain for your server, a subdomain of one of your added domains. If there are no domains, you are prompted to make one.
+
+### GitHub Auto-Deploy
+
+If you are configured to use GitHub on the app, the deployment have a prompt to create a deploy workflow. The manager writes it to your codebase and prompts you to commit and push it. It also specifies the GitHub secrets that you must add for the action to operate properly.
 
 
 <!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->
