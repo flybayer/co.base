@@ -1,8 +1,9 @@
+import next from "next";
+
 const { createServer } = require("http");
 const { parse } = require("url");
-const next = require("next");
-const attachStoreServer = require("./cloud-docs/attachStoreServer");
-const stores = require("./stores");
+const attachStoreServer = require("../cloud-docs/attachStoreServer");
+const stores = require("../stores");
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
