@@ -1,9 +1,9 @@
 import next from "next";
 
-const { createServer } = require("http");
-const { parse } = require("url");
-const attachStoreServer = require("../cloud-docs/attachStoreServer");
-const stores = require("../stores");
+import { createServer } from "http";
+import { parse } from "url";
+import attachStoreServer from "../cloud-docs/attachStoreServer";
+import stores from "../stores/server";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -23,10 +23,8 @@ async function startServer() {
   const serverPort = 3000;
 
   await new Promise((resolve, reject) => {
-    httpServer.listen(serverPort, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
+    httpServer.listen(serverPort, resolve);
+    httpServer.on("error", reject);
   });
 
   return { serverPort };

@@ -17,4 +17,6 @@ const pageComments = createDocStore({
   },
 });
 
-module.exports = pageComments;
+// pageComments.on('postComment',  (key, action, localState, dispatch))
+
+export default pageComments;

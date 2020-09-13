@@ -1,14 +1,7 @@
 import "../styles/globals.css";
-import { DocProvider } from "../cloud-docs/client";
-
-const stores = require("../stores");
 
 function MyApp({ Component, pageProps }) {
-  return (
-    <DocProvider stores={stores}>
-      <Component {...pageProps} />
-    </DocProvider>
-  );
+  return <Component {...pageProps} />;
 }
 
 export default MyApp;

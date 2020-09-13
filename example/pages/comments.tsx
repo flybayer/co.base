@@ -1,14 +1,16 @@
-import { useClient, useValue } from "../cloud-docs/client";
+import { DocProvider, useClient, useValue } from "../cloud-docs/client";
 import Head from "next/head";
+import stores from "../stores";
 
-export default function WSTest() {
+export function Comments() {
   const client = useClient();
   const doc = client?.pageComments("test-page");
   const value = useValue(doc || null);
+
   return (
     <>
       <Head>
-        <title>Comment Here </title>
+        <title>Comment Here</title>
       </Head>
       <h1>All comments</h1>
       {value &&
@@ -27,5 +29,13 @@ export default function WSTest() {
         Post new Random Number
       </button>
     </>
+  );
+}
+
+export default function CommentsPage() {
+  return (
+    <DocProvider stores={stores}>
+      <Comments />
+    </DocProvider>
   );
 }

@@ -1,5 +1,5 @@
-const { produce } = require("immer");
-const stringify = require("json-stable-stringify");
+import { produce } from "immer";
+import stringify from "json-stable-stringify";
 
 function createDocStore({ get, actions }) {
   const docs = new Map();
