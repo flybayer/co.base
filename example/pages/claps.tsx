@@ -1,6 +1,5 @@
 import { DocProvider, useClient, useValue } from "../cloud-docs/client";
 import Head from "next/head";
-import stores from "../stores";
 import { useClaps } from "../stores/Claps";
 
 export function Claps() {
@@ -26,9 +25,5 @@ export function Claps() {
 }
 
 export default function ClapsPage() {
-  return (
-    <DocProvider stores={stores}>
-      <Claps />
-    </DocProvider>
-  );
+  return <Claps />;
 }
