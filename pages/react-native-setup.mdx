@@ -1,0 +1,140 @@
+
+
+### Dependencies and Setup
+
+Works on any Windows, Linux or macOS computer. Make sure you have:
+
+- NodeJS 12
+- Yarn (reccomended)
+- VSCode (reccomended)
+
+### React Native
+
+RN allows us to use open source technology to build native experiences for iOS and Android. In addition to mobile, you can use React Native technologies to build web sites and desktop apps.
+
+### React
+
+It builds upon React, a library that allows you to construct apps with components, and use a HTML-like language extension called JSX to declare the components.
+
+### JS & TS
+
+React and React Native support JavaScript and any language that compiles to JS. The most common is TypeScript, which adds type safety features to JavaScript and is well supported by the React Native environment.
+
+This project uses TypeScript for the additional robustness and convenience of code completion. As such, we will create `.ts` files, and `.tsx` files for TypeScript+JSX. You are free to use JavaScript by renaming to `.js` files and ignoring the type annotations. 
+
+### Expo and RN
+
+You can use React Native by itself, but Expo provides a more cohesive suite of open source tools, in addition to several useful proprietary services.
+
+Expo has two versions of their product. One is easier to use, and the other gives you more control.
+
+#### Expo Managed App
+
+This is the easier option where Expo manages the native code of your app. This is usually reccomended for your first react native app, because you won't need to set up your native build environment.
+
+Your app will run in Expo's native development app, and Expo will build the app for you when you deploy to production.
+
+If you run into limitations by Expo's managed tools, you can jump into a bare React Native environment with one command (`expo eject`)
+
+#### Expo Bare App
+
+This is a raw React Native app and it requires you to have all the local build tooling for your platform. It gives you complete control of your native code.
+
+In a bare RN app, you can continue to use Expo's tools:
+
+- App update server
+- Notifications
+- Build Server (coming soon)
+
+### Create App
+
+First, we will need the Expo CLI. Run `yarn global add expo-cli` (or `npm i -g expo-cli`)
+
+We will start with an Expo Managed app, and we can always change our minds later. In your terminal:
+
+```
+yarn create react-native-app
+```
+
+Or if you have npm, use `npx create-react-native-app`
+
+Then give your app a folder name, and choose either blank (for JavaScript), or choose the TypeScript template, "with-typescript"
+
+### Run App
+
+Open up VSCode in your app's folder.
+
+To start the development server, you can run `yarn start` or `npm start`. A QR code will be shown in the terminal and web app. Make sure your phone has the Expo app installed, and is on the same Wifi/network as your computer. Then, scan the QR code and your app will open in Expo.
+
+If you have an iOS simulator set up, you can start with `yarn ios` or `npm run ios`
+
+If you have an Android device plugged in to your computer with adb, or an Android simulator ready, you can run `yarn android`
+
+Try making changes in `App.tsx` to see them reflected on your phone.
+
+### Rewrite App
+
+Introduce JSX, View, StyleSheet,
+
+```tsx
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+
+function LocationCell({ name, color }: { name: string; color: string }) {
+  return (
+    <View style={[styles.location, { backgroundColor: color }]}>
+      <Text style={styles.locationName}>{name}</Text>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <LocationCell name="Portland" color="purple" />
+      <LocationCell name="San Francisco" color="red" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  location: {
+    padding: 20,
+  },
+  locationName: {
+    color: "white",
+    fontSize: 32,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+  },
+});
+```
+
+React mapping with keys
+
+
+```tsx
+const locations = [
+  {
+    id: 1,
+    name: "Portland",
+  },
+  {
+    id: 2,
+    name: "San Francisco",
+  },
+];
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      {locations.map((location) => (
+        <LocationCell key={location.id} name={location.name} color="purple" />
+      ))}
+    </View>
+  );
+}
+```

@@ -4,12 +4,16 @@ import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { database } from "../../data/database";
 import PostButton from "../../components/PostButton";
+import { Error400 } from "../../api-utils/Errors";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
-  const page: string = (context.params as any).pageId;
+  const page = context.params?.pageId;
+  if (!page) {
+    throw new Error400({ message: "No page" });
+  }
   const comments = await database.comment.findMany({
-    where: { page },
+    where: { page: String(page) },
     include: {
       user: {
         select: { name: true },
