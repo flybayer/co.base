@@ -10,7 +10,7 @@ git pull
 rm -rf node_modules
 
 # Get all deps.
-yarn
+yarn --frozen-lockfile
 
 # Runs `next build`, as defined in /package.json[scripts][build]
 yarn build

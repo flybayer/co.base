@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   return {
     props: {
-      comments: comments.map((c) => ({
+      comments: comments.map((c: any) => ({
         ...c,
         publishTime: c.publishTime.toISOString(),
       })),
