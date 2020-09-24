@@ -11,6 +11,7 @@ rm -rf node_modules
 
 # Get all deps.
 yarn --frozen-lockfile
+yarn prisma generate
 
 # Runs `next build`, as defined in /package.json[scripts][build]
 yarn build
