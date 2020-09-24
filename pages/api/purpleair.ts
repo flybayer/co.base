@@ -46,4 +46,9 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
   const latCache = cache[String(lat)];
   const cell = latCache && latCache[String(lon)];
   res.send(JSON.stringify({ lat, lon, results: cell }));
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
 };
