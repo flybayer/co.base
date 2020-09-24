@@ -2,9 +2,85 @@
 
 ## Intro to React
 
+## JSX
 
 ## Component Props
 
-## asdf
+## Hooks
 
-## 
+## React Native Components
+
+View, Text, Image
+
+## NPM Installable
+
+
+
+
+
+### Rewrite App
+
+Introduce JSX, View, StyleSheet,
+
+```tsx
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+
+function LocationCell({ name, color }: { name: string; color: string }) {
+  return (
+    <View style={[styles.location, { backgroundColor: color }]}>
+      <Text style={styles.locationName}>{name}</Text>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <LocationCell name="Portland" color="purple" />
+      <LocationCell name="San Francisco" color="red" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  location: {
+    padding: 20,
+  },
+  locationName: {
+    color: "white",
+    fontSize: 32,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+  },
+});
+```
+
+React mapping with keys
+
+
+```tsx
+const locations = [
+  {
+    id: 1,
+    name: "Portland",
+  },
+  {
+    id: 2,
+    name: "San Francisco",
+  },
+];
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      {locations.map((location) => (
+        <LocationCell key={location.id} name={location.name} color="purple" />
+      ))}
+    </View>
+  );
+}
+```
