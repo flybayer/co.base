@@ -7,7 +7,8 @@ let lastUpdate = null;
 
 async function updateCache() {
   const res = await fetch("https://www.purpleair.com/json", {});
-  const data = await res.json();
+  const json = await res.text();
+  const data = JSON.parse(json);
   if (res.status === 200) {
     lastUpdate = Date.now();
     data.results.forEach((result: any) => {
