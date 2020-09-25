@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import Cors from "cors";
 
 const cache: any = {};
 
@@ -41,14 +42,28 @@ setInterval(() => {
     });
 }, 15 * 60 * 60 * 1000);
 
+const cors = Cors({
+  methods: ["GET", "HEAD"],
+  origin: "*",
+});
+
+function runMiddleware(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  middleware: any
+) {
+  return new Promise((resolve, reject) => {
+    middleware(req, res, (result: any) => {
+      if (result instanceof Error) return reject(result);
+      return resolve(result);
+    });
+  });
+}
+
 export default (req: NextApiRequest, res: NextApiResponse) => {
+  runMiddleware(req, res, cors);
   const { lat, lon } = req.query;
   const latCache = cache[String(lat)];
   const cell = latCache && latCache[String(lon)];
   res.send(JSON.stringify({ lat, lon, results: cell }));
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
 };
