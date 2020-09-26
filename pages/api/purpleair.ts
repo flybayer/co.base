@@ -66,7 +66,7 @@ function getCity(id: number) {
   const readingsPressure = [];
   for (const sensorId in idCache) {
     const sensor = idCache[sensorId];
-    // if (sensor.DEVICE_LOCATIONTYPE !== "outside") break;
+    if (sensor.DEVICE_LOCATIONTYPE === "inside") break;
     const sensorLat = sensor.Lat;
     const sensorLon = sensor.Lon;
     const distanceLat = lat - sensorLat;
