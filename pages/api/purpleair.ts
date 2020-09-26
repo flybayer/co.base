@@ -66,22 +66,23 @@ function getCity(id: number) {
   const readingsPressure = [];
   for (const sensorId in idCache) {
     const sensor = idCache[sensorId];
-    if (sensor.DEVICE_LOCATIONTYPE === "inside") break;
-    const sensorLat = sensor.Lat;
-    const sensorLon = sensor.Lon;
-    const distanceLat = lat - sensorLat;
-    const distanceLon = lon - sensorLon;
-    const distance = Math.sqrt(distanceLat ** 2 + distanceLon ** 2); // thanks pythagorea. by squaring these values we also are getting the absolute value, all positive baby.
-    // Each degree of latitude is approximately 69 miles (111 kilometers) apart.
-    // https://www.thoughtco.com/degree-of-latitude-and-longitude-distance-4070616
-    // so here we have chosen to use a radius of .5, assuming that each city includes ~55km radius.
-    if (distance < 0.5) {
-      sensors.push(sensor);
-      if (sensor.temp_f) readingsTempF.push(Number(sensor.temp_f));
-      if (sensor.humidity) readingsHumidity.push(Number(sensor.humidity));
-      if (sensor.PM2_5Value) readingsPM2_5.push(Number(sensor.PM2_5Value));
-      if (sensor.totalPM2_5) readingsPressure.push(Number(sensor.totalPM2_5));
-      if (sensor.pressure) readingsPressure.push(Number(sensor.pressure));
+    if (sensor.DEVICE_LOCATIONTYPE !== "inside") {
+      const sensorLat = sensor.Lat;
+      const sensorLon = sensor.Lon;
+      const distanceLat = lat - sensorLat;
+      const distanceLon = lon - sensorLon;
+      const distance = Math.sqrt(distanceLat ** 2 + distanceLon ** 2); // thanks pythagorea. by squaring these values we also are getting the absolute value, all positive baby.
+      // Each degree of latitude is approximately 69 miles (111 kilometers) apart.
+      // https://www.thoughtco.com/degree-of-latitude-and-longitude-distance-4070616
+      // so here we have chosen to use a radius of .5, assuming that each city includes ~55km radius.
+      if (distance < 0.5) {
+        sensors.push(sensor);
+        if (sensor.temp_f) readingsTempF.push(Number(sensor.temp_f));
+        if (sensor.humidity) readingsHumidity.push(Number(sensor.humidity));
+        if (sensor.PM2_5Value) readingsPM2_5.push(Number(sensor.PM2_5Value));
+        if (sensor.totalPM2_5) readingsPressure.push(Number(sensor.totalPM2_5));
+        if (sensor.pressure) readingsPressure.push(Number(sensor.pressure));
+      }
     }
   }
   const computedCity = {
