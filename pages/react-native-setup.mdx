@@ -1,73 +1,52 @@
 
+### Javascript
 
-### Dependencies and Setup
+This course assumes you are familiar with modern [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Introduction).
 
-Works on any Windows, Linux or macOS computer. Make sure you have:
+### Expo 
 
-- NodeJS 12
-- Yarn (reccomended)
-- VSCode (reccomended)
+Expo is a suite of tools for building apps with React Native. It provides great development tools, and services like push notifications and code updates.
 
 ### React Native
 
-RN allows us to use open source technology to build native experiences for iOS and Android. In addition to mobile, you can use React Native technologies to build web sites and desktop apps.
+RN allows us to build native experiences for iOS and Android. In addition to mobile, you can use React Native to build web sites and desktop apps.
 
 ### React
 
-It builds upon React, a library that allows you to construct apps with components, and use a HTML-like language extension called JSX to declare the components.
+React Native builds upon React, a library that allows you to construct apps with components, and use a HTML-like language extension called JSX to declare the components.
 
-### JS & TS
+### Dependencies and Setup
 
-React and React Native support JavaScript and any language that compiles to JS. The most common is TypeScript, which adds type safety features to JavaScript and is well supported by the React Native environment.
+Works on any Windows, Linux or macOS computer. You will need:
 
-This project uses TypeScript for the additional robustness and convenience of code completion. As such, we will create `.ts` files, and `.tsx` files for TypeScript+JSX. You are free to use JavaScript by renaming to `.js` files and ignoring the type annotations. 
+- A code editor - [VSCode](https://code.visualstudio.com/) is reccommended
+- [Expo CLI](https://docs.expo.io/get-started/installation/#1-expo-cli)
+- [Expo App on your smartphone](https://docs.expo.io/get-started/installation/#2-expo-client-app-for-ios-and).
 
-### Expo and RN
+The Expo CLI requires:
 
-You can use React Native by itself, but Expo provides a more cohesive suite of open source tools, in addition to several useful proprietary services.
+- [NodeJS LTS](https://nodejs.org/en/)
+- [Git](https://git-scm.com/)
+- If you're on macOS, [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall)
 
-Expo has two versions of their product. One is easier to use, and the other gives you more control.
+To install the Expo CLI, run `npm install --global expo-cli`
 
-#### Expo Managed App
+The Expo development app can be found in the iOS App Store or Google's Play Store.
 
-This is the easier option where Expo manages the native code of your app. This is usually reccomended for your first react native app, because you won't need to set up your native build environment.
+If you don't want to use your phone, you can set up an [Android emulator](https://docs.expo.io/workflow/android-studio-emulator/) or if you're on a mac, an [iOS simulator](https://docs.expo.io/workflow/ios-simulator/).
 
-Your app will run in Expo's native development app, and Expo will build the app for you when you deploy to production.
+### Create your app
 
-If you run into limitations by Expo's managed tools, you can jump into a bare React Native environment with one command (`expo eject`)
+Run `expo init violet` (or you can choose a different name than violet), choose managed blank app.
 
-#### Expo Bare App
+Now enter your app directory with `cd violet`
 
-This is a raw React Native app and it requires you to have all the local build tooling for your platform. It gives you complete control of your native code.
+## Run your app
 
-In a bare RN app, you can continue to use Expo's tools:
+Open the app folder in your code editor. 
 
-- App update server
-- Notifications
-- Build Server (coming soon)
+Start the server with `expo start`. The server will start and the web browser will open, or you can go to the URL that the server prints out.
 
-### Create App
+Make sure your phone is on the same wifi, and the home screen of the Expo app should show your app, which you can tap on. Or, you can open the app by scanning the QR code with your phone.
 
-First, we will need the Expo CLI. Run `yarn global add expo-cli` (or `npm i -g expo-cli`)
-
-We will start with an Expo Managed app, and we can always change our minds later. In your terminal:
-
-```
-yarn create react-native-app
-```
-
-Or if you have npm, use `npx create-react-native-app`
-
-Then give your app a folder name, and choose either blank (for JavaScript), or choose the TypeScript template, "with-typescript"
-
-### Run App
-
-Open up VSCode in your app's folder.
-
-To start the development server, you can run `yarn start` or `npm start`. A QR code will be shown in the terminal and web app. Make sure your phone has the Expo app installed, and is on the same Wifi/network as your computer. Then, scan the QR code and your app will open in Expo.
-
-If you have an iOS simulator set up, you can start with `yarn ios` or `npm run ios`
-
-If you have an Android device plugged in to your computer with adb, or an Android simulator ready, you can run `yarn android`
-
-Try making changes in `App.tsx` to see them reflected on your phone.
+Open `App.js`, and see that the text matches on your phone. Try editing the text and saving the file to make sure changes go to your phone.

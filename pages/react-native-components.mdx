@@ -2,85 +2,454 @@
 
 ## Intro to React
 
+React Components are usually delcared as functions:
+
+```js
+function MyComponent() {
+  return (
+    <View>
+      <Text>Hello, World!</Text>
+    </View>
+  )
+}
+```
+
+Components can also be declared as JS classes, but functions are considered the modern approach.
+
+
+
 ## JSX
+
+If you're familiar with JS but are new to React, you might be confused by the HTML tags in the JS code.
+
+This is a language extension called JSX, and it allows you to mix and match Javascript and JSX elements, which describe the structure of your components.
+
+The curly braces allow you to use any Javascript:
+
+```js
+function MyComponent() {
+  let a = 'Hello'
+  if (false) {
+    a = 'Goodbye'
+  }
+  return (
+    <View>
+      <Text>{a}, World!</Text>
+    </View>
+  )
+}
+```
+
+When you put JSX elements inside of eachother, you are describing "children" of that component. In the above example, the Text is the child of the View. Other components may have no children, and they do not need a closing tag:
+
+``` js
+<Image style={styles.img} />
+```
+
+This Image tag also demonstrates a "prop" called `style`. Inside the curly braces we have regular JS, so we look up the `img` key of the `styles` object. The `children` is a special prop.
+
 
 ## Component Props
 
-## Hooks
+You can declare a component with inputs, called "props". They are passed in to your function as an object.
+
+```js
+function Title(props) {
+  return <Text style={{ color: props.color }}>Hello, World</Text>;
+}
+```
+
+The component would be used like this: `<Title color="blue" />`. Here you can see the special "children" prop in action:
+
+```js
+function Title({ color, children }) {
+  return <Text style={{ color }}>{children}</Text>;
+}
+```
 
 ## React Native Components
 
-View, Text, Image
+A few core components are provided by React Native:
 
-## NPM Installable
+### View, Text
+
+See the [View docs](https://reactnative.dev/docs/view) for the props and styles of Views, the generic "box" component in RN.
+
+See the [Text docs](https://reactnative.dev/docs/text) for the styles and props of Text components.
+
+### Image
+
+With React Native tools, you can require images directly:
+
+```js
+<Image
+  source={require('./myImage.png')}
+/>
+```
+
+See the [Image docs](https://reactnative.dev/docs/image) for the props and styles of image components.
 
 
+### StyleSheet
 
+You can add styles to your component a few different ways. Usually they are declared statically using the `StyleSheet` utility:
 
+```js
+function App() {
+  return <View style={{ backgroundColor: 'blue' }} />
+}
+const styles = StyleSheet.create({
+  app: {
+    backgroundColor: 'blue',
+  },
+});
+```
 
-### Rewrite App
+You can also specify styles inline, but this is only reccomended for styles that change based on props or hooks:
 
-Introduce JSX, View, StyleSheet,
+```js
+<View style={{ backgroundColor: 'blue' }} />
+```
 
-```tsx
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+You can also combine static and dynamic styles using an array:
 
-function LocationCell({ name, color }: { name: string; color: string }) {
+```js
+function Box({ backgroundColor }) {
   return (
-    <View style={[styles.location, { backgroundColor: color }]}>
-      <Text style={styles.locationName}>{name}</Text>
+    <View
+      style={[
+        styles.box,
+        { backgroundColor }
+      ]}
+    />
+  )
+}
+const styles = StyleSheet.create({
+  box: {
+    flex: 1,
+  },
+});
+```
+
+### TextInput
+
+See the [TextInput docs](https://reactnative.dev/docs/textinput) for the props and styles of text inputs.
+
+## React Hooks
+
+We can tell React to add behavior to our components using "hooks".
+
+### useState
+
+State in React allows a component to remember some value and change it, as long as the component is still there.
+
+We can use state to create a toggle button:
+
+```js
+import React, { useState } from "react";
+import { StyleSheet, Text, View, Button } from "react-native";
+
+export default function App() {
+  const [lightsOn, setLightsOn] = useState(false);
+  return (
+    <View style={styles.container}>
+      <Text>{lightsOn ? "Lights are On" : "Lights are Off"}</Text>
+      <Button
+        onPress={() => {
+          setLightsOn(!lightsOn);
+        }}
+        title={lightsOn ? "Turn Off" : "Turn On"}
+      />
     </View>
   );
 }
+```
+
+Here we use state for a text input:
+
+```js
+import React, { useState } from "react";
+import { StyleSheet, Text, TextInput, View, Button } from "react-native";
 
 export default function App() {
+  const [name, setName] = useState("");
   return (
     <View style={styles.container}>
-      <LocationCell name="Portland" color="purple" />
-      <LocationCell name="San Francisco" color="red" />
+      <TextInput style={styles.textInput} value={name} onChangeText={setName} />
+      <Button
+        onPress={() => {
+          alert(`Your name is ${name}!`);
+        }}
+        title="Submit"
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  location: {
-    padding: 20,
-  },
-  locationName: {
-    color: "white",
-    fontSize: 32,
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#aaa",
+    borderRadius: 6,
+    minWidth: 200,
+    padding: 6,
   },
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    alignItems: "center",
     justifyContent: "center",
   },
 });
+
 ```
 
-React mapping with keys
+### useEffect
 
+The effect happens whenever the component mounts, or the dependencies change. You can also provide a function to run when the component unmounts, or the dependencies change.
 
-```tsx
-const locations = [
-  {
-    id: 1,
-    name: "Portland",
-  },
-  {
-    id: 2,
-    name: "San Francisco",
-  },
-];
+Here's an example where we mount and un-mount a Monster component based on state.
+
+```js
+function Monster() {
+  useEffect(() => {
+    alert("Monster: And now, we fight!");
+    return () => {
+      alert("Monster: You got me! Until we meet again..");
+    };
+  }, []);
+  return <Text>Grr, I am Monster!</Text>;
+}
 
 export default function App() {
+  const [hasMonster, setHasMonster] = useState(false);
   return (
     <View style={styles.container}>
-      {locations.map((location) => (
-        <LocationCell key={location.id} name={location.name} color="purple" />
-      ))}
+      {hasMonster && <Monster />}
+      <Button
+        onPress={() => {
+          setHasMonster(!hasMonster);
+        }}
+        title={hasMonster ? "Vanquish Monster" : "Invite Monster"}
+      />
     </View>
   );
 }
+```
+
+The dependencies array is passed as the second argument to `useEffect`, and here it is empty. This means the effect will only run once when the component is mounted, and the callback will only happen when the component is removed/unmounted.
+
+And in this example we have a component which alerts the user when the message text changes:
+
+```js
+
+function AlertMessage({ message }) {
+  useEffect(() => {
+    alert(message);
+    return () => {
+      console.log(`No longer: ${message}`);
+    };
+  }, [message]);
+  return null;
+}
+
+export default function App() {
+  const [clapCount, setClapCount] = useState(0);
+  return (
+    <View style={styles.container}>
+      <AlertMessage message={`Clapped ${clapCount} times`} />
+      <Button
+        onPress={() => {
+          setClapCount((cc) => cc + 1);
+        }}
+        title="Clap"
+      />
+    </View>
+  );
+}
+```
+
+In this example, the message is passed into the dependencies array, so the effect is re-run whenever the message changes.
+
+### Reference
+
+## NPM Installable Components
+
+You can install a huge number of react native components from npm.
+
+We will want a component library to help make our app look nice. The most popular component libraries are:
+
+- [RN UI Kitten](https://akveo.github.io/react-native-ui-kitten/)
+- [React Native Paper](https://callstack.github.io/react-native-paper/)
+- [RN Elements](https://reactnativeelements.com/)
+
+For this project we will use UI Kitten because it has a modern cross-platform look, and excellent documentation.
+
+### Install UI Library
+
+Following the [UI kitten installation instructions](https://akveo.github.io/react-native-ui-kitten/docs/guides/getting-started#manual-installation):
+
+```
+expo install react-native-svg@9.13.6
+npm install --save @ui-kitten/components @eva-design/eva @ui-kitten/eva-icons
+```
+
+Now we will rewrite our `App.js` file to look like this:
+
+```js
+import React from 'react';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, IconRegistry, Layout, Text } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
+
+
+function HomeScreen() {
+  return (
+    <Layout style={styles.layout}>
+      <Text category='h1'>Welcome Home</Text>
+    </Layout>
+  );
+}
+
+const styles = StyleSheet.create({
+  layout: {
+    flex: 1
+  }
+});
+
+export default () => (
+  <>
+    <IconRegistry icons={EvaIconsPack} />
+    <ApplicationProvider {...eva} theme={eva.light}>
+      <HomeScreen />
+    </ApplicationProvider>
+  </>
+);
+```
+
+This sets up a theme and the [Eva Icons](https://akveo.github.io/react-native-ui-kitten/docs/guides/icon-packages#icon-packages).
+
+Now we are set up to use any of the [UI Kitten components](https://akveo.github.io/react-native-ui-kitten/docs/components/components-overview), including the [Eva design icons](https://akveo.github.io/eva-icons/#/).
+
+Alternatively, a great package for icons is [@expo/vector-icons](https://docs.expo.io/guides/icons/), with the great icon browser at [icons.expo.fyi](https://icons.expo.fyi/).
+
+### Build Search App
+
+Now, lets build a nice UI for searching cities to add for our air quality app.
+
+In the App file, lets override the theme to suit our app.
+
+```js
+import React from "react";
+import HomeScreen from "./HomeScreen";
+import * as eva from "@eva-design/eva";
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
+
+export default () => (
+  <>
+    <IconRegistry icons={EvaIconsPack} />
+    <ApplicationProvider
+      {...eva}
+      theme={{
+        ...eva.light,
+        "color-primary-100": "#F2F6FF",
+        "color-primary-200": "#e9E4FF",
+        "color-primary-300": "#c6C1FF",
+        "color-primary-400": "#898BFF",
+        "color-primary-500": "#7366FF",
+        "color-primary-600": "#574BDB",
+        "color-primary-700": "#4A34B8",
+        "color-primary-800": "#402694",
+        "color-primary-900": "#291C7A",
+      }}
+    >
+      <HomeScreen />
+    </ApplicationProvider>
+  </>
+);
+```
+
+Now we can build a basic home screen to filter cities in `HomeScreen.js`:
+
+```js
+import React from "react";
+import { ScrollView, StyleSheet } from "react-native";
+import { Layout, Text, Input, Icon, Card } from "@ui-kitten/components";
+
+const EXAMPLE_CITIES = [
+  {
+    cityId: 5368361,
+    name: "Los Angeles",
+    country: "US",
+  },
+  {
+    cityId: 2643743,
+    name: "London",
+    country: "GB",
+  },
+  {
+    cityId: 1273294,
+    name: "Delhi",
+    country: "IN",
+  },
+];
+
+function CityRow({ city }) {
+  return (
+    <Card style={styles.cityRowCard}>
+      <Text>
+        {city.name}, {city.country}
+      </Text>
+    </Card>
+  );
+}
+
+function CitiesList({ filter }) {
+  const cities = filter
+    ? EXAMPLE_CITIES.filter((c) => c.name.match(filter))
+    : EXAMPLE_CITIES;
+  return cities.map((city) => <CityRow city={city} key={city.cityId} />);
+}
+
+function SearchIcon(props) {
+  return <Icon {...props} name="search-outline" />;
+}
+
+export default function HomeScreen() {
+  const [citySearch, setCitySearch] = React.useState("");
+
+  return (
+    <Layout style={styles.layout}>
+      <Text category="h1" status="primary">
+        violet air
+      </Text>
+      <Input
+        value={citySearch}
+        placeholder="Search for your City"
+        accessoryLeft={SearchIcon}
+        onChangeText={setCitySearch}
+      />
+      <ScrollView style={styles.scrollView}>
+        <CitiesList filter={citySearch} />
+      </ScrollView>
+    </Layout>
+  );
+}
+
+const styles = StyleSheet.create({
+  layout: {
+    flex: 1,
+    marginTop: 20,
+    marginHorizontal: 12,
+    alignItems: "center",
+  },
+  scrollView: {
+    flex: 1,
+    alignSelf: "stretch",
+  },
+  cityRowCard: {
+    marginBottom: 8,
+  },
+});
 ```
