@@ -1,0 +1,181 @@
+
+## NPM Installable Components
+
+You can install a huge number of react native components from npm, which you can browse on [reactnative.directory](https://reactnative.directory/).
+
+We will want a component library to help make our app look nice. The most popular component libraries are:
+
+- [RN UI Kitten](https://akveo.github.io/react-native-ui-kitten/)
+- [React Native Paper](https://callstack.github.io/react-native-paper/)
+- [RN Elements](https://reactnativeelements.com/)
+
+For this project we will use UI Kitten because it has a modern cross-platform look, and excellent documentation.
+
+### Install UI Library
+
+Following the [UI kitten installation instructions](https://akveo.github.io/react-native-ui-kitten/docs/guides/getting-started#manual-installation):
+
+```
+expo install react-native-svg@9.13.6
+npm install @ui-kitten/components @eva-design/eva @ui-kitten/eva-icons
+```
+
+Now we will rewrite our `App.js` file to look like this:
+
+```js
+import React from 'react';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, IconRegistry, Layout, Text } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
+
+
+function HomeScreen() {
+  return (
+    <Layout style={styles.layout}>
+      <Text category='h1'>Welcome Home</Text>
+    </Layout>
+  );
+}
+
+const styles = StyleSheet.create({
+  layout: {
+    flex: 1
+  }
+});
+
+export default () => (
+  <>
+    <IconRegistry icons={EvaIconsPack} />
+    <ApplicationProvider {...eva} theme={eva.light}>
+      <HomeScreen />
+    </ApplicationProvider>
+  </>
+);
+```
+
+This sets up a theme and the [Eva Icons](https://akveo.github.io/react-native-ui-kitten/docs/guides/icon-packages#icon-packages).
+
+Now we are set up to use any of the [UI Kitten components](https://akveo.github.io/react-native-ui-kitten/docs/components/components-overview), including the [Eva design icons](https://akveo.github.io/eva-icons/#/).
+
+Alternatively, a great package for icons is [@expo/vector-icons](https://docs.expo.io/guides/icons/), with the great icon browser at [icons.expo.fyi](https://icons.expo.fyi/).
+
+### Build Search App
+
+Now, lets build a nice UI for searching cities to add for our air quality app.
+
+In the App file, lets override the theme to suit our app.
+
+```js
+import React from "react";
+import HomeScreen from "./HomeScreen";
+import * as eva from "@eva-design/eva";
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
+
+export default () => (
+  <>
+    <IconRegistry icons={EvaIconsPack} />
+    <ApplicationProvider
+      {...eva}
+      theme={{
+        ...eva.light,
+        "color-primary-100": "#F2F6FF",
+        "color-primary-200": "#e9E4FF",
+        "color-primary-300": "#c6C1FF",
+        "color-primary-400": "#898BFF",
+        "color-primary-500": "#7366FF",
+        "color-primary-600": "#574BDB",
+        "color-primary-700": "#4A34B8",
+        "color-primary-800": "#402694",
+        "color-primary-900": "#291C7A",
+      }}
+    >
+      <HomeScreen />
+    </ApplicationProvider>
+  </>
+);
+```
+
+Now we can build a basic home screen to filter cities in `HomeScreen.js`:
+
+```js
+import React from "react";
+import { ScrollView, StyleSheet } from "react-native";
+import { Layout, Text, Input, Icon, Card } from "@ui-kitten/components";
+
+const EXAMPLE_CITIES = [
+  {
+    cityId: 5368361,
+    name: "Los Angeles",
+    country: "US",
+  },
+  {
+    cityId: 2643743,
+    name: "London",
+    country: "GB",
+  },
+  {
+    cityId: 1273294,
+    name: "Delhi",
+    country: "IN",
+  },
+];
+
+function CityRow({ city }) {
+  return (
+    <Card style={styles.cityRowCard}>
+      <Text>
+        {city.name}, {city.country}
+      </Text>
+    </Card>
+  );
+}
+
+function CitiesList({ filter }) {
+  const cities = filter
+    ? EXAMPLE_CITIES.filter((c) => c.name.match(filter))
+    : EXAMPLE_CITIES;
+  return cities.map((city) => <CityRow city={city} key={city.cityId} />);
+}
+
+function SearchIcon(props) {
+  return <Icon {...props} name="search-outline" />;
+}
+
+export default function HomeScreen() {
+  const [citySearch, setCitySearch] = React.useState("");
+
+  return (
+    <Layout style={styles.layout}>
+      <Text category="h1" status="primary">
+        violet air
+      </Text>
+      <Input
+        value={citySearch}
+        placeholder="Search for your City"
+        accessoryLeft={SearchIcon}
+        onChangeText={setCitySearch}
+      />
+      <ScrollView style={styles.scrollView}>
+        <CitiesList filter={citySearch} />
+      </ScrollView>
+    </Layout>
+  );
+}
+
+const styles = StyleSheet.create({
+  layout: {
+    flex: 1,
+    marginTop: 20,
+    marginHorizontal: 12,
+    alignItems: "center",
+  },
+  scrollView: {
+    flex: 1,
+    alignSelf: "stretch",
+  },
+  cityRowCard: {
+    marginBottom: 8,
+  },
+});
+```

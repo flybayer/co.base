@@ -1,0 +1,136 @@
+
+## React Hooks
+
+We can tell React to add behavior to our components using "hooks".
+
+### useState
+
+State in React allows a component to remember some value and change it, as long as the component is still there.
+
+We can use state to create a toggle button:
+
+```js
+import React, { useState } from "react";
+import { StyleSheet, Text, View, Button } from "react-native";
+
+export default function App() {
+  const [lightsOn, setLightsOn] = useState(false);
+  return (
+    <View style={styles.container}>
+      <Text>{lightsOn ? "Lights are On" : "Lights are Off"}</Text>
+      <Button
+        onPress={() => {
+          setLightsOn(!lightsOn);
+        }}
+        title={lightsOn ? "Turn Off" : "Turn On"}
+      />
+    </View>
+  );
+}
+```
+
+Here we use state for a text input:
+
+```js
+import React, { useState } from "react";
+import { StyleSheet, Text, TextInput, View, Button } from "react-native";
+
+export default function App() {
+  const [name, setName] = useState("");
+  return (
+    <View style={styles.container}>
+      <TextInput style={styles.textInput} value={name} onChangeText={setName} />
+      <Button
+        onPress={() => {
+          alert(`Your name is ${name}!`);
+        }}
+        title="Submit"
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#aaa",
+    borderRadius: 6,
+    minWidth: 200,
+    padding: 6,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+
+```
+
+### useEffect
+
+The effect happens whenever the component mounts, or the dependencies change. You can also provide a function to run when the component unmounts, or the dependencies change.
+
+Here's an example where we mount and un-mount a Monster component based on state.
+
+```js
+function Monster() {
+  useEffect(() => {
+    alert("Monster: And now, we fight!");
+    return () => {
+      alert("Monster: You got me! Until we meet again..");
+    };
+  }, []);
+  return <Text>Grr, I am Monster!</Text>;
+}
+
+export default function App() {
+  const [hasMonster, setHasMonster] = useState(false);
+  return (
+    <View style={styles.container}>
+      {hasMonster && <Monster />}
+      <Button
+        onPress={() => {
+          setHasMonster(!hasMonster);
+        }}
+        title={hasMonster ? "Vanquish Monster" : "Invite Monster"}
+      />
+    </View>
+  );
+}
+```
+
+The dependencies array is passed as the second argument to `useEffect`, and here it is empty. This means the effect will only run once when the component is mounted, and the callback will only happen when the component is removed/unmounted.
+
+And in this example we have a component which alerts the user when the message text changes:
+
+```js
+
+function AlertMessage({ message }) {
+  useEffect(() => {
+    alert(message);
+    return () => {
+      console.log(`No longer: ${message}`);
+    };
+  }, [message]);
+  return null;
+}
+
+export default function App() {
+  const [clapCount, setClapCount] = useState(0);
+  return (
+    <View style={styles.container}>
+      <AlertMessage message={`Clapped ${clapCount} times`} />
+      <Button
+        onPress={() => {
+          setClapCount((cc) => cc + 1);
+        }}
+        title="Clap"
+      />
+    </View>
+  );
+}
+```
+
+In this example, the message is passed into the dependencies array, so the effect is re-run whenever the message changes.

@@ -1,0 +1,79 @@
+
+## Custom hook
+
+
+Lets create a new file, `Cities.js`, with the following code:
+
+
+## Fetch
+
+
+React native supports the [fetch](https://reactnative.dev/docs/network) function that you find in web browsers.
+
+In `Cities.js`:
+
+
+```js
+import { useEffect, useState } from "react";
+
+export function useCitySearch(filter) {
+  const trimmedFilter = filter.trim();
+  const [cities, setCities] = useState(null);
+  useEffect(() => {
+    if (filter.length < 3) {
+      return;
+    }
+    fetch(`https://aven.io/api/cities?name=${trimmedFilter}`)
+      .then((res) => res.json())
+      .then((results) => {
+        setCities(results.cities);
+      })
+      .catch((err) => {});
+  }, [trimmedFilter]);
+
+  return cities;
+}
+```
+
+
+We can also use a ref to store a timeout, allowing us to debounce the queries:
+
+```js
+import { useEffect, useState, useRef } from "react";
+
+export function useCitySearch(filter) {
+  const trimmedFilter = filter.trim();
+  const [cities, setCities] = useState(null);
+  const timeout = useRef(null)
+  useEffect(() => {
+    if (filter.length < 3) {
+      return;
+    }
+    clearTimeout(timeout.current)
+    timeout.current = setTimeout(() => {
+      fetch(`https://aven.io/api/cities?name=${trimmedFilter}`)
+        .then((res) => res.json())
+        .then((results) => {
+          setCities(results.cities);
+        })
+        .catch((err) => {});
+    }, 150)
+  }, [trimmedFilter]);
+
+  return cities;
+}
+```
+
+Then, in your `HomeScreen.js`:
+
+```js
+import { useCitySearch } from "./Cities";
+// ...
+function CitiesList({ filter }) {
+  const cities = useCitySearch(filter);
+  if (!cities) {
+    return null;
+  }
+  return cities.map((city) => <CityRow city={city} key={city.cityId} />);
+}
+```

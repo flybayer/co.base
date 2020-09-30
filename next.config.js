@@ -3,6 +3,7 @@ const withMdxEnhanced = require("next-mdx-enhanced");
 const remarkPlugins = [
   require("remark-autolink-headings"),
   require("remark-slug"),
+  require("remark-code-titles"),
 ];
 
 module.exports = withMdxEnhanced({
