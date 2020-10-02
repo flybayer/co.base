@@ -9,4 +9,5 @@ export type FrontMatter = {
   twitterHandle?: string;
   githubHandle?: string;
   linkedinHandle?: string;
+  seriesNumber?: string;
 };
