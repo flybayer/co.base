@@ -1,12 +1,15 @@
+---
+title: React Native Distribution
+layout: course-chapter
+seriesNumber: 10
+---
 
-### Distribution
+We will follow [Expo's guide](https://docs.expo.io/distribution/building-standalone-apps/) for building the app for our phone and app stores.
 
-https://docs.expo.io/distribution/building-standalone-apps/
+### Configure App
 
 
-app.json
-
-```
+```json:app.json
  {
    "expo": {
     "name": "Violet App Name",
@@ -25,7 +28,26 @@ app.json
  }
  ```
 
- `expo build:android -t apk`
+The easiest way to build the app for your phone:
 
+`expo build:android -t apk`
+
+
+### Android Play Store
+
+When you are ready to build for the Play store, you can build the app bundle:
+
+`expo build:android -t app-bundle`
+
+This bundle can be uploaded to the Google Play store for Android distribution.
+
+### iOS
+
+You can build the iOS app with the following command, and Expo will produce an `.ipa` file that you can upload to apple for test and distribution.
 
  `expo build:ios`
+
+
+Now you have some ways of getting your app on the phone and out into the world!
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

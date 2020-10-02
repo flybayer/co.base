@@ -1,10 +1,38 @@
+---
+title: React Native Local Storage
+layout: course-chapter
+seriesNumber: 8
+---
 
+### Install AsyncStorage
 
 ```
-npm i 
+npm i @react-native-community/async-storage
 ```
 
-```js
+### Usage
+
+AsyncStorage has two essential functions for storing and retreiving data. To store data, use `setItem`
+
+```jsx
+await AsyncStorage.setItem('message', 'hello!')
+```
+
+And to retreive that string we saved:
+
+```jsx
+const message = await AsyncStorage.getItem('message')
+if (message === null) {
+  console.log('Could not find message!')
+} else {
+  console.log(message)
+}
+```
+
+
+### Store Integration
+
+```jsx
 import AsyncStorage from "@react-native-community/async-storage";
 
 let favorites = null;
@@ -43,3 +71,7 @@ function setFavorites(transaction) {
   );
 }
 ```
+
+#### [Next: Maps](/react-native-maps)
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

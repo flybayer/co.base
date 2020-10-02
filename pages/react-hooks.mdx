@@ -1,3 +1,9 @@
+---
+title: React Hooks
+layout: course-chapter
+seriesNumber: 3
+vimeoId: 464101334
+---
 
 ## React Hooks
 
@@ -9,7 +15,7 @@ State in React allows a component to remember some value and change it, as long 
 
 We can use state to create a toggle button:
 
-```js
+```jsx
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 
@@ -31,7 +37,7 @@ export default function App() {
 
 Here we use state for a text input:
 
-```js
+```jsx
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, View, Button } from "react-native";
 
@@ -74,7 +80,7 @@ The effect happens whenever the component mounts, or the dependencies change. Yo
 
 Here's an example where we mount and un-mount a Monster component based on state.
 
-```js
+```jsx
 function Monster() {
   useEffect(() => {
     alert("Monster: And now, we fight!");
@@ -105,7 +111,7 @@ The dependencies array is passed as the second argument to `useEffect`, and here
 
 And in this example we have a component which alerts the user when the message text changes:
 
-```js
+```jsx
 
 function AlertMessage({ message }) {
   useEffect(() => {
@@ -134,3 +140,48 @@ export default function App() {
 ```
 
 In this example, the message is passed into the dependencies array, so the effect is re-run whenever the message changes.
+
+### useRef
+
+```jsx
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, Text, TextInput, View, Button } from "react-native";
+
+export default function App() {
+  const [name, setName] = useState("");
+  const timeout = useRef(null);
+  useEffect(() => {
+    clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => {
+      if (!name) return;
+      alert(name);
+    }, 200);
+  }, [name]);
+  return (
+    <View style={styles.container}>
+      <TextInput style={styles.textInput} value={name} onChangeText={setName} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#aaa",
+    borderRadius: 6,
+    minWidth: 200,
+    padding: 6,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
+```
+
+
+#### [Next: React Native UI](/react-native-ui)
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

@@ -1,10 +1,17 @@
-
+---
+title: React Native Components
+layout: course-chapter
+seriesNumber: 2
+vimeoId: 464102058
+---
 
 ## Intro to React
 
-React Components are usually delcared as functions:
+React allows you to define your app with components that are composed inside each other.
 
-```js
+Components are usually delcared as functions:
+
+```jsx
 function MyComponent() {
   return (
     <View>
@@ -13,9 +20,6 @@ function MyComponent() {
   )
 }
 ```
-
-Components can also be declared as JS classes, but functions are considered the modern approach.
-
 
 
 ## JSX
@@ -26,7 +30,7 @@ This is a language extension called JSX, and it allows you to mix and match Java
 
 The curly braces allow you to use any Javascript:
 
-```js
+```jsx
 function MyComponent() {
   let a = 'Hello'
   if (false) {
@@ -53,7 +57,7 @@ This Image tag also demonstrates a "prop" called `style`. Inside the curly brace
 
 You can declare a component with inputs, called "props". They are passed in to your function as an object.
 
-```js
+```jsx
 function Title(props) {
   return <Text style={{ color: props.color }}>Hello, World</Text>;
 }
@@ -61,7 +65,7 @@ function Title(props) {
 
 The component would be used like this: `<Title color="blue" />`. Here you can see the special "children" prop in action:
 
-```js
+```jsx
 function Title({ color, children }) {
   return <Text style={{ color }}>{children}</Text>;
 }
@@ -73,15 +77,20 @@ A few core components are provided by React Native:
 
 ### View, Text
 
-See the [View docs](https://reactnative.dev/docs/view) for the props and styles of Views, the generic "box" component in RN.
+See the [View docs](https://reactnative.dev/docs/view) for the props and [styles](https://reactnative.dev/docs/view-style-props) of Views, the generic "box" component in RN.
 
-See the [Text docs](https://reactnative.dev/docs/text) for the styles and props of Text components.
+See the [Text docs](https://reactnative.dev/docs/text) for the [styles](https://reactnative.dev/docs/text-style-props) and props of Text components.
+
+### ScrollView
+
+See the [ScrollView docs](https://reactnative.dev/docs/scrollview) for the props and [styles](https://reactnative.dev/docs/view-style-props) of scroll views.
+
 
 ### Image
 
 With React Native tools, you can require images directly:
 
-```js
+```jsx
 <Image
   source={require('./myImage.png')}
 />
@@ -94,7 +103,7 @@ See the [Image docs](https://reactnative.dev/docs/image) for the props and style
 
 You can add styles to your component a few different ways. Usually they are declared statically using the `StyleSheet` utility:
 
-```js
+```jsx
 function App() {
   return <View style={{ backgroundColor: 'blue' }} />
 }
@@ -107,13 +116,13 @@ const styles = StyleSheet.create({
 
 You can also specify styles inline, but this is only reccomended for styles that change based on props or hooks:
 
-```js
+```jsx
 <View style={{ backgroundColor: 'blue' }} />
 ```
 
 You can also combine static and dynamic styles using an array:
 
-```js
+```jsx
 function Box({ backgroundColor }) {
   return (
     <View
@@ -135,3 +144,33 @@ const styles = StyleSheet.create({
 
 See the [TextInput docs](https://reactnative.dev/docs/textinput) for the props and styles of text inputs.
 
+```jsx
+import React from "react";
+import { StyleSheet, TextInput } from "react-native";
+
+export default function App() {
+  return (
+    <TextInput
+      style={styles.textInput}
+      value={""}
+      onChangeText={(value) => {
+        // do something with value
+      }}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#aaa",
+    borderRadius: 6,
+    minWidth: 200,
+    padding: 6,
+  },
+});
+```
+
+#### [Next: React Hooks](/react-hooks)
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

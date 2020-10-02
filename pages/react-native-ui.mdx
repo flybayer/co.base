@@ -1,3 +1,9 @@
+---
+title: UI Library
+layout: course-chapter
+seriesNumber: 4
+vimeoId: 464107445
+---
 
 ## NPM Installable Components
 
@@ -22,7 +28,7 @@ npm install @ui-kitten/components @eva-design/eva @ui-kitten/eva-icons
 
 Now we will rewrite our `App.js` file to look like this:
 
-```js
+```jsx:App.js
 import React from 'react';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry, Layout, Text } from '@ui-kitten/components';
@@ -65,7 +71,7 @@ Now, lets build a nice UI for searching cities to add for our air quality app.
 
 In the App file, lets override the theme to suit our app.
 
-```js
+```jsx:App.js
 import React from "react";
 import HomeScreen from "./HomeScreen";
 import * as eva from "@eva-design/eva";
@@ -96,9 +102,9 @@ export default () => (
 );
 ```
 
-Now we can build a basic home screen to filter cities in `HomeScreen.js`:
+Now we can build a basic home screen to filter cities:
 
-```js
+```jsx:HomeScreen.js
 import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { Layout, Text, Input, Icon, Card } from "@ui-kitten/components";
@@ -179,3 +185,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+#### [Next: React Navigation](/react-native-navigation)
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

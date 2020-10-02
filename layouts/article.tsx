@@ -32,7 +32,6 @@ export default function ArticleLayout({
   page: string;
   comments: Comment[];
 }>) {
-  console.log("wtf", { restProps, comments, page });
   let topContent: ReactNode = null;
   if (frontMatter.vimeoId) {
     topContent = (

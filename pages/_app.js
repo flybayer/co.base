@@ -7,6 +7,8 @@ import Head from "next/head";
 import React from "react";
 import { MDXProvider } from "@mdx-js/react";
 import Title from "../components/Title";
+import { Global } from "@emotion/core";
+import prism from "../styles/prism.js";
 
 const mdComponents = {
   h1: (props) => <Title {...props} />,
@@ -49,6 +51,7 @@ export default function getMDXPageComponent({ Component, pageProps }) {
   }
   return (
     <Page meta={Component.meta}>
+      <Global styles={prism} />
       <MDXProvider components={mdComponents}>
         <Component {...pageProps} />
       </MDXProvider>

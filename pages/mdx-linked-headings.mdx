@@ -25,7 +25,7 @@ yarn add remark-autolink-headings remark-slug
 
 In your `next.config.js`, add the following:
 
-```js
+```jsx
 const remarkPlugins = [
   require("remark-autolink-headings"),
   require("remark-slug"),
@@ -34,7 +34,7 @@ const remarkPlugins = [
 
 And use it within your `withMdx` or `withMdxEnhanced`:
 
-```js
+```jsx
 module.exports = withMdxEnhanced({
   ...
   remarkPlugins,

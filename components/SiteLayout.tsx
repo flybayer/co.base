@@ -3,6 +3,7 @@ import MainWidth from "./MainWidth";
 import SiteFooter from "./SiteFooter";
 import styled from "@emotion/styled";
 import { ReactNode } from "react";
+import { articleStyles } from "../styles/article";
 
 const MainArea = styled.main`
   flex-grow: 1;
@@ -18,6 +19,7 @@ const Article = styled.article`
     padding-left: 40px;
     padding-right: 40px;
   }
+  ${articleStyles}
 `;
 
 export default function SiteLayout({

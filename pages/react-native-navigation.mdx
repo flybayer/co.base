@@ -1,3 +1,9 @@
+---
+title: React Navigation
+layout: course-chapter
+seriesNumber: 5
+vimeoId: 464113583
+---
 
 ## Navigation 
 
@@ -16,9 +22,9 @@ expo install react-native-gesture-handler react-native-reanimated react-native-s
 npm install @react-navigation/native @react-navigation/stack
 ```
 
-Now, we can set up our `App.js` to use a stack navigator:
+Now, we can set up our app to use a stack navigator:
 
-```js
+```jsx:App.js
 import React from "react";
 import * as eva from "@eva-design/eva";
 import HomeScreen from "./HomeScreen";
@@ -48,7 +54,7 @@ export default () => (
     <IconRegistry icons={EvaIconsPack} />
     <ApplicationProvider {...eva} theme={THEME}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator headerMode="none">
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="City" component={CityScreen} />
         </Stack.Navigator>
@@ -60,17 +66,17 @@ export default () => (
 
 Lets create a new `CityScreen.js`:
 
-```js
+```jsx:CityScreen.js
 import React from "react";
 import { Layout, Text } from "@ui-kitten/components";
 import { StyleSheet } from "react-native";
 
 export default function CityScreen({ route }) {
-  const { id, name } = route.params;
+  const { city } = route.params;
   return (
     <Layout style={styles.layout}>
       <Text category="h1" status="primary">
-        {name}
+        {city.name}
       </Text>
     </Layout>
   );
@@ -79,16 +85,15 @@ export default function CityScreen({ route }) {
 const styles = StyleSheet.create({
   layout: {
     flex: 1,
-    marginTop: 20,
     marginHorizontal: 12,
     alignItems: "center",
   },
 });
 ```
 
-Now our new screen exists, but we have no way to get to it. Lets fix that by adding a press handler to our CityCard component in `HomeScreen.js`
+Now our new screen exists, but we have no way to get to it. Lets fix that by adding a press handler to our CityCard component:
 
-```js
+```jsx:HomeScreen.js
 import { useNavigation } from "@react-navigation/native";
 
 function CityRow({ city }) {
@@ -97,24 +102,146 @@ function CityRow({ city }) {
   return (
     <Card
       onPress={() => {
-        navigate("City", { id: city.city, name: city.name });
+        navigate("City", { city });
       }}
       // ...
 ```
 
-For the title of the city screen, we can set the title with the options prop. Or it can be set as a function:
+Make fit in status bar:
 
-```js
-<Stack.Screen
-  options={({ route }) => ({ title: route.params.name })}
-  ...
+```jsx
+import { SafeAreaView } from "react-native-safe-area-context";
+// to use it:
+<SafeAreaView style={styles.container}>
+ // ...
+</SafeAreaView>
 ```
 
-We can also disable the header on the home screen:
+Add header
 
-```js
-<Stack.Screen
-  options={{ header: () => null }}
+```jsx
+function BackIcon(props) {
+  return <Icon {...props} name="arrow-back" />;
+}
+
+// inside <SafeAreaView>:
+<TopNavigation
+  title={city.name}
+  alignment="center"
+  accessoryLeft={() => (
+    <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
+  )}
+/>
+<Divider />
 ```
 
-Things are looking a bit strange now, so
+You will also need this function as the button callback for going back:
+```jsx
+function navigateBack() {
+  navigation.goBack();
+}
+```
+
+Lets prepare some icons to use in the header, to switch modes of our city screen:
+
+```jsx
+function MapIcon(props) {
+  return <Icon {...props} name="map" />;
+}
+
+function InfoIcon(props) {
+  return <Icon {...props} name="info" />;
+}
+```
+
+Now add state inside the screen:
+
+```jsx:CityScreen.js
+  const [isMapView, setIsMapView] = useState(false);
+
+    <TopNavigation
+      ...
+        accessoryRight={() =>
+          isMapView ? (
+            <TopNavigationAction
+              icon={InfoIcon}
+              onPress={() => {
+                setIsMapView(false);
+              }}
+            />
+          ) : (
+            <TopNavigationAction
+              icon={MapIcon}
+              onPress={() => {
+                setIsMapView(true);
+              }}
+            />
+          )
+        }
+      />
+      <Divider />
+      {isMapView ? <CityMap city={city} /> : <CityStats city={city} />}
+```
+
+Create component to display the city stats:
+
+
+```js
+function useCityStats(city) {
+  return {
+    avgPM2_5: 111,
+    avgTempF: 222,
+    avgHumidity: 333,
+    sensorCount: 123,
+    population: 1234,
+  };
+}
+
+function CityStats({ city }) {
+  const stats = useCityStats(city.cityId);
+  return (
+    <Layout style={styles.layout}>
+      {stats && (
+        <>
+          <View style={styles.valueRow}>
+            <Text category="h4">PM2.5</Text>
+            <Text>{stats.avgPM2_5.toFixed(0)}</Text>
+          </View>
+          <View style={styles.valueRow}>
+            <Text category="h4">Temperature</Text>
+            <Text>{stats.avgTempF.toFixed(0)}°F</Text>
+          </View>
+          <View style={styles.valueRow}>
+            <Text category="h4">Humidity</Text>
+            <Text>{stats.avgHumidity.toFixed(0)}%</Text>
+          </View>
+          <View style={styles.valueRow}>
+            <Text category="h4">Sensor Count</Text>
+            <Text>{stats.sensorCount}</Text>
+          </View>
+          <View style={styles.valueRow}>
+            <Text category="h4">Population</Text>
+            <Text>{stats.population}</Text>
+          </View>
+        </>
+      )}
+    </Layout>
+  );
+}
+```
+
+And a placeholder map component with a spinner:
+
+```js
+function CityMap({ city }) {
+  return (
+    <Layout style={styles.spinnerLayout}>
+      <Spinner />
+    </Layout>
+  );
+}
+```
+
+#### [Next: API Fetching](/react-native-fetch)
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->
