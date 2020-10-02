@@ -4,15 +4,20 @@ layout: course-chapter
 seriesNumber: 8
 ---
 
+We need to persist the favorites after the app re-launches, so we will use a local storage module to save the data.
+
 ### Install AsyncStorage
 
+The [AsyncStorage](https://react-native-community.github.io/async-storage/docs/usage/) is a basic key-value database for React Native. Because the module involves native code, [Expo reccomends](https://docs.expo.io/versions/latest/sdk/async-storage/): 
+
 ```
-npm i @react-native-community/async-storage
+expo install @react-native-community/async-storage
 ```
+
 
 ### Usage
 
-AsyncStorage has two essential functions for storing and retreiving data. To store data, use `setItem`
+AsyncStorage has two essential functions for storing and retreiving data. To store data, use `setItem`:
 
 ```jsx
 await AsyncStorage.setItem('message', 'hello!')
@@ -32,7 +37,7 @@ if (message === null) {
 
 ### Store Integration
 
-```jsx
+```jsx:
 import AsyncStorage from "@react-native-community/async-storage";
 
 let favorites = null;
@@ -71,6 +76,8 @@ function setFavorites(transaction) {
   );
 }
 ```
+
+Now even after our app restarts, we persist the favorite cities. Now that the city favorite feature is complete, we will move on to the map component to display our city's air sensors.
 
 #### [Next: Maps](/react-native-maps)
 

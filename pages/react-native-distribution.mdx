@@ -32,6 +32,14 @@ The easiest way to build the app for your phone:
 
 `expo build:android -t apk`
 
+Expo will start building the app and let you download it later when it completes. If you have an Android emulator running, you can drag the apk to the emulator to install it.
+
+On your Android phone, you can install it over USB. First enable developer mode by going to System Info > Build Number, and tap on the build number until you get into developer mode. Then enable "USB Debugging", plug the device into your computer, and accept to trust it. Now you are ready to run the `adb` command to install your app on device.
+
+```
+adb install <apk_file_name>
+```
+
 
 ### Android Play Store
 
@@ -45,7 +53,7 @@ This bundle can be uploaded to the Google Play store for Android distribution.
 
 You can build the iOS app with the following command, and Expo will produce an `.ipa` file that you can upload to apple for test and distribution.
 
- `expo build:ios`
+`expo build:ios`
 
 
 Now you have some ways of getting your app on the phone and out into the world!

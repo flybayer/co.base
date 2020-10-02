@@ -6,10 +6,60 @@ seriesNumber: 7
 
 ## Implement a Store
 
+We want our app to share some data across all components, so we will create an independent "store" to contain that data. Then we will set up some custom hooks to use the store.
 
-In `CityFavorites.js`:
+First, lets create a component to subscribe the city, on the "stats" page:
 
-```jsx
+```jsx:CityScreen.js
+function FavoriteRow({ city }) {
+  const [isSubscribed, setIsSubscribed] = useCityFavorite(city);
+  const theme = useTheme();
+  return (
+    <>
+      <View style={styles.favoriteRow}>
+        <Button
+          onPress={() => {
+            setIsSubscribed(!isSubscribed);
+          }}
+          status={isSubscribed ? "basic" : "info"}
+        >
+          {isSubscribed ? "Remove from Favorites" : "Add to Favorites"}
+        </Button>
+      </View>
+      <Icon
+        name={isSubscribed ? "star" : "star-outline"}
+        style={styles.favoriteIcon}
+        fill={theme["color-info-400"]}
+      />
+    </>
+  );
+}
+```
+
+Lets pretend that we have another hook called `useFavorites()`, and we can now implement `useCityFavorite`
+
+```jsx:CityFavorites.js
+export function useCityFavorite(city) {
+  const favCities = useFavorites();
+  const isSubscribed = !!favCities.find(
+    (favCity) => favCity.cityId === city.cityId
+  );
+  function setIsFavorite(isFavorite) {
+    if (isFavorite) {
+      setFavorites((favorites) => [...favorites, city]);
+    } else {
+      setFavorites((favorites) =>
+        favorites.filter((c) => c.cityId !== city.cityId)
+      );
+    }
+  }
+  return [isSubscribed, setIsFavorite];
+}
+```
+
+Now we need to store our favorites in memory, create the `setFavorites` function, and set up the `useFavorites` hook.
+
+```jsx:CityFavorites.js
 import { useEffect, useState } from "react";
 
 let favorites = [];
@@ -35,25 +85,126 @@ export function useFavorites() {
   }, []);
   return state;
 }
+```
 
-export function useCityFavorite(city) {
-  const favCities = useFavorites();
-  const isSubscribed = !!favCities.find(
-    (favCity) => favCity.cityId === city.cityId
-  );
-  function setIsFavorite(isFavorite) {
-    if (isFavorite) {
-      setFavorites((favorites) => [...favorites, city]);
-    } else {
-      setFavorites((favorites) =>
-        favorites.filter((c) => c.cityId !== city.cityId)
-      );
-    }
-  }
-  return [isSubscribed, setIsFavorite];
+Here we store the favorites and a set of subscriber functions that will be called when the favorites change.
+
+The `useFavorites` hook has internal state that the component uses, which is handled by grabbing the initial state and adding a subscriber to update the state when the store value changes.
+
+
+On the home screen, lets use our favorites to display them when the user is not searching:
+
+```jsx:HomeScreen.js
+function FavoriteCities() {
+  const favorites = useFavorites();
+  if (!favorites) return null;
+  return favorites.map((city) => <CityRow city={city} key={city.cityId} />);
 }
 
+// Inside <ScrollView>:
+
+{citySearch ? (
+  <CitiesSearch filter={citySearch} />
+) : (
+  <FavoriteCities />
+)}
 ```
+
+Now our app can add cities to the home screen.
+
+## Fetching Store
+
+Now lets create a more advanced store to load data from the API and share that data with all components who need it.
+
+We need a function that gives us the store for a given city.
+
+```jsx:CityAir.js
+function createCityStore(cityId) {
+  let cityState = null;
+  const subscribers = new Set();
+  function setState(city) {
+    cityState = city;
+    subscribers.forEach((handle) => handle(city));
+  }
+  return {
+    subscribe: (handler) => {
+      subscribers.add(handler);
+
+      return () => {
+        subscribers.delete(handler);
+      };
+    },
+    get: () => {
+      return cityState;
+    },
+  };
+}
+```
+
+This allows us to save city data and subscribe to it. Now lets add the API fetch:
+
+```jsx
+if (cityState === null && !loadPromise) {
+  loadPromise = fetch(`https://aven.io/api/purpleair?city=${cityId}`)
+    .then((res) => {
+      return res.json();
+    })
+    .then((city) => {
+      setState(city);
+    })
+    .catch((err) => {
+      console.error("PurpleAir API request failed");
+      console.error(err);
+    })
+    .finally(() => {
+      loadPromise = null;
+    });
+}
+```
+
+We save the loadPromise to ensure the store will only perform one request, even with multiple subscribers.
+
+Now we can create an object to hold the stores, organized by city ID.
+
+```jsx:CityAir.js
+const cityStores = {};
+
+function getCityStore(cityId) {
+  if (cityStores[cityId]) return cityStores[cityId];
+  cityStores[cityId] = createCityStore(cityId);
+  return cityStores[cityId];
+}
+```
+
+Finally lets create a hook that subscribes us to the store of a city:
+
+
+```jsx:CityAir.js
+export function useCity(cityId) {
+  if (!cityId) throw new Error("Must provide cityId to useCity");
+  const store = getCityStore(cityId);
+  const [stats, setStats] = useState(store.get());
+  useEffect(() => {
+    function handleCityState(city) {
+      setStats(city);
+    }
+    return store.subscribe(handleCityState);
+  }, [store]);
+  return stats;
+}
+```
+
+Now lets use the new hook in our city screen:
+
+```jsx:CityScreen.js
+import { useCity } from './CityAir';
+
+function CityStats({ city }) {
+  const stats = useCity(city.cityId);
+  ...
+```
+
+This works great and we can finally see air quality details for a city. But we are loosing our favorites every time the app starts, so the next section will introduce a way to store data locally on the phone.
 
 #### [Next: Local Storage](/react-native-local-storage)
 
