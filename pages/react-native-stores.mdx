@@ -2,6 +2,7 @@
 title: React Native Stores
 layout: course-chapter
 seriesNumber: 7
+vimeoId: 464445050
 ---
 
 ## Implement a Store
@@ -12,22 +13,22 @@ First, lets create a component to subscribe the city, on the "stats" page:
 
 ```jsx:CityScreen.js
 function FavoriteRow({ city }) {
-  const [isSubscribed, setIsSubscribed] = useCityFavorite(city);
+  const [isFavorite, setIsFavorite] = useCityFavorite(city);
   const theme = useTheme();
   return (
     <>
       <View style={styles.favoriteRow}>
         <Button
           onPress={() => {
-            setIsSubscribed(!isSubscribed);
+            setIsFavorite(!isFavorite);
           }}
-          status={isSubscribed ? "basic" : "info"}
+          status={isFavorite ? "basic" : "info"}
         >
-          {isSubscribed ? "Remove from Favorites" : "Add to Favorites"}
+          {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
         </Button>
       </View>
       <Icon
-        name={isSubscribed ? "star" : "star-outline"}
+        name={isFavorite ? "star" : "star-outline"}
         style={styles.favoriteIcon}
         fill={theme["color-info-400"]}
       />
@@ -41,7 +42,7 @@ Lets pretend that we have another hook called `useFavorites()`, and we can now i
 ```jsx:CityFavorites.js
 export function useCityFavorite(city) {
   const favCities = useFavorites();
-  const isSubscribed = !!favCities.find(
+  const isFavorite = !!favCities.find(
     (favCity) => favCity.cityId === city.cityId
   );
   function setIsFavorite(isFavorite) {
@@ -53,7 +54,7 @@ export function useCityFavorite(city) {
       );
     }
   }
-  return [isSubscribed, setIsFavorite];
+  return [isFavorite, setIsFavorite];
 }
 ```
 
@@ -183,14 +184,14 @@ Finally lets create a hook that subscribes us to the store of a city:
 export function useCity(cityId) {
   if (!cityId) throw new Error("Must provide cityId to useCity");
   const store = getCityStore(cityId);
-  const [stats, setStats] = useState(store.get());
+  const [city, setCity] = useState(store.get());
   useEffect(() => {
-    function handleCityState(city) {
-      setStats(city);
+    function handleCityState(newCity) {
+      setCity(newCity);
     }
     return store.subscribe(handleCityState);
   }, [store]);
-  return stats;
+  return city;
 }
 ```
 

@@ -2,6 +2,7 @@
 title: React Native Distribution
 layout: course-chapter
 seriesNumber: 10
+vimeoId: 464455030
 ---
 
 We will follow [Expo's guide](https://docs.expo.io/distribution/building-standalone-apps/) for building the app for our phone and app stores.
@@ -10,22 +11,31 @@ We will follow [Expo's guide](https://docs.expo.io/distribution/building-standal
 
 
 ```json:app.json
- {
-   "expo": {
-    "name": "Violet App Name",
-    "icon": "./VioletIcon.png",
-    "version": "1.0.0",
+{
+  "expo": {
+    "name": "violet",
     "slug": "violet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "com.taskreactor.violet",
-      "buildNumber": "1.0.0"
+      "supportsTablet": true,
+      "bundleIdentifier": "io.aven.violet"
     },
     "android": {
-      "package": "com.taskreactor.violet",
+      "package": "io.aven.violet",
       "versionCode": 1
     }
-   }
- }
+  }
+}
  ```
 
 The easiest way to build the app for your phone:
@@ -39,6 +49,10 @@ On your Android phone, you can install it over USB. First enable developer mode 
 ```
 adb install <apk_file_name>
 ```
+
+Now the app will install on your phone!
+
+Our application depends on Google Maps, so you will need to follow Expo's instructions on the [Google API key installation](https://docs.expo.io/versions/latest/sdk/map-view/#deploying-to-a-standalone-app-on-android).
 
 
 ### Android Play Store

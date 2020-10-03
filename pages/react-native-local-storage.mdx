@@ -2,6 +2,7 @@
 title: React Native Local Storage
 layout: course-chapter
 seriesNumber: 8
+vimeoId: 464445622
 ---
 
 We need to persist the favorites after the app re-launches, so we will use a local storage module to save the data.
@@ -37,7 +38,7 @@ if (message === null) {
 
 ### Store Integration
 
-```jsx:
+```jsx:CityFavorites.js
 import AsyncStorage from "@react-native-community/async-storage";
 
 let favorites = null;
@@ -46,19 +47,16 @@ const subscriptions = new Set();
 const FAVS_STORAGE_KEY = "FavoriteCities-0";
 
 AsyncStorage.getItem(FAVS_STORAGE_KEY)
-  .then((data) => {
+  .then((result) => {
     if (data === null) {
       favorites = [];
-      subscriptions.forEach((handle) => {
-        handle(favorites);
-      });
     } else {
       const storedFavorites = JSON.parse(data);
       favorites = storedFavorites;
-      subscriptions.forEach((handle) => {
-        handle(favorites);
-      });
     }
+    subscriptions.forEach((handle) => {
+      handle(favorites);
+    });
   })
   .catch((err) => {
     console.error("Could not load favorites", err);

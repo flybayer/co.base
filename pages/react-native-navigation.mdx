@@ -136,6 +136,7 @@ function BackIcon(props) {
 ```
 
 You will also need this function as the button callback for going back:
+
 ```jsx
 function navigateBack() {
   navigation.goBack();
@@ -186,7 +187,7 @@ Now add state inside the screen:
 Create component to display the city stats:
 
 
-```js
+```jsx
 function useCityStats(city) {
   return {
     avgPM2_5: 111,
@@ -232,7 +233,7 @@ function CityStats({ city }) {
 
 And a placeholder map component with a spinner:
 
-```js
+```jsx
 function CityMap({ city }) {
   return (
     <Layout style={styles.spinnerLayout}>
