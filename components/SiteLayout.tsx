@@ -28,12 +28,14 @@ export default function SiteLayout({
   content,
   tailContent,
   bottomContent,
+  hideFooter = false,
 }: {
   topContent?: ReactNode;
   headContent?: ReactNode;
   content: ReactNode;
   tailContent?: ReactNode;
   bottomContent?: ReactNode;
+  hideFooter?: boolean;
 }) {
   return (
     <>
@@ -47,7 +49,7 @@ export default function SiteLayout({
         </MainWidth>
         {bottomContent}
       </MainArea>
-      <SiteFooter />
+      {!hideFooter && <SiteFooter />}
     </>
   );
 }

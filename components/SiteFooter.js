@@ -1,4 +1,4 @@
-import { Link } from "@chakra-ui/core";
+import { Button, Link } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import React from "react";
 import MainWidth from "./MainWidth";
@@ -8,7 +8,7 @@ const InnerWidth = styled.div`
   padding: 25px;
 `;
 const FooterText = styled.p`
-  color: white;
+  color: #bbb;
 `;
 export default function SiteFooter() {
   return (
