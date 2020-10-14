@@ -1,5 +1,10 @@
 const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const { SENDGRID_API_KEY } = process.env;
+
+if (SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 const dev = process.env.NODE_ENV !== "production";
 
@@ -15,5 +20,16 @@ export async function sendEmail(
     text: textContent,
     // html: textContent,
   };
-  await sgMail.send(msg);
+  if (SENDGRID_API_KEY) {
+    await sgMail.send(msg);
+  } else {
+    console.log("=======");
+    console.log(
+      "Email cannot be sent without setting SENDGRID_API_KEY in your .env.development.local file."
+    );
+    console.log(`-- Recipient: ${dest}`);
+    console.log(`-- Subject: ${subject}`);
+    console.log(`-- Text Body: ${textContent}`);
+    console.log("=======");
+  }
 }

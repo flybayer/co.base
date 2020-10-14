@@ -10,18 +10,36 @@ Make sure you have Docker, NodeJS 12 or 14, and Yarn.
 
 To run Aven Sky (this site) we are going to:
 
-- Check out the repo: https://github.com/avencloud/sky
-- Install Dependencies
-- Start the app
+### 1. Install Dependencies
+
+First make sure you have Node.js LTS and Yarn installed. Then set up and run Docker.
+
+### 2. Check out Repo
+
+First set up SSH with GitHub, then you can check out with the following command:
 
 ```
 git clone git@github.com:AvenCloud/sky.git
-cd sky
-yarn
-yarn start
 ```
 
-When the server starts in `yarn start`, it will automatically set up your Postgres database in docker, then it will run a migration with Prisma migrate to make sure your database schema is up to date.
+### 3. Install Packages
+
+Go into your directory and run yarn to install all the dependencies.
+
+```
+cd sky
+yarn
+```
+
+### 4. Run Development Server
+
+Run the sky site with the command:
+
+```
+yarn dev
+```
+
+When the server starts, it will automatically set up your Postgres database in docker, then it will run a migration with Prisma migrate to make sure your database schema is up to date.
 
 > Note: Sometimes the Postgres server does not start fast enough and there is an error on the migration. If this happens, you can re-start the server and the database should be ready
 
@@ -32,10 +50,45 @@ When the server starts in `yarn start`, it will automatically set up your Postgr
 
 Once you see this message, you are ready to open the app in your web browser at [http://localhost:3001](http://localhost:3001)
 
-## Full Site Setup
+### 5. Build for Production (optional)
+
+To test the production build of the app, you can start by running the build:
+
+```
+yarn build
+```
+
+Now to run the server in the same way as we do in production:
+
+```
+yarn start
+```
+
+
+### 5. Full Configuration (optional)
 
 To test the full-blown site on your computer, you will need credentials to [SendGrid](/sendgrid) and [Stripe](/stripe).
 
-If any of these things are missing, we should fall back elegantly (although, this is a work in progress).
+If you want to send emails from your development environment, you can set up a SendGrid account and get an API key.
+
+You can create a file for environment variables (secrets). This `.env.development.local` file will be ignored by git and will stay (secret) on your computer because it is listed in the `.gitignore` file.
+
+We will use the `.env` file as a template for our new file:
+
+```:.env.development.local
+DATABASE_URL='postgresql://user:pw@localhost:5432/db'
+
+SENDGRID_API_KEY='<YourAPIKey>'
+
+STRIPE_PUBLIC_KEY=''
+STRIPE_SECRET_KEY=''
+STRIPE_WEBHOOK_SECRET=''
+
+JWT_SECRET=localKeySecret
+```
+
+You can also see there are empty variables for Stripe, and the billing features on the site will not work unless these are set.
+
+The setup for secrets will be very similar in production. You will add your secrets to the `.env.production.local` file in the folder where your server is deployed.
 
 <!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

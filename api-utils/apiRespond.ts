@@ -8,7 +8,7 @@ export function apiRespond(res: NextApiResponse, promise: Promise<any>) {
         return; // this happens in the case of redirects..
       }
       res.statusCode = 200;
-      res.send(resp);
+      res.json(resp);
     })
     .catch((err) => {
       console.error(err);
@@ -21,6 +21,6 @@ export function apiRespond(res: NextApiResponse, promise: Promise<any>) {
       } else {
         res.statusCode = 500;
       }
-      res.send({ error: err.detail });
+      res.json({ error: err.detail });
     });
 }

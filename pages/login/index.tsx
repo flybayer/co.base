@@ -9,6 +9,22 @@ import redirect from "../../api-utils/redirect";
 import getVerifiedUser from "../../api-utils/getVerifedUser";
 import { ControlledInputGroup } from "../../components/ControlledInputGroup";
 
+async function api(endpoint: string, payload: any) {
+  return fetch(`/api/${endpoint}`, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  }).then(async (res) => {
+    const body = await res.json();
+    if (res.status !== 200) {
+      throw new Error("Indubitably!");
+    }
+    return body;
+  });
+}
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = getVerifiedUser(context.req);
   if (!user) {
@@ -39,16 +55,9 @@ function LoginForm({}) {
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          fetch("/api/login-register", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: data.email,
-            }),
+          api("login-register", {
+            email: data.email,
           })
-            .then((res) => res.json())
             .then((resp) => {
               setHasEmailed(true);
               setIsSubmitting(false);
