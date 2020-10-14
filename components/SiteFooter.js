@@ -10,6 +10,14 @@ const InnerWidth = styled.div`
 const FooterText = styled.p`
   color: #bbb;
 `;
+const FooterA = styled.a`
+  color: #bbb;
+  text-decoration: underline;
+  transition: color 0.25s ease-out, border 0.25s ease-out;
+  :hover {
+    color: white;
+  }
+`;
 export default function SiteFooter() {
   return (
     <>
@@ -35,16 +43,18 @@ export default function SiteFooter() {
         <InnerWidth>
           <FooterText>
             © Aven LLC and Aven Contributors. Licensed under{" "}
-            <Link href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+            <FooterA href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
               Creative Commons BY-NC-SA 4.0
-            </Link>
+            </FooterA>
           </FooterText>
           <FooterText>
-            <Link href="https://github.com/avencloud/sky">Source Open</Link>{" "}
+            <FooterA href="https://github.com/avencloud/sky">
+              Open Source
+            </FooterA>{" "}
             under{" "}
-            <Link href="https://github.com/AvenCloud/sky/blob/main/LICENSE.md">
+            <FooterA href="https://github.com/AvenCloud/sky/blob/main/LICENSE.md">
               Apache 2.0
-            </Link>
+            </FooterA>
           </FooterText>
         </InnerWidth>
       </div>
