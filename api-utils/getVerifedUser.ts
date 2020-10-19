@@ -24,7 +24,10 @@ export default async function getVerifiedUser(
   if (!AvenSession) {
     return null;
   }
-  const jwt = decode(AvenSession);
+  let jwt = decode(AvenSession);
+  if (!jwt) {
+    jwt = req.body.jwt;
+  }
   if (!jwt) {
     return null;
   }

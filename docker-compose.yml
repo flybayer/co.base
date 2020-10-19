@@ -1,5 +1,6 @@
 version: "3"
 services:
+
   database:
     image: "postgres" # use latest official postgres version
     env_file:
@@ -9,7 +10,17 @@ services:
     ports:
       - 5432:5432
 
+  s3:
+    image: minio/minio:RELEASE.2020-10-12T21-53-21Z
+    command: server /data
+    environment:
+      MINIO_ACCESS_KEY: test-minio-access
+      MINIO_SECRET_KEY: test-minio-secret
+    ports:
+      - 9000:9000
+    volumes:
+      - s3-data:/data
+      
 volumes:
-  database-data: # named volumes can be managed easier using docker-compose
-
-# taken from https://medium.com/analytics-vidhya/getting-started-with-postgresql-using-docker-compose-34d6b808c47c
+  database-data: 
+  s3-data: 

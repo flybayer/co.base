@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -20,7 +20,6 @@ model User {
   subscribedAccess    Int       @default(0)
   subscriptionEndTime DateTime?
   Comment             Comment[]
-  Clip                Clip[]
 }
 
 model EmailValidation {
@@ -44,12 +43,4 @@ model Comment {
   userId      Int
   user        User     @relation(fields: [userId], references: [id])
   message     String
-}
-
-model Clip {
-  id          Int       @id @default(autoincrement())
-  draftTime   DateTime  @default(now())
-  publishTime DateTime?
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id])
 }

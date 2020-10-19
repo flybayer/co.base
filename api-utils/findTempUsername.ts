@@ -2,7 +2,7 @@ import { database } from "../data/database";
 import { getRandomLetters } from "./getRandomLetters";
 
 export function getTempUsername(): string {
-  return `u-${getRandomLetters(8)}`;
+  return `Anon-${getRandomLetters(7)}`;
 }
 
 export async function findTempUsername(): Promise<string> {

@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -47,9 +47,8 @@ model Comment {
 }
 
 model Clip {
-  id          Int       @id @default(autoincrement())
-  draftTime   DateTime  @default(now())
-  publishTime DateTime?
+  id          Int      @id @default(autoincrement())
+  publishTime DateTime @default(now())
   userId      Int
-  user        User      @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
