@@ -7,7 +7,8 @@ import { Error500 } from "./Errors";
 
 export type APIUser = {
   id: number;
-  email: string;
+  email: string | null;
+  phone: string | null;
   name: string | null;
   username: string;
   giftedAccess: number;
@@ -37,6 +38,7 @@ export default async function getVerifiedUser(
       id: true,
       email: true,
       name: true,
+      phone: true,
       username: true,
       giftedAccess: true,
       subscribedAccess: true,
@@ -53,6 +55,7 @@ export default async function getVerifiedUser(
   const {
     id,
     email,
+    phone,
     name,
     username,
     giftedAccess,
@@ -62,6 +65,7 @@ export default async function getVerifiedUser(
   const apiUser = {
     id,
     email,
+    phone,
     name,
     username,
     giftedAccess,
