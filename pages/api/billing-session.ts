@@ -4,6 +4,7 @@ import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import stripe from "../../api-utils/stripe";
 import getSiteLink from "../../api-utils/getSiteLink";
+import { createAPI } from "../../api-utils/createAPI";
 
 async function redirectBillingSession(user: APIUser, res: NextApiResponse) {
   let stripeCustomer = user.stripeCustomerId;
@@ -30,16 +31,16 @@ async function redirectBillingSession(user: APIUser, res: NextApiResponse) {
   return {};
 }
 
-async function handleAction(req: NextApiRequest, res: NextApiResponse) {
-  const verifiedUser = await getVerifiedUser(req);
-  if (verifiedUser == null) {
-    redirect(res, "/login");
-    return {};
-  } else {
-    return await redirectBillingSession(verifiedUser, res);
+const APIHandler = createAPI(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const verifiedUser = await getVerifiedUser(req);
+    if (verifiedUser == null) {
+      redirect(res, "/login");
+      return {};
+    } else {
+      return await redirectBillingSession(verifiedUser, res);
+    }
   }
-}
+);
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  handleAction(req, res).catch((err) => console.error(err));
-};
+export default APIHandler;

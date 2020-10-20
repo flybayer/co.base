@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
 import { Error400, Error500 } from "../../api-utils/Errors";
-import { apiRespond } from "../../api-utils/apiRespond";
 import setCookie from "../../api-utils/setCookie";
 import { encode } from "../../api-utils/jwt";
 import { findTempUsername } from "../../api-utils/findTempUsername";
+import { createAPI } from "../../api-utils/createAPI";
 
 export type VerifyPhonePayload = {
   secret?: string;
@@ -78,10 +78,11 @@ async function verifyPhone(
   return { sessionPayload, user: { id, username }, jwt };
 }
 
-async function handleActionPayload(payload: any, res: NextApiResponse) {
-  return await verifyPhone(validatePayload(payload), res);
-}
+const APIHandler = createAPI(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const action = validatePayload(req.body);
+    return await verifyPhone(action, res);
+  }
+);
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  apiRespond(res, handleActionPayload(req.body, res));
-};
+export default APIHandler;

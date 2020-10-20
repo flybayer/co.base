@@ -1,12 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
-import { sendEmail } from "../../api-utils/email";
-import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import { Error400 } from "../../api-utils/Errors";
-import { apiRespond } from "../../api-utils/apiRespond";
-import setCookie from "../../api-utils/setCookie";
-import getSiteLink from "../../api-utils/getSiteLink";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
+import { createAPI } from "../../api-utils/createAPI";
 
 export type UsernamePayload = {
   username: string;
@@ -52,14 +48,15 @@ async function setUsername(
   });
 }
 
-async function handleActionPayload(req: NextApiRequest, res: NextApiResponse) {
-  const verifiedUser = await getVerifiedUser(req);
-  if (!verifiedUser) {
-    throw new Error400({ message: "No Authenticated User" });
+const APIHandler = createAPI(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const verifiedUser = await getVerifiedUser(req);
+    if (!verifiedUser) {
+      throw new Error400({ message: "No Authenticated User" });
+    }
+    await setUsername(verifiedUser, validatePayload(req.body), res);
+    return {};
   }
-  return await setUsername(verifiedUser, validatePayload(req.body), res);
-}
+);
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  apiRespond(res, handleActionPayload(req, res));
-};
+export default APIHandler;

@@ -5,6 +5,7 @@ import { findTempUsername } from "../../api-utils/findTempUsername";
 import { parseCookies } from "nookies";
 import setCookie from "../../api-utils/setCookie";
 import { encode } from "../../api-utils/jwt";
+import { createAPI } from "../../api-utils/createAPI";
 
 export async function verifyEmail(secret: string) {
   const emailValidation = await database.emailValidation.findOne({
@@ -65,16 +66,14 @@ async function emailAuth(
   };
 }
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  const parsedCookies = parseCookies({ req });
-  const token = req.query.token;
-  emailAuth(String(token), parsedCookies, res)
-    .then(() => {
-      res.redirect("/account");
-    })
-    .catch((err) => {
-      console.error(err);
-      res.statusCode = 500;
-      res.send({});
-    });
-};
+const APIHandler = createAPI(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const parsedCookies = parseCookies({ req });
+    const token = req.query.token;
+    await emailAuth(String(token), parsedCookies, res);
+    res.redirect("/account");
+    return res;
+  }
+);
+
+export default APIHandler;

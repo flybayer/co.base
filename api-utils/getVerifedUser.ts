@@ -27,7 +27,7 @@ export default async function getVerifiedUser(
   }
   let jwt = decode(AvenSession);
   if (!jwt) {
-    jwt = req.body.jwt;
+    jwt = req.body?.jwt;
   }
   if (!jwt) {
     return null;

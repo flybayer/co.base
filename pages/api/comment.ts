@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
-import { apiRespond } from "../../api-utils/apiRespond";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
+import { createAPI } from "../../api-utils/createAPI";
 
 export type CommentPayload = {
   message: string;
@@ -40,14 +40,14 @@ async function publishComment(
   return { id: comment.id };
 }
 
-async function handleActionPayload(req: NextApiRequest, res: NextApiResponse) {
-  const verifiedUser = await getVerifiedUser(req);
-  if (!verifiedUser) {
-    throw new Error400({ message: "No Authenticated User" });
+const APIHandler = createAPI(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const verifiedUser = await getVerifiedUser(req);
+    if (!verifiedUser) {
+      throw new Error400({ message: "No Authenticated User" });
+    }
+    return await publishComment(verifiedUser, validatePayload(req.body), res);
   }
-  return await publishComment(verifiedUser, validatePayload(req.body), res);
-}
+);
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  apiRespond(res, handleActionPayload(req, res));
-};
+export default APIHandler;

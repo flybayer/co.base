@@ -4,10 +4,10 @@ import { sendEmail } from "../../api-utils/email";
 import { sendSMS } from "../../api-utils/sms";
 import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import { Error400, Error500 } from "../../api-utils/Errors";
-import { apiRespond } from "../../api-utils/apiRespond";
 import setCookie from "../../api-utils/setCookie";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { getRandomNumbers } from "../../api-utils/getRandomNumbers";
+import { createAPI } from "../../api-utils/createAPI";
 
 type Email = string;
 
@@ -84,10 +84,7 @@ async function loginRegisterPhone(phone: string, res: NextApiResponse) {
         secret,
       },
     });
-    await sendSMS(
-      phone,
-      `Your verification code is ${secret}`
-    );
+    await sendSMS(phone, `Your verification code is ${secret}`);
     return { status: 2, phone };
   }
 }
@@ -103,10 +100,11 @@ async function loginRegister(
   } else throw new Error("Insufficient login details");
 }
 
-async function handleActionPayload(payload: any, res: NextApiResponse) {
-  return await loginRegister(validatePayload(payload), res);
-}
+const APIHandler = createAPI(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const action = validatePayload(req.body);
+    return await loginRegister(action, res);
+  }
+);
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  apiRespond(res, handleActionPayload(req.body, res));
-};
+export default APIHandler;

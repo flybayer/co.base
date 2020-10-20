@@ -4,26 +4,23 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { database } from "../../data/database";
 import { createAPI } from "../../api-utils/createAPI";
 
-export type ClipSetPublicPayload = {
+export type ClipSetCaptionPayload = {
   clipId: number;
-  isPublished: boolean;
+  caption: string;
 };
 
-function validatePayload(input: any): ClipSetPublicPayload {
+function validatePayload(input: any): ClipSetCaptionPayload {
   return {
     clipId: Number(input.clipId),
-    isPublished: Boolean(input.isPublished),
+    caption: String(input.caption),
   };
 }
 
-async function clipSetPublic(
+async function clipSetCaption(
   verifiedUser: APIUser,
-  { clipId, isPublished }: ClipSetPublicPayload,
-  res: NextApiResponse
+  { clipId, caption }: ClipSetCaptionPayload,
+  _res: NextApiResponse
 ) {
-  if (!verifiedUser) {
-    throw new Error("Not logged in");
-  }
   const clip = await database.clip.findOne({
     where: { id: clipId },
   });
@@ -32,7 +29,7 @@ async function clipSetPublic(
   }
   await database.clip.update({
     where: { id: clipId },
-    data: { publishTime: isPublished ? new Date() : null },
+    data: { caption },
   });
   return {};
 }
@@ -43,7 +40,7 @@ const APIHandler = createAPI(
     if (!verifiedUser) {
       throw new Error400({ message: "No Authenticated User" });
     }
-    return await clipSetPublic(verifiedUser, validatePayload(req.body), res);
+    return await clipSetCaption(verifiedUser, validatePayload(req.body), res);
   }
 );
 

@@ -1,21 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Error400 } from "../../api-utils/Errors";
-import { apiRespond } from "../../api-utils/apiRespond";
 import { S3_BUCKET, s3Client } from "../../api-utils/s3Client";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { database } from "../../data/database";
+import { createAPI } from "../../api-utils/createAPI";
 
 export type ClipUploadPayload = {};
 
-function validatePayload(input: any): ClipUploadPayload {
+function validatePayload(_input: any): ClipUploadPayload {
   return {};
 }
 
-async function clipUpload(
-  user: APIUser,
-  {}: ClipUploadPayload,
-  res: NextApiResponse
-) {
+async function clipUpload(user: APIUser, {}: ClipUploadPayload) {
   if (!s3Client || !S3_BUCKET) {
     throw new Error("S3 not configured");
   }
@@ -34,14 +30,14 @@ async function clipUpload(
   };
 }
 
-async function handleActionPayload(req: NextApiRequest, res: NextApiResponse) {
-  const verifiedUser = await getVerifiedUser(req);
-  if (!verifiedUser) {
-    throw new Error400({ message: "No Authenticated User" });
+const APIHandler = createAPI(
+  async (req: NextApiRequest, _res: NextApiResponse) => {
+    const verifiedUser = await getVerifiedUser(req);
+    if (!verifiedUser) {
+      throw new Error400({ message: "No Authenticated User" });
+    }
+    return await clipUpload(verifiedUser, validatePayload(req.body));
   }
-  return await clipUpload(verifiedUser, validatePayload(req.body), res);
-}
+);
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  apiRespond(res, handleActionPayload(req, res));
-};
+export default APIHandler;
