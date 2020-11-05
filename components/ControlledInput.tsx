@@ -1,19 +1,16 @@
-import { InputGroup } from "@blueprintjs/core";
+import { Input } from "@chakra-ui/core";
 import { Controller, Control } from "react-hook-form";
-import React from "react";
 
-export function ControlledInputGroup({
+export default function ControlledInput({
   control,
   name,
-}: { control: Control; name: string } & React.ComponentProps<
-  typeof InputGroup
->) {
+}: { control: Control; name: string } & React.ComponentProps<typeof Input>) {
   return (
     <Controller
       control={control}
       name={name}
       render={({ onChange, onBlur, value, name }) => (
-        <InputGroup
+        <Input
           value={value}
           name={name}
           onBlur={onBlur}

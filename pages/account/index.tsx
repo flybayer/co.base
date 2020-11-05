@@ -1,11 +1,11 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { Button } from "@blueprintjs/core";
 import SiteLayout from "../../components/SiteLayout";
 import redirect from "../../api-utils/redirect";
 import { destroyCookie } from "nookies";
 import Router from "next/router";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import PostButton from "../../components/PostButton";
+import { Button } from "@chakra-ui/core";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

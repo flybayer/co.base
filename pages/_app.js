@@ -1,5 +1,3 @@
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "../styles/globals.css";
 
 import Head from "next/head";
@@ -7,8 +5,9 @@ import Head from "next/head";
 import React from "react";
 import { MDXProvider } from "@mdx-js/react";
 import Title from "../components/Title";
-import { Global } from "@emotion/core";
+import { Global } from "@emotion/react";
 import prism from "../styles/prism.js";
+import { ChakraProvider } from "@chakra-ui/core";
 
 const mdComponents = {
   h1: (props) => <Title {...props} />,
@@ -52,9 +51,11 @@ export default function getMDXPageComponent({ Component, pageProps }) {
   return (
     <Page meta={Component.meta}>
       <Global styles={prism} />
-      <MDXProvider components={mdComponents}>
-        <Component {...pageProps} />
-      </MDXProvider>
+      <ChakraProvider>
+        <MDXProvider components={mdComponents}>
+          <Component {...pageProps} />
+        </MDXProvider>
+      </ChakraProvider>
     </Page>
   );
 }

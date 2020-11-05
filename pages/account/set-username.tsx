@@ -3,10 +3,10 @@ import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
 import { useForm } from "react-hook-form";
-import { FormGroup, Spinner } from "@blueprintjs/core";
-import { ControlledInputGroup } from "../../components/ControlledInputGroup";
+import ControlledInput from "../../components/ControlledInput";
 import React from "react";
 import Router from "next/router";
+import { FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -58,19 +58,20 @@ function ChangeUsernameForm({ username }: { username: string | null }) {
             });
         })}
       >
-        <FormGroup label="Username" labelFor="username-input">
-          <ControlledInputGroup
-            id="username-input"
-            placeholder="jane-doe"
+        <FormControl>
+          <FormLabel htmlFor="username-input">Login username</FormLabel>
+          <ControlledInput
             name="username"
+            placeholder="jane-doe"
+            id="username-input"
             control={control}
           />
-        </FormGroup>
+        </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
         <button type="submit" className="bp3-button bp3-intent-primary">
           <span className="bp3-button-text">Set Username</span>
         </button>
-        {isSubmitting && <Spinner size={Spinner.SIZE_SMALL} />}
+        {isSubmitting && <Spinner size="sm" />}
       </form>
     </>
   );

@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { FormGroup, Button, Spinner } from "@blueprintjs/core";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import SiteLayout from "../../components/SiteLayout";
@@ -7,7 +6,14 @@ import { GetServerSideProps } from "next";
 import React from "react";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser from "../../api-utils/getVerifedUser";
-import { ControlledInputGroup } from "../../components/ControlledInputGroup";
+import ControlledInput from "../../components/ControlledInput";
+import {
+  Button,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Spinner,
+} from "@chakra-ui/core";
 
 async function api(endpoint: string, payload: any) {
   return fetch(`/api/${endpoint}`, {
@@ -68,19 +74,19 @@ function LoginForm({}) {
             });
         })}
       >
-        <FormGroup
-          helperText="Your email will be kept private."
-          label="Login Email"
-          labelFor="email-input"
-        >
-          <ControlledInputGroup
-            id="email-input"
-            placeholder="me@email.com"
+        <FormControl>
+          <FormLabel htmlFor="email-input">Login Email</FormLabel>
+          <ControlledInput
             type="email"
             name="email"
+            id="email-input"
+            aria-describedby="email-helper-text"
             control={control}
           />
-        </FormGroup>
+          <FormHelperText id="email-helper-text">
+            Your email will be kept private.
+          </FormHelperText>
+        </FormControl>
         <p>
           By logging in, you agree to the{" "}
           <Link href="/terms-conditions">
@@ -88,15 +94,8 @@ function LoginForm({}) {
           </Link>
           .
         </p>
-        <button
-          type="submit"
-          className="bp3-button bp3-intent-primary"
-          // intent="primary"
-          // onClick={handleSubmit((data) => console.log(data))}
-        >
-          <span className="bp3-button-text">Log In</span>
-        </button>
-        {isSubmitting && <Spinner size={Spinner.SIZE_SMALL} />}
+        <Button type="submit">Log In</Button>
+        {isSubmitting && <Spinner size="sm" />}
       </form>
     </>
   );

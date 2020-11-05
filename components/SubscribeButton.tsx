@@ -1,4 +1,4 @@
-import { Button, Spinner } from "@blueprintjs/core";
+import { Button, Spinner } from "@chakra-ui/core";
 import React from "react";
 import {
   SubscriptionLevel,
@@ -45,12 +45,12 @@ export default function SubscribeButton({
   }, []);
   return (
     <div style={{ display: "flex" }}>
-      <Button onClick={subscribeClick} intent="primary">
+      <Button onClick={subscribeClick}>
         Subscribe - {getSubscriptionLevelName(level)}
       </Button>
       {errorText && <p style={{ margin: "4px 16px" }}>{errorText}</p>}
       <span style={{ padding: "4px 16px 0", color: "#933" }}>
-        {isWaiting && <Spinner size={Spinner.SIZE_SMALL} />}
+        {isWaiting && <Spinner size="sm" />}
       </span>
     </div>
   );

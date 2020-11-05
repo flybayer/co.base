@@ -3,10 +3,10 @@ import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
 import { useForm } from "react-hook-form";
-import { FormGroup, Spinner } from "@blueprintjs/core";
-import { ControlledInputGroup } from "../../components/ControlledInputGroup";
 import React from "react";
 import Router, { useRouter } from "next/router";
+import ControlledInput from "../../components/ControlledInput";
+import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -62,19 +62,18 @@ function NewCommentForm() {
             });
         })}
       >
-        <FormGroup label="Comment" labelFor="comment-input">
-          <ControlledInputGroup
+        <FormControl>
+          <FormLabel htmlFor="comment-input">Comment</FormLabel>
+          <ControlledInput
             id="comment-input"
             placeholder="please be polite!"
             name="comment"
             control={control}
           />
-        </FormGroup>
+        </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
-        <button type="submit" className="bp3-button bp3-intent-primary">
-          <span className="bp3-button-text">Publish Comment</span>
-        </button>
-        {isSubmitting && <Spinner size={Spinner.SIZE_SMALL} />}
+        <Button type="submit">Publish Comment</Button>
+        {isSubmitting && <Spinner size="sm" />}
       </form>
     </>
   );

@@ -3,10 +3,10 @@ import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
 import { useForm } from "react-hook-form";
-import { FormGroup, Spinner } from "@blueprintjs/core";
-import { ControlledInputGroup } from "../../components/ControlledInputGroup";
 import React from "react";
 import Router from "next/router";
+import ControlledInput from "../../components/ControlledInput";
+import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -53,18 +53,17 @@ function ChangeNameForm({ name }: { name: string | null }) {
             });
         })}
       >
-        <FormGroup label="Public Name" labelFor="name-input">
-          <ControlledInputGroup
+        <FormControl>
+          <FormLabel htmlFor="name-input">Public Name</FormLabel>
+          <ControlledInput
             id="name-input"
             placeholder="Jane Doe"
             name="name"
             control={control}
           />
-        </FormGroup>
-        <button type="submit" className="bp3-button bp3-intent-primary">
-          <span className="bp3-button-text">Set Name</span>
-        </button>
-        {isSubmitting && <Spinner size={Spinner.SIZE_SMALL} />}
+        </FormControl>
+        <Button type="submit">Set Name</Button>
+        {isSubmitting && <Spinner size="sm" />}
       </form>
     </>
   );
