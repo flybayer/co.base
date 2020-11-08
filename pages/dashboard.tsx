@@ -12,6 +12,7 @@ import { useReducer, useState } from "react";
 import { PlusSquareIcon, AddIcon, SettingsIcon } from "@chakra-ui/icons";
 import { getRandomLetters } from "../api-utils/getRandomLetters";
 import { ChannelList } from "twilio/lib/rest/preview/trusted_comms/brandedChannel/channel";
+import Link from "next/link";
 
 type TreeState = {
   name: string;
@@ -40,9 +41,14 @@ type DashAction =
 type DashDispatcher = (action: DashAction) => void;
 
 const initState: DashState = {
-  siteName: "Um",
+  siteName: "DB IO",
   nav: [],
-  tree: [],
+  tree: [
+    {
+      name: "Status",
+      key: "status",
+    },
+  ],
 };
 
 function addToAddress(
@@ -84,9 +90,15 @@ function stateReducer(state: DashState, action: DashAction): DashState {
     };
   }
   if (action.type === "GoRecord") {
+    let nav: NavigationFrame[] = [];
+    let keyAddress: string[] = [];
+    action.keyAddress.forEach((key) => {
+      keyAddress = [...keyAddress, key];
+      nav = [...nav, { type: "record", keyAddress }];
+    });
     return {
       ...state,
-      nav: [...state.nav, { type: "record", keyAddress: action.keyAddress }],
+      nav,
     };
   }
   if (action.type === "SetSiteName") {
@@ -177,7 +189,15 @@ function RecordItem({
   keyAddress: Array<string>;
   dispatch: DashDispatcher;
 }) {
-  return <div>{item.name}</div>;
+  return (
+    <Button
+      onClick={() => {
+        dispatch({ type: "GoRecord", keyAddress });
+      }}
+    >
+      {item.name}
+    </Button>
+  );
 }
 
 function RecordItems({
@@ -250,8 +270,10 @@ function getRecord(
 ): undefined | TreeState {
   let validList: null | TreeState[] = tree;
   let matchedRecord = undefined;
-  for (let key in keyAddress) {
+  for (let keyIndex in keyAddress) {
+    const key = keyAddress[keyIndex];
     const n: TreeState | undefined = validList?.find((i) => i.key === key);
+    console.log({ key });
     if (n) {
       validList = n.children || null;
       matchedRecord = n;
