@@ -22,6 +22,8 @@ model User {
   publicBio           String?
   Comment             Comment[]
   Clip                Clip[]
+
+  Sites               Site[]
 }
 
 model EmailValidation {
@@ -46,6 +48,29 @@ model Comment {
   user        User     @relation(fields: [userId], references: [id])
   message     String
 }
+
+// Cloud 2
+
+model Site {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  ownerId     Int
+  owner       User   @relation(fields: [ownerId], references: [id])
+}
+
+model SiteNode {
+  id            Int       @id @default(autoincrement())
+  key           String
+  siteId        Int
+  site          Site      @relation(fields: [siteId], references: [id])
+  parentNodeId  Int?
+  parentNode    SiteNode? @relation(fields: [parentNodeId], references: [id])
+  schema        Json?
+  value         Json?
+  @@unique([siteId, key, parentNodeId], name: "SiteNodeId")
+}
+
+// ClipClock
 
 model Clip {
   id          Int       @id @default(autoincrement())

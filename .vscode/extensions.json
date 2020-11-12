@@ -1,3 +1,4 @@
 {
-  "recommendations": ["anseki.vscode-color"]
+  "recommendations": [
+    "pflannery.vscode-versionlens","anseki.vscode-color", "esbenp.prettier-vscode", "prisma.prisma"
 }

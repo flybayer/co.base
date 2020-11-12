@@ -9,21 +9,21 @@ import {
 } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import { useReducer, useState } from "react";
-import { PlusSquareIcon, AddIcon, SettingsIcon } from "@chakra-ui/icons";
+import { AddIcon, SettingsIcon } from "@chakra-ui/icons";
 import { getRandomLetters } from "../api-utils/getRandomLetters";
-import { ChannelList } from "twilio/lib/rest/preview/trusted_comms/brandedChannel/channel";
-import Link from "next/link";
+import { Control, Controller, useForm } from "react-hook-form";
 
 type TreeState = {
-  name: string;
   key: string;
+  label: string;
   children?: Array<TreeState>;
 };
 
 type NavigationFrame =
   | { type: "site-settings" }
-  | { type: "new-record"; keyAddress: Array<string> }
-  | { type: "record"; keyAddress: Array<string> };
+  | { type: "new-record"; address: Array<string> }
+  | { type: "record"; address: Array<string> }
+  | { type: "record-settings"; address: Array<string> };
 
 type DashState = {
   siteName: string;
@@ -33,9 +33,10 @@ type DashState = {
 
 type DashAction =
   | { type: "GoSiteSettings" }
-  | { type: "GoNewRecord"; keyAddress?: Array<string> }
-  | { type: "GoRecord"; keyAddress: Array<string> }
-  | { type: "AddRecord"; name: string; keyAddress: Array<string> }
+  | { type: "GoNewRecord"; address?: string[] }
+  | { type: "GoRecordSettings"; address: string[] }
+  | { type: "GoRecord"; address: string[] }
+  | { type: "AddRecord"; label: string; key: string; address: string[] }
   | { type: "SetSiteName"; value: string };
 
 type DashDispatcher = (action: DashAction) => void;
@@ -45,8 +46,12 @@ const initState: DashState = {
   nav: [],
   tree: [
     {
-      name: "Status",
       key: "status",
+      label: "Status",
+    },
+    {
+      key: "status2",
+      label: "Status2",
     },
   ],
 };
@@ -84,21 +89,33 @@ function stateReducer(state: DashState, action: DashAction): DashState {
     };
   }
   if (action.type === "GoNewRecord") {
+    let nav: NavigationFrame[] = [];
+    let address: string[] = [];
+    action.address?.forEach((key) => {
+      address = [...address, key];
+      nav = [...nav, { type: "record", address }];
+    });
     return {
       ...state,
-      nav: [{ type: "new-record", keyAddress: action.keyAddress || [] }],
+      nav: [...nav, { type: "new-record", address: action.address || [] }],
     };
   }
   if (action.type === "GoRecord") {
     let nav: NavigationFrame[] = [];
-    let keyAddress: string[] = [];
-    action.keyAddress.forEach((key) => {
-      keyAddress = [...keyAddress, key];
-      nav = [...nav, { type: "record", keyAddress }];
+    let address: string[] = [];
+    action.address.forEach((key) => {
+      address = [...address, key];
+      nav = [...nav, { type: "record", address }];
     });
     return {
       ...state,
       nav,
+    };
+  }
+  if (action.type === "GoRecordSettings") {
+    return {
+      ...state,
+      nav: [...state.nav, { type: "record-settings", address: action.address }],
     };
   }
   if (action.type === "SetSiteName") {
@@ -108,17 +125,16 @@ function stateReducer(state: DashState, action: DashAction): DashState {
     };
   }
   if (action.type === "AddRecord") {
-    const newKey = getRandomLetters(5);
     return {
       ...state,
       tree: addToAddress(
         state.tree,
-        { name: action.name, key: newKey },
-        action.keyAddress
+        { label: action.label, key: action.key },
+        action.address
       ),
       nav: [
         ...state.nav.filter((n) => n.type !== "new-record"),
-        { type: "record", keyAddress: [...action.keyAddress, newKey] },
+        { type: "record", address: [...action.address, action.key] },
       ],
     };
   }
@@ -181,45 +197,53 @@ const PaneTitle = styled.h2`
 `;
 
 function RecordItem({
-  keyAddress,
+  address,
   item,
   dispatch,
 }: {
   item: TreeState;
-  keyAddress: Array<string>;
+  address: Array<string>;
   dispatch: DashDispatcher;
 }) {
   return (
     <Button
+      variant="link"
+      color="black"
+      padding={6}
+      display="flex"
+      justifyContent="flex-start"
       onClick={() => {
-        dispatch({ type: "GoRecord", keyAddress });
+        dispatch({ type: "GoRecord", address });
       }}
     >
-      {item.name}
+      {item.label || item.key}
     </Button>
   );
 }
-
+const RecordItemContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 function RecordItems({
   items,
-  keyAddress,
+  address,
   dispatch,
 }: {
   items: Array<TreeState>;
-  keyAddress: Array<string>;
+  address: Array<string>;
   dispatch: DashDispatcher;
 }) {
   return (
-    <>
+    <RecordItemContainer>
       {items.map((item) => (
         <RecordItem
           key={item.key}
-          keyAddress={[...keyAddress, item.key]}
+          address={[...address, item.key]}
           item={item}
           dispatch={dispatch}
         />
       ))}
-    </>
+    </RecordItemContainer>
   );
 }
 
@@ -260,18 +284,19 @@ function MainPane({
           </MenuList>
         </Menu>
       </PaneHeader>
-      <RecordItems items={state.tree} keyAddress={[]} dispatch={dispatch} />
+      <RecordItems items={state.tree} address={[]} dispatch={dispatch} />
     </PaneContainer>
   );
 }
+
 function getRecord(
   tree: TreeState[],
-  keyAddress: string[]
+  address: string[]
 ): undefined | TreeState {
   let validList: null | TreeState[] = tree;
   let matchedRecord = undefined;
-  for (let keyIndex in keyAddress) {
-    const key = keyAddress[keyIndex];
+  for (let keyIndex in address) {
+    const key = address[keyIndex];
     const n: TreeState | undefined = validList?.find((i) => i.key === key);
     console.log({ key });
     if (n) {
@@ -283,26 +308,27 @@ function getRecord(
   }
   return matchedRecord;
 }
+
 function RecordPane({
   state,
   dispatch,
-  keyAddress,
+  address,
 }: {
   state: DashState;
   dispatch: DashDispatcher;
-  keyAddress: Array<string>;
+  address: Array<string>;
 }) {
-  const record = getRecord(state.tree, keyAddress);
+  const record = getRecord(state.tree, address);
 
   return (
     <PaneContainer>
       <PaneHeader>
-        <PaneTitle>{record?.name || "Not found"}</PaneTitle>
+        <PaneTitle>{record?.label || "Not found"}</PaneTitle>
         {record && (
           <Button
             variant="ghost"
             onClick={() => {
-              dispatch({ type: "GoSiteSettings" });
+              dispatch({ type: "GoRecordSettings", address });
             }}
           >
             <SettingsIcon />
@@ -317,7 +343,7 @@ function RecordPane({
             <MenuList>
               <MenuItem
                 onClick={() => {
-                  dispatch({ type: "GoNewRecord", keyAddress });
+                  dispatch({ type: "GoNewRecord", address });
                 }}
               >
                 Record
@@ -330,41 +356,92 @@ function RecordPane({
       </PaneHeader>
       <RecordItems
         items={record?.children || []}
-        keyAddress={[]}
+        address={[]}
         dispatch={dispatch}
       />
     </PaneContainer>
   );
 }
 
-function NewRecordPane({
+function RecordSettingsPane({
   state,
   dispatch,
-  keyAddress,
+  address,
 }: {
   state: DashState;
   dispatch: DashDispatcher;
-  keyAddress: Array<string>;
+  address: Array<string>;
 }) {
-  const [newName, setNewName] = useState("");
+  const record = getRecord(state.tree, address);
+
+  return (
+    <PaneContainer>
+      <PaneHeader>
+        <PaneTitle>
+          {record?.label ? `${record?.label} Settings` : "Not found"}
+        </PaneTitle>
+      </PaneHeader>
+    </PaneContainer>
+  );
+}
+
+function ControlledInput({
+  control,
+  name,
+}: { control: Control; name: string } & React.ComponentProps<typeof Input>) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ onChange, onBlur, value, name }) => (
+        <Input
+          value={value}
+          name={name}
+          onBlur={onBlur}
+          onChange={(e: any) => {
+            onChange(e.nativeEvent.target.value);
+          }}
+        />
+      )}
+    />
+  );
+}
+
+function NewRecordPane({
+  state,
+  dispatch,
+  address,
+}: {
+  state: DashState;
+  dispatch: DashDispatcher;
+  address: Array<string>;
+}) {
+  const { handleSubmit, errors, control } = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      key: "",
+      label: "",
+    },
+  });
   return (
     <PaneContainer>
       <PaneHeader>
         <PaneTitle>New Record</PaneTitle>
       </PaneHeader>
-      <Input
-        value={newName}
-        onChange={(e: any) => {
-          setNewName(e.target.value);
-        }}
-      />
-      <Button
-        onClick={() => {
-          dispatch({ type: "AddRecord", name: newName, keyAddress });
-        }}
+      <form
+        onSubmit={handleSubmit((data) => {
+          dispatch({
+            type: "AddRecord",
+            label: data.label,
+            key: data.key,
+            address,
+          });
+        })}
       >
-        Create
-      </Button>
+        <ControlledInput name="label" control={control} />
+        <ControlledInput name="key" control={control} />
+      </form>
+      <Button type="submit">Create</Button>
     </PaneContainer>
   );
 }
@@ -412,7 +489,7 @@ export default function Dashboard() {
               <NewRecordPane
                 state={state}
                 dispatch={dispatch}
-                keyAddress={paneSpec.keyAddress || []}
+                address={paneSpec.address || []}
               />
             );
           if (paneSpec.type === "site-settings")
@@ -422,9 +499,18 @@ export default function Dashboard() {
               <RecordPane
                 state={state}
                 dispatch={dispatch}
-                keyAddress={paneSpec.keyAddress}
+                address={paneSpec.address}
               />
             );
+          if (paneSpec.type === "record-settings") {
+            return (
+              <RecordSettingsPane
+                state={state}
+                dispatch={dispatch}
+                address={paneSpec.address}
+              />
+            );
+          }
         })}
       </MainSection>
     </DashboardContainer>

@@ -6,14 +6,22 @@ import Router from "next/router";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import PostButton from "../../components/PostButton";
 import { Button } from "@chakra-ui/core";
+import Link from "next/link";
+import { database } from "../../data/database";
+import styled from "@emotion/styled";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
   if (!verifiedUser) {
     redirect(context.res, "/login");
   }
+  const sites = await database.site.findMany({
+    where: { owner: { id: verifiedUser?.id } },
+    select: { name: true, id: true },
+  });
   return {
     props: {
+      sites,
       user: verifiedUser,
     },
   };
@@ -52,7 +60,24 @@ function PasswordBox({ user }: { user: APIUser }) {
   );
 }
 
-export default function accountPage({ user }: { user: APIUser }) {
+const SiteContainer = styled.div`
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+
+  h3 {
+    font-size: 32px;
+  }
+`;
+
+export default function accountPage({
+  user,
+  sites,
+}: {
+  user: APIUser;
+  sites: Array<{ id: number; name: string }>;
+}) {
   return (
     <SiteLayout
       content={
@@ -66,6 +91,22 @@ export default function accountPage({ user }: { user: APIUser }) {
           <PostButton action="/api/billing-session" primary>
             Manage billing
           </PostButton>
+          {sites.map((site) => (
+            <Link href={`/account/sites/${site.name}`}>
+              <SiteContainer>
+                <h3>{site.name}</h3>
+                <Link href={`/account/sites/${site.name}`}>
+                  <Button colorScheme="green">Dashboard</Button>
+                </Link>
+                <Link href={`/account/sites/${site.name}`}>
+                  <Button>Settings</Button>
+                </Link>
+              </SiteContainer>
+            </Link>
+          ))}
+          <Link href={`/account/new-site`}>
+            <Button colorScheme="green">New Site</Button>
+          </Link>
           <h3>Account</h3>
           <Button
             onClick={() => {

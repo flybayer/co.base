@@ -10,8 +10,10 @@ const cookieParser = require("cookie-parser");
 
 const port = dev ? 3001 : 3000;
 
+const DEFAULT_DB_URL = "postgresql://user:pw@localhost:5992/db";
+
 if (dev && !process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = "postgresql://user:pw@localhost:5432/db";
+  process.env.DATABASE_URL = DEFAULT_DB_URL;
 }
 
 let authRouter = null;
@@ -91,8 +93,7 @@ async function prepareDatabase() {
       env: {
         // relying on dotenv to pull this from .env.production.local
         ...process.env,
-        DATABASE_URL:
-          process.env.DATABASE_URL || "postgresql://user:pw@localhost:5432/db",
+        DATABASE_URL: process.env.DATABASE_URL || DEFAULT_DB_URL,
       },
     }
   );

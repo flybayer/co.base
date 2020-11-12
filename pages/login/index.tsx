@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import SiteLayout from "../../components/SiteLayout";
 import { GetServerSideProps } from "next";
 import React from "react";
-import redirect from "../../api-utils/redirect";
 import getVerifiedUser from "../../api-utils/getVerifedUser";
 import ControlledInput from "../../components/ControlledInput";
 import {
@@ -34,7 +33,12 @@ async function api(endpoint: string, payload: any) {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = getVerifiedUser(context.req);
   if (!user) {
-    redirect(context.res, "/account");
+    return {
+      redirect: {
+        destination: "/account",
+        permanent: false,
+      },
+    };
   }
   return { props: {} };
 };
