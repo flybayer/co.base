@@ -1,0 +1,49 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "passwordSalt"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Site",
+      "field": "SiteNode",
+      "type": "SiteNode",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "SiteNode",
+      "field": "SiteNode",
+      "type": "SiteNode",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "SiteNode",
+          "field": "SiteNode"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "SiteNode",
+          "field": "SiteNode"
+        },
+        "directive": "relation"
+      },
+      "argument": "",
+      "value": "\"SiteNodeToSiteNode\""
+    }
+  ]
+}

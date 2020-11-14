@@ -1,3 +1,6 @@
+import { Button } from "@chakra-ui/core";
+import Link from "next/link";
+
 export default function PostButton({
   action,
   primary,
@@ -10,9 +13,18 @@ export default function PostButton({
 }>) {
   return (
     <form method={method} action={action}>
-      <button type="submit" className="bp3-button bp3-intent-primary">
-        <span className="bp3-button-text">{children}</span>
-      </button>
+      <Button type="submit">{children}</Button>
     </form>
+  );
+}
+
+export function LinkButton({
+  href,
+  children,
+}: React.PropsWithChildren<{ href: string }>) {
+  return (
+    <Link href={href}>
+      <Button type="submit">{children}</Button>
+    </Link>
   );
 }

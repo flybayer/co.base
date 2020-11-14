@@ -4,7 +4,7 @@ import redirect from "../../api-utils/redirect";
 import { destroyCookie } from "nookies";
 import Router from "next/router";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import PostButton from "../../components/PostButton";
+import PostButton, { LinkButton } from "../../components/PostButton";
 import { Button } from "@chakra-ui/core";
 import Link from "next/link";
 import { database } from "../../data/database";
@@ -31,9 +31,7 @@ function UserName({ user }: { user: APIUser }) {
   return (
     <>
       <h2>Account: {user.username}</h2>
-      <PostButton method="GET" action="/account/set-username">
-        Set Username
-      </PostButton>
+      <LinkButton href="/account/set-username">Set Username</LinkButton>
     </>
   );
 }
@@ -43,9 +41,7 @@ function NameBox({ user }: { user: APIUser }) {
     <>
       <h3>Name</h3>
       <p>{user.name}</p>
-      <PostButton method="GET" action="/account/set-name">
-        Set Name
-      </PostButton>
+      <LinkButton href="/account/set-name">Set Name</LinkButton>
     </>
   );
 }
@@ -55,7 +51,9 @@ function PasswordBox({ user }: { user: APIUser }) {
     <>
       <h3>Password</h3>
       <div>{user.hasPassword ? "PW is set" : "No pw set"}</div>
-      <Button onClick={() => {}}>Set Password</Button>
+      <Link href="/account/set-password">
+        <Button>Set Password</Button>
+      </Link>
     </>
   );
 }

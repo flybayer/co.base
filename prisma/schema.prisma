@@ -13,7 +13,6 @@ model User {
   email               String?   @unique
   phone               String?   @unique
   name                String?
-  passwordSalt        String?
   passwordHash        String?
   stripeCustomerId    String?
   giftedAccess        Int       @default(0)
@@ -23,7 +22,7 @@ model User {
   Comment             Comment[]
   Clip                Clip[]
 
-  Sites               Site[]
+  Sites Site[]
 }
 
 model EmailValidation {
@@ -52,21 +51,24 @@ model Comment {
 // Cloud 2
 
 model Site {
-  id          Int    @id @default(autoincrement())
-  name        String @unique
-  ownerId     Int
-  owner       User   @relation(fields: [ownerId], references: [id])
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  ownerId  Int
+  owner    User       @relation(fields: [ownerId], references: [id])
+  SiteNode SiteNode[]
 }
 
 model SiteNode {
-  id            Int       @id @default(autoincrement())
-  key           String
-  siteId        Int
-  site          Site      @relation(fields: [siteId], references: [id])
-  parentNodeId  Int?
-  parentNode    SiteNode? @relation(fields: [parentNodeId], references: [id])
-  schema        Json?
-  value         Json?
+  id           Int       @id @default(autoincrement())
+  key          String
+  siteId       Int
+  site         Site      @relation(fields: [siteId], references: [id])
+  parentNodeId Int?
+  parentNode   SiteNode? @relation(fields: [parentNodeId], references: [id])
+  schema       Json?
+  value        Json?
+
+  SiteNode SiteNode[] @relation("SiteNodeToSiteNode")
   @@unique([siteId, key, parentNodeId], name: "SiteNodeId")
 }
 

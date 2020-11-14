@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { database } from "../../data/database";
-import PostButton from "../../components/PostButton";
+import PostButton, { LinkButton } from "../../components/PostButton";
 import { Error400 } from "../../api-utils/Errors";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -57,9 +57,7 @@ export default function CommentPage({
               </div>
             );
           })}
-          <PostButton method="GET" action={`/${pageId}/new-comment`}>
-            New Comment
-          </PostButton>
+          <LinkButton href={`/${pageId}/new-comment`}>New Comment</LinkButton>
         </>
       }
     />

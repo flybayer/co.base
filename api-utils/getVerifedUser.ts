@@ -42,8 +42,8 @@ export default async function getVerifiedUser(
       username: true,
       giftedAccess: true,
       subscribedAccess: true,
-      passwordSalt: true,
       stripeCustomerId: true,
+      passwordHash: true,
       subscriptionEndTime: true,
     },
   });
@@ -51,7 +51,7 @@ export default async function getVerifiedUser(
     return null;
   }
 
-  const hasPassword = !!verifiedUser.passwordSalt;
+  const hasPassword = !!verifiedUser.passwordHash;
   const {
     id,
     email,

@@ -69,13 +69,3 @@ body {
   src: local("Fira Sans Regular"), local("FiraSans-Regular"),
     url("/font/FiraSans-Regular.woff2") format("woff2");
 }
-
-.bp3-button-text {
-  font-family: "Fira Sans", Helvetica, sans-serif;
-  font-size: 16px;
-}
-
-.bp3-label {
-  font-size: 16px;
-  font-family: "Fira Sans", Helvetica, sans-serif;
-}
