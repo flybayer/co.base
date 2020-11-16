@@ -90,13 +90,13 @@ export default function accountPage({
             Manage billing
           </PostButton>
           {sites.map((site) => (
-            <Link href={`/account/sites/${site.name}`}>
+            <Link href={`/sites/${site.name}`}>
               <SiteContainer>
                 <h3>{site.name}</h3>
-                <Link href={`/account/sites/${site.name}`}>
+                <Link href={`/sites/${site.name}/dashboard`}>
                   <Button colorScheme="green">Dashboard</Button>
                 </Link>
-                <Link href={`/account/sites/${site.name}`}>
+                <Link href={`/sites/${site.name}`}>
                   <Button>Settings</Button>
                 </Link>
               </SiteContainer>

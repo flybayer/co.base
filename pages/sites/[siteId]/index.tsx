@@ -1,10 +1,11 @@
 import { Button } from "@chakra-ui/core";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { api } from "../../../../api-utils/api";
-import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import SiteLayout from "../../../../components/SiteLayout";
-import { database } from "../../../../data/database";
+import { api } from "../../../api-utils/api";
+import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
+import DashboardBreadcrumbs from "../../../components/DashboardBreadcrumbs";
+import SiteLayout from "../../../components/SiteLayout";
+import { database } from "../../../data/database";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -18,7 +19,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findOne({ where: { name: siteName } });
-  console.log({ site });
   return {
     props: {
       user: verifiedUser,
@@ -39,6 +39,11 @@ export default function SiteSettingsPage({
     <SiteLayout
       content={
         <>
+          <DashboardBreadcrumbs
+            siteName={siteName}
+            address={[]}
+            nodeFeature="Settings"
+          />
           <h3>Site Settings: {siteName}</h3>
           <Button
             colorScheme="red"

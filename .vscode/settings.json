@@ -11,5 +11,6 @@
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform"
-  }
+  },
+  "emmet.excludeLanguages": ["javascript", "*"]
 }
