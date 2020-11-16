@@ -58,9 +58,10 @@ async function loginRegisterEmail(
     where: { email },
     select: { passwordHash: true, email: true, id: true },
   });
-  if (!!password && !forceSend) {
+  const existingUserPw = existingUser?.passwordHash;
+  if (existingUser && existingUserPw && !!password && !forceSend) {
     const doesMatch = await new Promise((resolve, reject) => {
-      bcrypt.compare(password, existingUser.passwordHash, (err, doesMatch) => {
+      bcrypt.compare(password, existingUserPw, (err, doesMatch) => {
         if (err) reject(err);
         else resolve(doesMatch);
       });

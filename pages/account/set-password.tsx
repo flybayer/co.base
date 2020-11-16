@@ -21,13 +21,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function ChangePasswordForm({ password }: { password: string | null }) {
+function ChangePasswordForm({}: {}) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorText, setErrorText] = React.useState<null | string>(null);
   const { register, handleSubmit, errors, control } = useForm({
     mode: "onBlur",
     defaultValues: {
-      password,
+      password: "",
     },
   });
   return (
@@ -76,7 +76,7 @@ export default function setNamePage({ user }: { user: APIUser }) {
       content={
         <>
           <h3>Set Password</h3>
-          <ChangePasswordForm username={user.username} />
+          <ChangePasswordForm />
         </>
       }
     />
