@@ -1,7 +1,5 @@
-import { Button } from "@chakra-ui/core";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { api } from "../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import DashboardBreadcrumbs from "../../../components/DashboardBreadcrumbs";
 import SiteLayout from "../../../components/SiteLayout";
@@ -28,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function SiteSettingsPage({
+export default function SiteTeamPage({
   user,
   siteName,
 }: {
@@ -45,18 +43,7 @@ export default function SiteSettingsPage({
             address={[]}
             nodeFeature="Settings"
           />
-          <h3>Site Settings: {siteName}</h3>
-          <SiteTabs tab="site" siteName={siteName} />
-          <Button
-            colorScheme="red"
-            onClick={() => {
-              api("site-destroy", { name: siteName }).then(() => {
-                push("/account");
-              });
-            }}
-          >
-            Delete Site
-          </Button>
+          <SiteTabs tab="team" siteName={siteName} />
         </>
       }
     />
