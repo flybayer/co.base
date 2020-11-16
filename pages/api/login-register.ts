@@ -54,10 +54,24 @@ async function loginRegisterEmail(
   forceSend: boolean,
   res: NextApiResponse
 ) {
-  const existingUser = await database.user.findOne({
+  const verified = await database.verifiedEmail.findOne({
     where: { email },
-    select: { passwordHash: true, email: true, id: true },
+    include: {
+      user: { select: { passwordHash: true, email: true, id: true } },
+    },
   });
+  console.log("ummm", verified);
+  let existingUser = verified?.user;
+  if (!existingUser) {
+    // an edge case exists where a verified row does not exist but the user has the email set as a primary email. this makes sure that such a user may still log in:
+    const userPrimaryLookup = await database.user.findOne({
+      where: { email },
+      select: { passwordHash: true, email: true, id: true },
+    });
+    if (userPrimaryLookup) {
+      existingUser = userPrimaryLookup;
+    }
+  }
   const existingUserPw = existingUser?.passwordHash;
   if (existingUser && existingUserPw && !!password && !forceSend) {
     const doesMatch = await new Promise((resolve, reject) => {
@@ -77,6 +91,7 @@ async function loginRegisterEmail(
     return { status: 1, email };
   }
   const validationToken = getRandomLetters(32);
+  // create an anonymous email validation, that is not yet associated to a user account because it remains unverified. at verification time we will associate it to a user account or create one.
   await database.emailValidation.create({
     data: {
       email,

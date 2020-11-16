@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/core";
+import { Button, PropsOf } from "@chakra-ui/core";
 import Link from "next/link";
 
 export default function PostButton({
@@ -21,10 +21,11 @@ export default function PostButton({
 export function LinkButton({
   href,
   children,
-}: React.PropsWithChildren<{ href: string }>) {
+  ...props
+}: React.PropsWithChildren<{ href: string } & PropsOf<typeof Button>>) {
   return (
     <Link href={href}>
-      <Button type="submit">{children}</Button>
+      <Button {...props}>{children}</Button>
     </Link>
   );
 }

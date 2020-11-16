@@ -3,30 +3,25 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
-import bcrypt from "bcrypt";
 
-export type SetPasswordPayload = {
-  password: string;
+export type DeleteEmailPayload = {
+  email: string;
 };
 
-function validatePayload(input: any): SetPasswordPayload {
-  return { password: String(input.password) };
+function validatePayload(input: any): DeleteEmailPayload {
+  return { email: String(input.email) };
 }
 
-async function setPassword(
+async function accountDeleteEmail(
   user: APIUser,
-  { password }: SetPasswordPayload,
+  { email }: DeleteEmailPayload,
   res: NextApiResponse
 ) {
-  const passwordHash = await new Promise<string>((resolve, reject) =>
-    bcrypt.hash(password, 14, (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
-    })
-  );
-  await database.user.update({
-    where: { id: user.id },
-    data: { passwordHash },
+  await database.verifiedEmail.deleteMany({
+    where: { email, user: { id: user.id } },
+  });
+  await database.emailValidation.deleteMany({
+    where: { email, user: { id: user.id } },
   });
 }
 
@@ -36,7 +31,7 @@ const APIHandler = createAPI(
     if (!verifiedUser) {
       throw new Error400({ message: "No Authenticated User" });
     }
-    await setPassword(verifiedUser, validatePayload(req.body), res);
+    await accountDeleteEmail(verifiedUser, validatePayload(req.body), res);
     return {};
   }
 );

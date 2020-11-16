@@ -8,8 +8,10 @@ import { encode } from "../../api-utils/jwt";
 import { createAPI } from "../../api-utils/createAPI";
 
 export async function verifyEmail(secret: string) {
+  const userSelectQuery = { name: true, id: true, email: true, username: true };
   const emailValidation = await database.emailValidation.findOne({
     where: { secret },
+    include: { user: { select: userSelectQuery } },
   });
   if (!emailValidation) {
     throw new Error400({ message: "Invalid Token" });
@@ -17,7 +19,13 @@ export async function verifyEmail(secret: string) {
   await database.emailValidation.delete({
     where: { secret },
   });
-  const { emailTime, email, secret: storedSecret } = emailValidation;
+
+  const {
+    emailTime,
+    email,
+    user: validatedUser,
+    secret: storedSecret,
+  } = emailValidation;
   if (!storedSecret) {
     throw new Error500({ message: "No validation token to compare" });
   }
@@ -31,24 +39,43 @@ export async function verifyEmail(secret: string) {
   if (Date.now() - 60 * 60 * 1000 > emailTime.getTime()) {
     throw new Error400({ message: "Invalid Time" });
   }
-  // get user id
-  let user = await database.user.findOne({
-    where: { email: email || undefined },
+
+  const verifiedEmail = await database.verifiedEmail.findOne({
+    where: { email },
+    include: { user: { select: userSelectQuery } },
   });
+
+  let user = verifiedEmail?.user;
   let isNewUser = false;
+
   if (!user) {
-    user = await database.user.create({
-      data: {
-        username: await findTempUsername(),
-        name: "",
-        email,
-      },
+    const primaryEmailUser = await database.user.findOne({
+      where: { email },
+      select: userSelectQuery,
     });
-    isNewUser = true;
+    if (primaryEmailUser) {
+      user = primaryEmailUser;
+    }
+
+    if (!user) {
+      user = await database.user.create({
+        data: {
+          username: await findTempUsername(),
+          name: "",
+          email,
+        },
+        select: userSelectQuery,
+      });
+      isNewUser = true;
+    }
+
+    await database.verifiedEmail.create({
+      data: { email, user: { connect: { id: user.id } } },
+    });
   }
 
   const jwt = encode({ sub: user.id });
-  return { validatedEmail: email, jwt, user, isNewUser };
+  return { verifiedEmail: email, jwt, user, isNewUser };
 }
 
 async function emailAuth(
@@ -56,10 +83,10 @@ async function emailAuth(
   parsedCookies: any,
   res: NextApiResponse
 ) {
-  const { validatedEmail, user, jwt, isNewUser } = await verifyEmail(secret);
+  const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(secret);
   setCookie(res, "AvenSession", jwt);
   return {
-    validatedEmail,
+    verifiedEmail,
     username: user.username,
     name: user.name,
     isNewUser,

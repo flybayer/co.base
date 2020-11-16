@@ -7,6 +7,7 @@ import React from "react";
 import Router from "next/router";
 import ControlledInput from "../../components/ControlledInput";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
+import { api } from "../../api-utils/api";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -38,17 +39,10 @@ function ChangeNameForm({ name }: { name: string | null }) {
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          fetch("/api/account-set-public", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: data.name,
-            }),
+          api("/api/account-set-public", {
+            name: data.name,
           })
-            .then((res) => res.json())
-            .then((resp) => {
+            .then(() => {
               setIsSubmitting(false);
               Router.push("/account");
             })

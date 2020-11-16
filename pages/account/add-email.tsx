@@ -5,7 +5,7 @@ import SiteLayout from "../../components/SiteLayout";
 import { useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React from "react";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../api-utils/api";
 
@@ -21,61 +21,60 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function ChangeUsernameForm({ username }: { username: string | null }) {
+function AddEmailForm({}: {}) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorText, setErrorText] = React.useState<null | string>(null);
   const { register, handleSubmit, errors, control } = useForm({
     mode: "onBlur",
     defaultValues: {
-      username,
+      email: "",
     },
   });
+  const { push } = useRouter();
   return (
     <>
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          api("account-set-username", {
-            username: data.username,
+          api("account-add-email", {
+            email: data.email,
           })
-            .then((resp) => {
-              setIsSubmitting(false);
-              if (resp.error) {
-                setErrorText(resp.error.message);
-              } else {
-                Router.push("/account");
-              }
+            .then(() => {
+              push("/account");
             })
             .catch((err) => {
               console.error(err);
+            })
+            .finally(() => {
               setIsSubmitting(false);
             });
         })}
       >
         <FormControl>
-          <FormLabel htmlFor="username-input">Login username</FormLabel>
+          <FormLabel htmlFor="email-input">New Email</FormLabel>
           <ControlledInput
-            name="username"
-            placeholder="jane-doe"
-            id="username-input"
+            name="email"
+            type="email"
+            placeholder="me@example.com"
+            id="email-input"
             control={control}
           />
         </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
-        <Button type="submit">Set Username</Button>
+        <Button type="submit">Add Email</Button>
         {isSubmitting && <Spinner size="sm" />}
       </form>
     </>
   );
 }
 
-export default function setNamePage({ user }: { user: APIUser }) {
+export default function AddEmailPage({ user }: { user: APIUser }) {
   return (
     <SiteLayout
       content={
         <>
-          <h3>Set Public Username</h3>
-          <ChangeUsernameForm username={user.username} />
+          <h3>Add an Email to your Account</h3>
+          <AddEmailForm />
         </>
       }
     />
