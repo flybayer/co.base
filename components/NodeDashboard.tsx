@@ -53,6 +53,7 @@ export default function NodeDashboard({
   siteName: string;
   address: string[];
   node: {
+    value: any;
     children: Array<{
       key: string;
     }>;
@@ -67,6 +68,11 @@ export default function NodeDashboard({
 
           <Divider />
 
+          <p>{JSON.stringify(node.value)}</p>
+          <LinkButton href={`/sites/${siteName}/edit/${address.join("/")}`}>
+            Edit
+          </LinkButton>
+          <Divider />
           <NodeChildren
             childs={node.children}
             address={address}

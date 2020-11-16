@@ -63,6 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       siteName,
       address: childKeys,
       node: {
+        value: node.value,
         children,
       },
     },
@@ -77,6 +78,7 @@ export default function ChildNodePage({
   siteName: string;
   address: string[];
   node: {
+    value: any;
     children: Array<{
       key: string;
     }>;
