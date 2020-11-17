@@ -1,8 +1,8 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import NodeChildren from "../../../components/NodeChildren";
-import { BasicSiteLayout } from "../../../components/SiteLayout";
+import { APIButton } from "../../../components/APIButton";
+import SiteLayout, { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteTabs } from "../../../components/SiteTabs";
 import { database } from "../../../data/database";
 
@@ -18,37 +18,37 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findOne({ where: { name: siteName } });
-  const nodes = await database.siteNode.findMany({
-    where: { site: { name: siteName }, parentNode: null },
-    select: { key: true, id: true },
-  });
   return {
     props: {
       user: verifiedUser,
       siteName,
-      nodes,
     },
   };
 };
 
-export default function SiteSettingsPage({
+export default function SiteTeamPage({
   user,
   siteName,
-  nodes,
 }: {
   user: APIUser;
   siteName: string;
-  nodes: Array<{
-    key: string;
-  }>;
 }) {
   const { push } = useRouter();
   return (
     <BasicSiteLayout
       content={
         <>
-          <SiteTabs tab="site" siteName={siteName} />
-          <NodeChildren childs={nodes} address={[]} siteName={siteName} />
+          <SiteTabs tab="settings" siteName={siteName} />
+          <APIButton
+            colorScheme="red"
+            endpoint="site-destroy"
+            payload={{ name: siteName }}
+            onDone={() => {
+              push("/account");
+            }}
+          >
+            Delete Site
+          </APIButton>
         </>
       }
     />

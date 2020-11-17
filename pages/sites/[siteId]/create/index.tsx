@@ -1,8 +1,8 @@
 import { GetServerSideProps } from "next";
 import getVerifiedUser from "../../../../api-utils/getVerifedUser";
 import { CreateNodeForm } from "../../../../components/CreateForm";
-import DashboardBreadcrumbs from "../../../../components/DashboardBreadcrumbs";
-import SiteLayout from "../../../../components/SiteLayout";
+import { BasicSiteLayout } from "../../../../components/SiteLayout";
+import { SiteTabs } from "../../../../components/SiteTabs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -24,14 +24,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function CreateChildPage({ siteName }: { siteName: string }) {
   return (
-    <SiteLayout
+    <BasicSiteLayout
       content={
         <>
-          <DashboardBreadcrumbs
-            siteName={siteName}
-            address={[]}
-            nodeFeature="Create"
-          />
+          <SiteTabs tab="site" siteName={siteName} address={[]} />
 
           <h3>Create New Node under {siteName}</h3>
           <CreateNodeForm siteName={siteName} address={[]} />

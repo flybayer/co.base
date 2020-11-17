@@ -1,4 +1,10 @@
+import { Button, Divider } from "@chakra-ui/core";
+import { AddIcon } from "@chakra-ui/icons";
+import { css } from "@emotion/react";
+import styled from "@emotion/styled";
 import Link from "next/link";
+import { ButtonContainer, ListContainer, ListLinkItem } from "./List";
+import { LinkButton } from "./PostButton";
 
 export default function NodeChildren({
   siteName,
@@ -12,17 +18,26 @@ export default function NodeChildren({
   }>;
 }) {
   return (
-    <>
+    <ListContainer>
       {childs.map((child) => (
-        <Link
+        <ListLinkItem
           key={child.key}
           href={`/sites/${siteName}/dashboard/${[...address, child.key].join(
             "/"
           )}`}
-        >
-          {child.key}
-        </Link>
+          label={child.key}
+        />
       ))}
-    </>
+      <Divider />
+      <ButtonContainer>
+        <LinkButton
+          href={`/sites/${siteName}/create/${address.join("/")}`}
+          leftIcon={<AddIcon />}
+          colorScheme="green"
+        >
+          Add Item
+        </LinkButton>
+      </ButtonContainer>
+    </ListContainer>
   );
 }

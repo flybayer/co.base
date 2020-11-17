@@ -18,11 +18,13 @@ export default function PostButton({
   );
 }
 
+type ButtonProps = PropsOf<typeof Button>;
+
 export function LinkButton({
   href,
   children,
   ...props
-}: React.PropsWithChildren<{ href: string } & PropsOf<typeof Button>>) {
+}: React.PropsWithChildren<{ href: string } & ButtonProps>) {
   return (
     <Link href={href}>
       <Button {...props}>{children}</Button>

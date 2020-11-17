@@ -1,5 +1,6 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/core";
 import Link from "next/link";
+import { explodeAddress } from "../api-utils/explodeAddress";
 
 export default function DashboardBreadcrumbs({
   siteName,
@@ -10,22 +11,16 @@ export default function DashboardBreadcrumbs({
   address: string[];
   nodeFeature?: string;
 }) {
-  const fullAddress: Array<{ key: string; address: string }> = [];
-  let walkingFullAddress = "";
-  address.forEach((key) => {
-    walkingFullAddress += `/${key}`;
-    fullAddress.push({ key, address: walkingFullAddress });
-  });
   return (
     <Breadcrumb>
       <BreadcrumbItem>
-        <Link href={`/sites/${siteName}/dashboard`} passHref>
+        <Link href={`/sites/${siteName}`} passHref>
           <BreadcrumbLink>{siteName}</BreadcrumbLink>
         </Link>
       </BreadcrumbItem>
-      {fullAddress.map(({ key, address }) => (
-        <BreadcrumbItem key={address}>
-          <Link href={`/sites/${siteName}/dashboard${address}`} passHref>
+      {explodeAddress(address).map(({ key, fullAddress }) => (
+        <BreadcrumbItem key={fullAddress}>
+          <Link href={`/sites/${siteName}/dashboard${fullAddress}`} passHref>
             <BreadcrumbLink>{key}</BreadcrumbLink>
           </Link>
         </BreadcrumbItem>

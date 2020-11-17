@@ -7,9 +7,9 @@ import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import ControlledInput from "../../../../components/ControlledInput";
 import { CreateNodeForm } from "../../../../components/CreateForm";
-import DashboardBreadcrumbs from "../../../../components/DashboardBreadcrumbs";
 import NodeDashboard from "../../../../components/NodeDashboard";
-import SiteLayout from "../../../../components/SiteLayout";
+import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
+import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
 
 type ManyQuery = null | {
@@ -46,15 +46,10 @@ export default function CreateChildPage({
   address: string[];
 }) {
   return (
-    <SiteLayout
+    <BasicSiteLayout
       content={
         <>
-          <DashboardBreadcrumbs
-            siteName={siteName}
-            address={address}
-            nodeFeature="Create"
-          />
-
+          <SiteTabs tab="data" siteName={siteName} address={address} />
           <h3>Create New Node under {address.join("/")}</h3>
           <CreateNodeForm siteName={siteName} address={address} />
         </>

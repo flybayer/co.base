@@ -21,6 +21,17 @@ const Article = styled.article`
   }
   ${articleStyles}
 `;
+const BasicContainer = styled.div`
+  flex-grow: 1;
+  max-width: 950px;
+  margin: 0 auto;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  @media only screen and (max-width: 1030px) {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+`;
 
 export default function SiteLayout({
   topContent,
@@ -45,6 +56,38 @@ export default function SiteLayout({
         <MainWidth>
           {headContent}
           <Article>{content}</Article>
+          {tailContent}
+        </MainWidth>
+        {bottomContent}
+      </MainArea>
+      {!hideFooter && <SiteFooter />}
+    </>
+  );
+}
+
+export function BasicSiteLayout({
+  topContent,
+  headContent,
+  content,
+  tailContent,
+  bottomContent,
+  hideFooter = false,
+}: {
+  topContent?: ReactNode;
+  headContent?: ReactNode;
+  content: ReactNode;
+  tailContent?: ReactNode;
+  bottomContent?: ReactNode;
+  hideFooter?: boolean;
+}) {
+  return (
+    <>
+      <SiteHeader />
+      <MainArea>
+        {topContent}
+        <MainWidth>
+          {headContent}
+          <BasicContainer>{content}</BasicContainer>
           {tailContent}
         </MainWidth>
         {bottomContent}

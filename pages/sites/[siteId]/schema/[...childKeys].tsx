@@ -1,12 +1,6 @@
-import { Button } from "@chakra-ui/core";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-import { api } from "../../../../api-utils/api";
-import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import ControlledInput from "../../../../components/ControlledInput";
-import NodeDashboard from "../../../../components/NodeDashboard";
-import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
+import { GetServerSideProps } from "next";
+import getVerifiedUser from "../../../../api-utils/getVerifedUser";
+import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
 
@@ -72,38 +66,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function EditForm({
-  value,
-  siteName,
-  address,
-}: {
-  value: any;
-  siteName: string;
-  address: string[];
-}) {
-  const { control, handleSubmit } = useForm({
-    mode: "onBlur",
-    defaultValues: { jsonValue: JSON.stringify(value, null, 2) },
-  });
-  const { push } = useRouter();
-  return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        api("node-edit", {
-          value: JSON.parse(data.jsonValue),
-          siteName,
-          address,
-        }).then(() => {
-          push(`/sites/${siteName}/dashboard/${address.join("/")}`);
-        });
-      })}
-    >
-      <ControlledInput type="textarea" control={control} name="jsonValue" />
-      <Button type="submit">Save</Button>
-    </form>
-  );
-}
-
 export default function ChildNodePage({
   siteName,
   address,
@@ -119,8 +81,7 @@ export default function ChildNodePage({
     <BasicSiteLayout
       content={
         <>
-          <SiteTabs tab="data" siteName={siteName} address={address} />
-          <EditForm value={node.value} siteName={siteName} address={address} />
+          <SiteTabs tab="schema" siteName={siteName} address={address} />
         </>
       }
     />

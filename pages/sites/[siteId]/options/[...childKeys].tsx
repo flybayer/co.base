@@ -1,14 +1,14 @@
-import { Button } from "@chakra-ui/core";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import ControlledInput from "../../../../components/ControlledInput";
-import NodeDashboard from "../../../../components/NodeDashboard";
-import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
-import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
+import { Button, Divider, Spinner } from "@chakra-ui/core";
+import { useState } from "react";
+import { SiteTabs } from "../../../../components/SiteTabs";
+import { LinkButton } from "../../../../components/PostButton";
+import NodeChildren from "../../../../components/NodeChildren";
+import { BasicSiteLayout } from "../../../../components/SiteLayout";
 
 type ManyQuery = null | {
   parentNode: ManyQuery;
@@ -67,44 +67,50 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       address: childKeys,
       node: {
         value: node.value,
+        children,
       },
     },
   };
 };
 
-function EditForm({
-  value,
+function DeleteButton({
   siteName,
   address,
 }: {
-  value: any;
   siteName: string;
   address: string[];
 }) {
-  const { control, handleSubmit } = useForm({
-    mode: "onBlur",
-    defaultValues: { jsonValue: JSON.stringify(value, null, 2) },
-  });
+  const [isDeleting, setIsDel] = useState(false);
   const { push } = useRouter();
   return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        api("node-edit", {
-          value: JSON.parse(data.jsonValue),
-          siteName,
+    <Button
+      onClick={() => {
+        setIsDel(true);
+        api("node-destroy", {
           address,
-        }).then(() => {
-          push(`/sites/${siteName}/dashboard/${address.join("/")}`);
-        });
-      })}
+          siteName,
+        })
+          .then(() => {
+            push(
+              `/sites/${siteName}/dashboard/${address
+                .slice(0, address.length - 1)
+                .join("/")}`
+            );
+          })
+          .catch((e) => console.error(e))
+          .finally(() => {
+            setIsDel(false);
+          });
+      }}
+      colorScheme="red"
+      rightIcon={isDeleting ? <Spinner size="sm" /> : undefined}
     >
-      <ControlledInput type="textarea" control={control} name="jsonValue" />
-      <Button type="submit">Save</Button>
-    </form>
+      Delete Node
+    </Button>
   );
 }
 
-export default function ChildNodePage({
+export default function NodeOptionsPage({
   siteName,
   address,
   node,
@@ -113,14 +119,19 @@ export default function ChildNodePage({
   address: string[];
   node: {
     value: any;
+    children: Array<{
+      key: string;
+    }>;
   };
 }) {
+  const { push } = useRouter();
   return (
     <BasicSiteLayout
       content={
         <>
-          <SiteTabs tab="data" siteName={siteName} address={address} />
-          <EditForm value={node.value} siteName={siteName} address={address} />
+          <SiteTabs tab="options" siteName={siteName} address={address} />
+
+          <DeleteButton siteName={siteName} address={address} />
         </>
       }
     />
