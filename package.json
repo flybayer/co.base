@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "DATABASE_URL='postgresql://user:pw@localhost:5992/db' node server.js",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js"
+    "start": "NODE_ENV=production node server.js",
+    "test": "yarn test-integration",
+    "test-integration": ""
   },
   "dependencies": {
     "@chakra-ui/core": "1.0.0-rc.7",
