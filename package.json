@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "DATABASE_URL='postgresql://user:pw@localhost:5992/db' node server.js",
-    "build": "next build",
+    "dev": "NODE_ENV=development nodemon --watch server -e js,ts,tsx --exec 'ts-node --project tsconfig.server.json server/server.ts'",
+    "build": "yarn prisma generate && yarn build:server && yarn build:next",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build:next": "next build",
     "start": "NODE_ENV=production node server.js",
     "test": "yarn test-integration",
     "test-integration": ""
@@ -52,7 +54,8 @@
     "remark-code-titles": "^0.1.1",
     "remark-slug": "^6.0.0",
     "stripe": "^8.119.0",
-    "twilio": "^3.50.0"
+    "twilio": "^3.50.0",
+    "ws": "^7.4.0"
   },
   "devDependencies": {
     "@prisma/cli": "^2.11.0",
@@ -60,6 +63,9 @@
     "@types/fs-extra": "^9.0.4",
     "@types/node": "^14.14.6",
     "@types/react": "^16.9.55",
+    "@types/ws": "^7.4.0",
+    "nodemon": "^2.0.6",
+    "ts-node": "^9.0.0",
     "typescript": "^4.0.5"
   }
 }
