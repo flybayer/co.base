@@ -36,3 +36,4 @@ yarn-error.log*
 
 local-media
 
+dist/
