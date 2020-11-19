@@ -8,12 +8,16 @@ import setCookie from "../../api-utils/setCookie";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { getRandomNumbers } from "../../api-utils/getRandomNumbers";
 import { createAPI } from "../../api-utils/createAPI";
+import bcrypt from "bcrypt";
+import { encode } from "../../api-utils/jwt";
 
 type Email = string;
 
 export type LoginRegisterPayload = {
   email?: Email;
   phone?: string;
+  password?: string;
+  method?: "email" | "phone" | "password";
 };
 
 function validatePayload(input: any): LoginRegisterPayload {
@@ -41,40 +45,75 @@ function validatePayload(input: any): LoginRegisterPayload {
     });
   }
 
-  return { email, phone };
+  return { email, phone, method: input.method, password: input.password };
 }
 
-async function loginRegisterEmail(email: string, res: NextApiResponse) {
-  const existingUser = await database.user.findOne({
+async function loginRegisterEmail(
+  email: string,
+  password: undefined | string,
+  forceSend: boolean,
+  res: NextApiResponse
+) {
+  const verified = await database.verifiedEmail.findOne({
     where: { email },
+    include: {
+      user: { select: { passwordHash: true, email: true, id: true } },
+    },
   });
-  if (existingUser && existingUser.passwordHash && existingUser.passwordSalt) {
-    return { status: 1, email };
-  } else {
-    const validationToken = getRandomLetters(32);
-    await database.emailValidation.create({
-      data: {
-        email,
-        secret: validationToken,
-      },
+  console.log("ummm", verified);
+  let existingUser = verified?.user;
+  if (!existingUser) {
+    // an edge case exists where a verified row does not exist but the user has the email set as a primary email. this makes sure that such a user may still log in:
+    const userPrimaryLookup = await database.user.findOne({
+      where: { email },
+      select: { passwordHash: true, email: true, id: true },
     });
-    await sendEmail(
+    if (userPrimaryLookup) {
+      existingUser = userPrimaryLookup;
+    }
+  }
+  const existingUserPw = existingUser?.passwordHash;
+  if (existingUser && existingUserPw && !!password && !forceSend) {
+    const doesMatch = await new Promise((resolve, reject) => {
+      bcrypt.compare(password, existingUserPw, (err, doesMatch) => {
+        if (err) reject(err);
+        else resolve(doesMatch);
+      });
+    });
+    if (!doesMatch) {
+      throw new Error("Invalid password");
+    }
+    const jwt = encode({ sub: existingUser.id });
+    setCookie(res, "AvenSession", jwt);
+    return { jwt, email };
+  }
+  if (!forceSend && existingUser && existingUser.passwordHash) {
+    return { status: 1, email };
+  }
+  const validationToken = getRandomLetters(32);
+  // create an anonymous email validation, that is not yet associated to a user account because it remains unverified. at verification time we will associate it to a user account or create one.
+  await database.emailValidation.create({
+    data: {
       email,
-      existingUser ? "Welcome back to Aven" : "Welcome to Aven",
-      `Click here to log in:
+      secret: validationToken,
+    },
+  });
+  await sendEmail(
+    email,
+    existingUser ? "Welcome back to Aven" : "Welcome to Aven",
+    `Click here to log in:
   
   ${getSiteLink(`/login/verify?token=${validationToken}`)}
   `
-    );
-    return { status: 2, email };
-  }
+  );
+  return { status: 2, email };
 }
 
 async function loginRegisterPhone(phone: string, res: NextApiResponse) {
   const existingUser = await database.user.findOne({
     where: { phone },
   });
-  if (existingUser && existingUser.passwordHash && existingUser.passwordSalt) {
+  if (existingUser && existingUser.passwordHash) {
     return { status: 1, phone };
   } else {
     const secret = getRandomNumbers(6);
@@ -90,11 +129,11 @@ async function loginRegisterPhone(phone: string, res: NextApiResponse) {
 }
 
 async function loginRegister(
-  { email, phone }: LoginRegisterPayload,
+  { email, phone, password, method }: LoginRegisterPayload,
   res: NextApiResponse
 ) {
   if (email) {
-    return loginRegisterEmail(email, res);
+    return loginRegisterEmail(email, password, method === "email", res);
   } else if (phone) {
     return loginRegisterPhone(phone, res);
   } else throw new Error("Insufficient login details");

@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React from "react";
 import Router from "next/router";
-import { FormControl, FormLabel, Spinner } from "@chakra-ui/core";
+import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
+import { api } from "../../api-utils/api";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -34,16 +35,9 @@ function ChangeUsernameForm({ username }: { username: string | null }) {
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          fetch("/api/account-set-username", {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username: data.username,
-            }),
+          api("account-set-username", {
+            username: data.username,
           })
-            .then((res) => res.json())
             .then((resp) => {
               setIsSubmitting(false);
               if (resp.error) {
@@ -68,9 +62,7 @@ function ChangeUsernameForm({ username }: { username: string | null }) {
           />
         </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
-        <button type="submit" className="bp3-button bp3-intent-primary">
-          <span className="bp3-button-text">Set Username</span>
-        </button>
+        <Button type="submit">Set Username</Button>
         {isSubmitting && <Spinner size="sm" />}
       </form>
     </>

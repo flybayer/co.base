@@ -13,7 +13,6 @@ model User {
   email               String?   @unique
   phone               String?   @unique
   name                String?
-  passwordSalt        String?
   passwordHash        String?
   stripeCustomerId    String?
   giftedAccess        Int       @default(0)
@@ -23,7 +22,11 @@ model User {
   Comment             Comment[]
   Clip                Clip[]
 
-  Sites               Site[]
+  Sites           Site[]
+  EmailValidation EmailValidation[]
+  VerifiedEmail   VerifiedEmail[]
+  SiteRole        SiteRole[]
+  NodeRole        NodeRole[]
 }
 
 model EmailValidation {
@@ -31,6 +34,15 @@ model EmailValidation {
   emailTime DateTime @default(now())
   email     String
   secret    String   @unique
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model VerifiedEmail {
+  email      String   @id
+  verifyTime DateTime @default(now())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model PhoneValidation {
@@ -52,22 +64,48 @@ model Comment {
 // Cloud 2
 
 model Site {
-  id          Int    @id @default(autoincrement())
-  name        String @unique
-  ownerId     Int
-  owner       User   @relation(fields: [ownerId], references: [id])
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  ownerId Int
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  SiteNode SiteNode[]
+  SiteRole SiteRole[]
 }
 
 model SiteNode {
-  id            Int       @id @default(autoincrement())
-  key           String
-  siteId        Int
-  site          Site      @relation(fields: [siteId], references: [id])
-  parentNodeId  Int?
-  parentNode    SiteNode? @relation(fields: [parentNodeId], references: [id])
-  schema        Json?
-  value         Json?
+  id           Int       @id @default(autoincrement())
+  key          String
+  siteId       Int
+  site         Site      @relation(fields: [siteId], references: [id])
+  parentNodeId Int?
+  parentNode   SiteNode? @relation(fields: [parentNodeId], references: [id])
+  schema       Json?
+  value        Json?
+
+  SiteNode SiteNode[] @relation("SiteNodeToSiteNode")
+
+  NodeRole NodeRole[]
+
   @@unique([siteId, key, parentNodeId], name: "SiteNodeId")
+}
+
+model NodeRole {
+  id         Int      @id @default(autoincrement())
+  siteNodeId Int
+  siteNode   SiteNode @relation(fields: [siteNodeId], references: [id])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  name       String
+}
+
+model SiteRole {
+  id     Int    @id @default(autoincrement())
+  siteId Int
+  site   Site   @relation(fields: [siteId], references: [id])
+  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+  name   String
 }
 
 // ClipClock
