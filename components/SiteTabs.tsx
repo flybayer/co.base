@@ -103,6 +103,7 @@ export function SiteTabs({
         <HeaderLink href={`/sites/${siteName}`} label={siteName} />
         {explodeAddress(address).map(({ key, fullAddress }) => (
           <HeaderLink
+            key={fullAddress}
             href={`/sites/${siteName}/dashboard${fullAddress}`}
             label={`/${key}`}
           />

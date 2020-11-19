@@ -1,4 +1,7 @@
+import { Button, Select } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
+import { useState } from "react";
+import { api } from "../../../../api-utils/api";
 import getVerifiedUser from "../../../../api-utils/getVerifedUser";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
@@ -60,11 +63,70 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       siteName,
       address: childKeys,
       node: {
+        schema: node.schema,
         value: node.value,
       },
     },
   };
 };
+
+function TypeSelector() {
+  return (
+    <Select>
+      <option value="number">Number</option>
+      <option value="boolean">Boolean</option>
+      <option value="string">String</option>
+      <option value="number">List</option>
+      <option value="number">Object</option>
+    </Select>
+  );
+}
+
+type RecordSchema = {};
+
+type NodeSchema = {
+  record?: RecordSchema;
+};
+
+function RecordForm({
+  record,
+  onRecord,
+}: {
+  record: RecordSchema;
+  onRecord: (r: RecordSchema) => void;
+}) {
+  return <TypeSelector />;
+}
+
+function SchemaForm({
+  siteName,
+  address,
+  schema,
+}: {
+  siteName: string;
+  address: string[];
+  schema: NodeSchema;
+}) {
+  const [record, setRecord] = useState<RecordSchema>(schema.record || {});
+  return (
+    <div>
+      <h2>{siteName}</h2>
+      <RecordForm record={record} onRecord={setRecord} />
+      <Button
+        onClick={() => {
+          api("node-schema-edit", { siteName, address, schema: { record } })
+            .then(() => {
+              alert("ok");
+            })
+            .catch(console.error);
+        }}
+        disabled={record === schema.record}
+      >
+        Save Schema
+      </Button>
+    </div>
+  );
+}
 
 export default function ChildNodePage({
   siteName,
@@ -75,6 +137,7 @@ export default function ChildNodePage({
   address: string[];
   node: {
     value: any;
+    schema?: NodeSchema;
   };
 }) {
   return (
@@ -82,6 +145,11 @@ export default function ChildNodePage({
       content={
         <>
           <SiteTabs tab="schema" siteName={siteName} address={address} />
+          <SchemaForm
+            siteName={siteName}
+            address={address}
+            schema={node.schema || {}}
+          />
         </>
       }
     />

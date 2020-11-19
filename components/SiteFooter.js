@@ -42,12 +42,7 @@ export default function SiteFooter() {
       >
         <InnerWidth>
           <FooterText>
-            © Aven LLC and Aven Contributors. Licensed under{" "}
-            <FooterA href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
-              Creative Commons BY-NC-SA 4.0
-            </FooterA>
-          </FooterText>
-          <FooterText>
+            © Aven LLC.{" "}
             <FooterA href="https://github.com/avencloud/sky">
               Open Source
             </FooterA>{" "}

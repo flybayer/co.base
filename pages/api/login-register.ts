@@ -60,7 +60,6 @@ async function loginRegisterEmail(
       user: { select: { passwordHash: true, email: true, id: true } },
     },
   });
-  console.log("ummm", verified);
   let existingUser = verified?.user;
   if (!existingUser) {
     // an edge case exists where a verified row does not exist but the user has the email set as a primary email. this makes sure that such a user may still log in:
