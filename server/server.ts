@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { createServer } from "http";
 import { Store, Subscription } from "./store";
 
+require("dotenv").config();
+
 const WebSocket = require("ws");
 const express = require("express");
 const { parse } = require("url");

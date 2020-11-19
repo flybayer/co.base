@@ -148,7 +148,7 @@ export default function accountPage({
           <PasswordBox user={user} />
           <h3>Email</h3>
           {emails.map(({ email, unverified, primary }) => (
-            <div>
+            <div key={email}>
               {email} {unverified && "(unverified)"}
               {primary && "(primary)"}
               {!unverified && !primary && (
@@ -163,7 +163,7 @@ export default function accountPage({
             Manage billing
           </PostButton>
           {sites.map((site) => (
-            <Link href={`/sites/${site.name}`}>
+            <Link href={`/sites/${site.name}`} key={site.name}>
               <SiteContainer>
                 <h3>{site.name}</h3>
                 <Link href={`/sites/${site.name}/dashboard`}>

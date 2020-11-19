@@ -7,7 +7,7 @@
     "build": "yarn prisma generate && yarn build:server && yarn build:next",
     "build:server": "tsc --project tsconfig.server.json",
     "build:next": "next build",
-    "start": "NODE_ENV=production node server.js",
+    "start": "NODE_ENV=production node dist/server/server.js",
     "test": "yarn test-integration",
     "test-integration": ""
   },
@@ -30,6 +30,7 @@
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "emotion-theming": "^10.0.27",
     "expo": "^39.0.3",
     "express": "^4.17.1",

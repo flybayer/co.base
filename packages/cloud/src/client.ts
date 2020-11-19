@@ -1,1 +1,3 @@
-throw new Error("hey, not here yet!");
+console.log("ok");
+
+export const a = {};
