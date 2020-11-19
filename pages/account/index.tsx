@@ -4,7 +4,7 @@ import redirect from "../../api-utils/redirect";
 import { destroyCookie } from "nookies";
 import Router, { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import PostButton, { LinkButton } from "../../components/PostButton";
+import PostButton, { LinkButton } from "../../components/Buttons";
 import { Button, Spinner } from "@chakra-ui/core";
 import Link from "next/link";
 import { database } from "../../data/database";

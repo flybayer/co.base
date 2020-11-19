@@ -6,7 +6,7 @@ import { database } from "../../../../data/database";
 import { Button, Divider, Spinner } from "@chakra-ui/core";
 import { useState } from "react";
 import { SiteTabs } from "../../../../components/SiteTabs";
-import { LinkButton } from "../../../../components/PostButton";
+import { LinkButton } from "../../../../components/Buttons";
 import NodeChildren from "../../../../components/NodeChildren";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
 

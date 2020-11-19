@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { api } from "../api-utils/api";
 import NodeChildren from "./NodeChildren";
-import { LinkButton } from "./PostButton";
+import { LinkButton } from "./Buttons";
 import { BasicSiteLayout } from "./SiteLayout";
 import { SiteTabs } from "./SiteTabs";
 

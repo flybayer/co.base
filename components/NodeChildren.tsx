@@ -1,10 +1,7 @@
-import { Button, Divider } from "@chakra-ui/core";
+import { Divider } from "@chakra-ui/core";
 import { AddIcon } from "@chakra-ui/icons";
-import { css } from "@emotion/react";
-import styled from "@emotion/styled";
-import Link from "next/link";
 import { ButtonContainer, ListContainer, ListLinkItem } from "./List";
-import { LinkButton } from "./PostButton";
+import { LinkButton } from "./Buttons";
 
 export default function NodeChildren({
   siteName,
