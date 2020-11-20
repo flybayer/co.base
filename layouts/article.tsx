@@ -11,7 +11,6 @@ function Commenting({ comments, page }: { comments: Comment[]; page: string }) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log("DUGH");
   const page: string = (context.req as any).path;
 
   return { props: { comments: [], page } };

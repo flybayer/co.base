@@ -298,7 +298,6 @@ function getRecord(
   for (let keyIndex in address) {
     const key = address[keyIndex];
     const n: TreeState | undefined = validList?.find((i) => i.key === key);
-    console.log({ key });
     if (n) {
       validList = n.children || null;
       matchedRecord = n;

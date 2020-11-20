@@ -54,8 +54,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  const children = node.SiteNode;
-  console.log({ site, node, childKeys, children });
+  // const children = node.SiteNode;
+  // console.log({ site, node, childKeys, children });
 
   return {
     props: {
