@@ -7,7 +7,7 @@ import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import ControlledInput from "../../../../components/ControlledInput";
 import { CreateNodeForm } from "../../../../components/CreateForm";
-import NodeDashboard from "../../../../components/NodeDashboard";
+
 import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
@@ -50,7 +50,7 @@ export default function CreateChildPage({
       content={
         <>
           <SiteTabs tab="data" siteName={siteName} address={address} />
-          <h3>Create New Node under {address.join("/")}</h3>
+
           <CreateNodeForm siteName={siteName} address={address} />
         </>
       }

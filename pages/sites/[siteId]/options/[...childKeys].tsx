@@ -9,6 +9,11 @@ import { SiteTabs } from "../../../../components/SiteTabs";
 import { LinkButton } from "../../../../components/Buttons";
 import NodeChildren from "../../../../components/NodeChildren";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
+import {
+  NodeSchema,
+  NodeType,
+  nodeTypeName,
+} from "../../../../data/NodeSchema";
 
 type ManyQuery = null | {
   parentNode: ManyQuery;
@@ -67,6 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       address: childKeys,
       node: {
         value: node.value,
+        schema: node.schema,
         children,
       },
     },
@@ -76,9 +82,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function DeleteButton({
   siteName,
   address,
+  nodeType,
 }: {
   siteName: string;
   address: string[];
+  nodeType?: NodeType;
 }) {
   const [isDeleting, setIsDel] = useState(false);
   const { push } = useRouter();
@@ -92,9 +100,11 @@ function DeleteButton({
         })
           .then(() => {
             push(
-              `/sites/${siteName}/dashboard/${address
-                .slice(0, address.length - 1)
-                .join("/")}`
+              address.length > 1
+                ? `/sites/${siteName}/dashboard/${address
+                    .slice(0, address.length - 1)
+                    .join("/")}`
+                : `/sites/${siteName}`
             );
           })
           .catch((e) => console.error(e))
@@ -105,7 +115,8 @@ function DeleteButton({
       colorScheme="red"
       rightIcon={isDeleting ? <Spinner size="sm" /> : undefined}
     >
-      Delete Node
+      Permanently Delete {nodeTypeName(nodeType || "record")} "
+      {address[address.length - 1]}"
     </Button>
   );
 }
@@ -119,6 +130,7 @@ export default function NodeOptionsPage({
   address: string[];
   node: {
     value: any;
+    schema?: NodeSchema;
     children: Array<{
       key: string;
     }>;
@@ -131,7 +143,11 @@ export default function NodeOptionsPage({
         <>
           <SiteTabs tab="options" siteName={siteName} address={address} />
 
-          <DeleteButton siteName={siteName} address={address} />
+          <DeleteButton
+            siteName={siteName}
+            address={address}
+            nodeType={node.schema?.type}
+          />
         </>
       }
     />

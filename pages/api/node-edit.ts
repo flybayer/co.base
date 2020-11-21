@@ -3,6 +3,11 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
+import { DEFAULT_SCHEMA, NodeSchema } from "../../data/NodeSchema";
+
+import Ajv, { JSONSchemaType, DefinedError } from "ajv";
+
+const ajv = new Ajv();
 
 export type NodeEditPayload = {
   address: string[];
@@ -36,6 +41,26 @@ async function nodeEdit(
     null
   ) as ManyQuery;
   if (!whereQ) throw new Error("unknown address");
+  const node = await database.siteNode.findFirst({
+    where: whereQ,
+    select: { schema: true, id: true },
+  });
+  const schema = (node?.schema as NodeSchema) || DEFAULT_SCHEMA;
+  if (schema.type !== "record")
+    throw new Error("may not modify a record set node. use children instead");
+  const recordSchema = schema.record;
+  if (!recordSchema) throw new Error("internal error. schema not found.");
+  const validate = ajv.compile(recordSchema);
+  if (!validate(value)) {
+    const errors = validate.errors as DefinedError[];
+    throw new Error400({
+      message: `Invalid: ${errors
+        .map((e) => `${e.dataPath} ${e.message}`)
+        .join(", ")}`,
+      name: "ValidationError",
+      data: { validationErrors: errors },
+    });
+  }
   await database.siteNode.updateMany({
     where: whereQ,
     data: { value },

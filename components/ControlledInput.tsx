@@ -15,13 +15,12 @@ export default function ControlledInput({
         if (props.type === "textarea") {
           return (
             <Textarea
+              value={value}
               name={name}
               onInput={(e: FormEvent<HTMLTextAreaElement>) => {
                 onChange((e.target as any).value);
               }}
-            >
-              {value}
-            </Textarea>
+            />
           );
         }
         return (

@@ -3,10 +3,9 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { api } from "../../../../api-utils/api";
-import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
+import getVerifiedUser from "../../../../api-utils/getVerifedUser";
 import ControlledInput from "../../../../components/ControlledInput";
-import NodeDashboard from "../../../../components/NodeDashboard";
-import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
+import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
 
@@ -93,9 +92,14 @@ function EditForm({
           value: JSON.parse(data.jsonValue),
           siteName,
           address,
-        }).then(() => {
-          push(`/sites/${siteName}/dashboard/${address.join("/")}`);
-        });
+        })
+          .then(() => {
+            push(`/sites/${siteName}/dashboard/${address.join("/")}`);
+          })
+          .catch((e) => {
+            console.error(e);
+            alert("could not save. check the console ok thanks");
+          });
       })}
     >
       <ControlledInput type="textarea" control={control} name="jsonValue" />

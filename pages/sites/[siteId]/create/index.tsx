@@ -28,7 +28,6 @@ export default function CreateChildPage({ siteName }: { siteName: string }) {
       content={
         <>
           <SiteTabs tab="site" siteName={siteName} address={[]} />
-          <h3>Create New Node under {siteName}</h3>
           <CreateNodeForm siteName={siteName} address={[]} />
         </>
       }

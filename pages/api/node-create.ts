@@ -3,11 +3,13 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
+import { NodeType } from "../../data/NodeSchema";
 
 export type NodeCreatePayload = {
   name: string;
   address: string[];
   siteName: string;
+  type: NodeType;
 };
 
 export type ManyQuery = null | {
@@ -31,12 +33,17 @@ function validatePayload(input: any): NodeCreatePayload {
       field: "name",
     });
 
-  return { name: normalized, address: input.address, siteName: input.siteName };
+  return {
+    name: normalized,
+    address: input.address,
+    siteName: input.siteName,
+    type: input.type,
+  };
 }
 
 async function nodeCreate(
   user: APIUser,
-  { name, siteName, address }: NodeCreatePayload,
+  { name, siteName, address, type }: NodeCreatePayload,
   res: NextApiResponse
 ) {
   const whereQ = address.reduce<any>(
@@ -57,6 +64,7 @@ async function nodeCreate(
       key: name,
       parentNode: parentNodeId ? { connect: { id: parentNodeId } } : undefined,
       site: { connect: { name: siteName } },
+      schema: { type },
     },
     select: {
       id: true,
