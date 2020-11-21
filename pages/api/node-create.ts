@@ -22,7 +22,7 @@ function validatePayload(input: any): NodeCreatePayload {
   if (!input)
     throw new Error400({
       message: "Request body not provided.",
-      field: "email",
+      name: "EmptyPayload",
     });
   const { name } = input;
 
@@ -30,7 +30,7 @@ function validatePayload(input: any): NodeCreatePayload {
   if (!normalized.match(/^[a-z]([a-z0-9-])*[a-z0-9]$/))
     throw new Error400({
       message: "name contains invalid characters.",
-      field: "name",
+      name: "NameValidation",
     });
 
   return {
@@ -77,7 +77,7 @@ const APIHandler = createAPI(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const verifiedUser = await getVerifiedUser(req);
     if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User" });
+      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
     }
     await nodeCreate(verifiedUser, validatePayload(req.body), res);
     return {};

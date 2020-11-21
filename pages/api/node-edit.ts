@@ -6,13 +6,14 @@ import { createAPI } from "../../api-utils/createAPI";
 import { DEFAULT_SCHEMA, NodeSchema } from "../../data/NodeSchema";
 
 import Ajv, { JSONSchemaType, DefinedError } from "ajv";
+import { InputJsonObject, JsonArray, JsonObject } from "@prisma/client";
 
 const ajv = new Ajv();
 
 export type NodeEditPayload = {
   address: string[];
   siteName: string;
-  value: any;
+  value: InputJsonObject;
 };
 
 export type ManyQuery = null | {
@@ -73,7 +74,7 @@ const APIHandler = createAPI(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const verifiedUser = await getVerifiedUser(req);
     if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User" });
+      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
     }
     await nodeEdit(verifiedUser, validatePayload(req.body), res);
     return {};

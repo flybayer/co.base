@@ -13,14 +13,20 @@ function validatePayload(input: any): CommentPayload {
   if (!input)
     throw new Error400({
       message: "Request body not provided.",
-      field: "email",
+      name: "NoBody",
     });
   const { message, page } = input;
   if (!message) {
-    throw new Error400({ message: "Empty comment message! " });
+    throw new Error400({
+      message: "Empty comment message! ",
+      name: "InvalidComment",
+    });
   }
   if (!page) {
-    throw new Error400({ message: "No page destination! " });
+    throw new Error400({
+      message: "No page destination! ",
+      name: "InvalidPage",
+    });
   }
   return { message, page };
 }
@@ -44,7 +50,7 @@ const APIHandler = createAPI(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const verifiedUser = await getVerifiedUser(req);
     if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User" });
+      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
     }
     return await publishComment(verifiedUser, validatePayload(req.body), res);
   }

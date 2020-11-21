@@ -34,7 +34,7 @@ const APIHandler = createAPI(
   async (req: NextApiRequest, _res: NextApiResponse) => {
     const verifiedUser = await getVerifiedUser(req);
     if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User" });
+      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
     }
     return await clipUpload(verifiedUser, validatePayload(req.body));
   }

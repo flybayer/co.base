@@ -1,7 +1,8 @@
-import { Button, Divider } from "@chakra-ui/core";
+import { Button, Divider, Input } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import { LinkButton } from "../../../../components/Buttons";
@@ -122,10 +123,66 @@ type Node<Schema = NodeSchema> = {
   }>;
 };
 
-function ValueDisplay({ schema, value }: { schema: ValueSchema; value: any }) {
+function StringEditor({
+  initialValue,
+  onValue,
+  schema,
+}: {
+  initialValue: string;
+  onValue: (s: string) => void;
+  schema: any;
+}) {
+  const [v, setV] = useState(initialValue);
+  return (
+    <div>
+      <Input value={v} />
+      <Button
+        onClick={() => {
+          onValue(v);
+        }}
+      >
+        Done
+      </Button>
+    </div>
+  );
+}
+
+function ValueDisplay({
+  schema,
+  value,
+  onValue,
+}: {
+  schema: ValueSchema;
+  value: any;
+  onValue?: (v: any) => void;
+}) {
+  debugger;
+  const [isEditing, setIsEditing] = useState(false);
   if (schema.type === "string") {
+    if (isEditing)
+      return (
+        <StringEditor
+          initialValue={value}
+          onValue={(v) => {
+            setIsEditing(false);
+            onValue && onValue(v);
+          }}
+          schema={schema}
+        />
+      );
     if (value == null) return <p>Empty</p>;
-    return <StringText>{value}</StringText>;
+    return (
+      <>
+        <StringText>{value}</StringText>
+        <Button
+          onClick={() => {
+            setIsEditing(true);
+          }}
+        >
+          Edit
+        </Button>
+      </>
+    );
   }
   if (schema.type === "number") {
     if (value == null) return <p>Empty</p>;
@@ -140,7 +197,19 @@ function ValueDisplay({ schema, value }: { schema: ValueSchema; value: any }) {
     return (
       <div>
         {value.map((v: any, index: number) => (
-          <ValueDisplay key={index} schema={schema.items} value={v} />
+          <ValueDisplay
+            key={index}
+            schema={schema.items}
+            value={v}
+            onValue={
+              onValue &&
+              ((child: any) => {
+                const v = [...value];
+                v[index] = child;
+                onValue(v);
+              })
+            }
+          />
         ))}
       </div>
     );
@@ -151,10 +220,19 @@ function ValueDisplay({ schema, value }: { schema: ValueSchema; value: any }) {
       <div>
         obj
         {Object.entries(schema.properties).map(
-          ([name, v]: [string, any], index: number) => (
-            <div key={name}>
-              {name}
-              <ValueDisplay schema={v} value={value && value[name]} />
+          ([keyName, v]: [string, any], index: number) => (
+            <div key={keyName}>
+              {keyName}
+              <ValueDisplay
+                schema={v}
+                value={value && value[keyName]}
+                onValue={
+                  onValue &&
+                  ((child: any) => {
+                    onValue({ ...value, [keyName]: child });
+                  })
+                }
+              />
             </div>
           )
         )}
@@ -175,14 +253,26 @@ function RecordContent({
   address: string[];
   node: Node<RecordSchema>;
 }) {
+  let [nodeValue, setNodeValue] = useState(node.value);
+  debugger;
   return (
     <>
       {node.schema.record && (
-        <ValueDisplay value={node.value} schema={node.schema.record} />
+        <ValueDisplay
+          value={nodeValue}
+          schema={node.schema.record}
+          onValue={(value: any) => {
+            api("node-edit", { siteName, address, value })
+              .then(() => {
+                setNodeValue(value);
+              })
+              .catch((e) => {
+                console.error(e);
+                alert("error saving");
+              });
+          }}
+        />
       )}
-      <LinkButton href={`/sites/${siteName}/edit/${address.join("/")}`}>
-        Edit
-      </LinkButton>
     </>
   );
 }

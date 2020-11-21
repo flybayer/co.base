@@ -24,24 +24,25 @@ function validatePayload(input: any): LoginRegisterPayload {
   if (!input)
     throw new Error400({
       message: "Request body not provided.",
-      field: "email",
+      name: "NoBody",
     });
   const { email, phone } = input;
   if (typeof email === "string") {
     if (!/\S+@\S+\.\S+/.test(email))
       throw new Error400({
         message: '"email" string does not look right.',
-        field: "email",
+        name: "BadEmail",
       });
   } else if (typeof phone === "string") {
     if (!/\+[1-9]\d{1,14}$/.test(phone))
       throw new Error400({
         message: '"phone" string does not look right.',
-        field: "phone",
+        name: "BadPhone",
       });
   } else {
     throw new Error400({
       message: '"email" or "phone" string not provided in request body.',
+      name: "BadEmail",
     });
   }
 

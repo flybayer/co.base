@@ -12,7 +12,7 @@ function validatePayload(input: any): AccountInfoPayload {
   if (!input)
     throw new Error400({
       message: "Request body not provided.",
-      field: "email",
+      name: "NoBody",
     });
   const { name } = input;
   return { name };
@@ -37,7 +37,7 @@ const APIHandler = createAPI(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const verifiedUser = await getVerifiedUser(req);
     if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User" });
+      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
     }
     return await setPublicInfo(verifiedUser, validatePayload(req.body), res);
   }

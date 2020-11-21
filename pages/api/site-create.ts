@@ -12,26 +12,26 @@ function validatePayload(input: any): SiteCreatePayload {
   if (!input)
     throw new Error400({
       message: "Request body not provided.",
-      field: "email",
+      name: "NoPayload",
     });
   const { name } = input;
 
   if (name.length < 4)
     throw new Error400({
       message: "name is too short.",
-      field: "name",
+      name: "NameValidation",
     });
   if (name.length > 30)
     throw new Error400({
       message: "name is too long.",
-      field: "name",
+      name: "NameValidation",
     });
 
   const normalized = name.toLowerCase();
   if (!normalized.match(/^[a-z]([a-z0-9-])*[a-z0-9]$/))
     throw new Error400({
       message: "name contains invalid characters.",
-      field: "name",
+      name: "NameValidation",
     });
 
   return { name: normalized };
@@ -51,7 +51,7 @@ const APIHandler = createAPI(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const verifiedUser = await getVerifiedUser(req);
     if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User" });
+      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
     }
     await siteCreate(verifiedUser, validatePayload(req.body), res);
     return {};

@@ -12,26 +12,27 @@ function validatePayload(input: any): UsernamePayload {
   if (!input)
     throw new Error400({
       message: "Request body not provided.",
-      field: "email",
+      name: "NoBody",
     });
   const { username } = input;
 
   if (username.length < 4)
     throw new Error400({
       message: "Username is too short.",
-      field: "username",
+
+      name: "BadEmailShort",
     });
   if (username.length > 30)
     throw new Error400({
       message: "Username is too long.",
-      field: "username",
+      name: "BadEmailLong",
     });
 
   const normalizedUsername = username.toLowerCase();
   if (!normalizedUsername.match(/^[a-z]([a-z0-9-])*[a-z0-9]$/))
     throw new Error400({
       message: "Username contains invalid characters.",
-      field: "username",
+      name: "BadEmail",
     });
 
   return { username: normalizedUsername };
@@ -52,7 +53,7 @@ const APIHandler = createAPI(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const verifiedUser = await getVerifiedUser(req);
     if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User" });
+      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
     }
     await setUsername(verifiedUser, validatePayload(req.body), res);
     return {};

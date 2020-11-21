@@ -15,7 +15,8 @@ function validatePayload(input: any): VerifyPhonePayload {
   if (!input)
     throw new Error400({
       message: "Request body not provided.",
-      field: "email",
+
+      name: "NoBody",
     });
   const { secret, phone } = input;
   if (typeof secret === "string") {
@@ -23,11 +24,12 @@ function validatePayload(input: any): VerifyPhonePayload {
     if (!/\+[1-9]\d{1,14}$/.test(phone))
       throw new Error400({
         message: '"phone" string does not look right.',
-        field: "phone",
+        name: "InvalidPhone",
       });
   } else {
     throw new Error400({
       message: '"phone" or "secret" string not provided in request body.',
+      name: "SecretOrPhoneNotProvided",
     });
   }
 
@@ -45,7 +47,7 @@ async function verifyPhone(
     },
   });
   if (!validations.length) {
-    throw new Error400({ message: "Invalid Token" });
+    throw new Error400({ name: "InvalidToken", message: "Invalid Token" });
   }
   await database.phoneValidation.deleteMany({
     where: {
@@ -60,7 +62,7 @@ async function verifyPhone(
     return true;
   });
   if (!acceptedValidation) {
-    throw new Error400({ message: "Invalid Token" });
+    throw new Error400({ name: "InvalidToken", message: "Invalid Token" });
   }
 
   let user = await database.user.findOne({

@@ -61,7 +61,7 @@ export function getPriceIdOfSubscriptionLevel(
   if (plan) {
     return plan;
   }
-  throw new Error500({ message: "Unknown Product" });
+  throw new Error500({ message: "Unknown Product", name: "UnknownProduct" });
 }
 
 export function getLevelOfProductId(productId: string): SubscriptionLevel {
@@ -71,5 +71,5 @@ export function getLevelOfProductId(productId: string): SubscriptionLevel {
   if (entry) {
     return Number(entry[0]);
   }
-  throw new Error500({ message: "Product not found!", field: productId });
+  throw new Error500({ message: "Product not found!", name: "UnknownProduct" });
 }

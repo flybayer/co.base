@@ -45,7 +45,10 @@ const APIHandler = createAPI(
     const event = readSignedWebhook(req.body, signature);
 
     if (event.object !== "event") {
-      throw new Error400({ message: 'Expected an object of type "event"' });
+      throw new Error400({
+        message: 'Expected an object of type "event"',
+        name: "UnexpectedEventType",
+      });
     }
     if (eventTypeHandlers[event.type]) {
       await eventTypeHandlers[event.type](event);

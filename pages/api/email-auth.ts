@@ -14,7 +14,7 @@ export async function verifyEmail(secret: string) {
     include: { user: { select: userSelectQuery } },
   });
   if (!emailValidation) {
-    throw new Error400({ message: "Invalid Token" });
+    throw new Error400({ message: "Invalid Token", name: "InvalidToken" });
   }
   await database.emailValidation.delete({
     where: { secret },
@@ -27,17 +27,20 @@ export async function verifyEmail(secret: string) {
     secret: storedSecret,
   } = emailValidation;
   if (!storedSecret) {
-    throw new Error500({ message: "No validation token to compare" });
+    throw new Error500({
+      message: "No validation token to compare",
+      name: "NoToken",
+    });
   }
   if (!email) {
-    throw new Error500({ message: "No email to verify" });
+    throw new Error500({ message: "No email to verify", name: "NoEmail" });
   }
   if (storedSecret !== secret) {
     // this should be caught earlier, but just to be safe:
-    throw new Error400({ message: "Invalid Token" });
+    throw new Error400({ message: "Invalid Token", name: "InvalidToken" });
   }
   if (Date.now() - 60 * 60 * 1000 > emailTime.getTime()) {
-    throw new Error400({ message: "Invalid Time" });
+    throw new Error400({ message: "Invalid Time", name: "InvalidToken" });
   }
 
   const verifiedEmail = await database.verifiedEmail.findOne({

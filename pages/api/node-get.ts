@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
+import { Error400, Error404 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 
@@ -36,8 +36,8 @@ async function nodeGet(
   const node = await database.siteNode.findFirst({
     where: whereQ,
   });
-  console.log("node", node);
-
+  if (!node)
+    throw new Error404({ message: "Node Not Found", name: "NodeNotFound" });
   return { value: node.value };
 }
 
