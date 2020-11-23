@@ -1,4 +1,5 @@
 import { Tab, TabList, Tabs } from "@chakra-ui/core";
+import { QuestionIcon, RepeatClockIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import Head from "next/head";
 import Link from "next/link";

@@ -1,8 +1,16 @@
-import { Button, Divider, Input } from "@chakra-ui/core";
+import {
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  Input,
+  Switch,
+} from "@chakra-ui/core";
+import { CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import { LinkButton } from "../../../../components/Buttons";
@@ -12,6 +20,9 @@ import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
 import {
+  DEFAULT_SCHEMA,
+  DEFAULT_VALUE_SCHEMA,
+  getDefaultValue,
   NodeSchema,
   RecordSchema,
   RecordSetSchema,
@@ -123,82 +134,115 @@ type Node<Schema = NodeSchema> = {
   }>;
 };
 
-function StringEditor({
-  initialValue,
+function TextInputDisplay({
+  label,
+  value,
   onValue,
   schema,
+  numeric,
 }: {
-  initialValue: string;
-  onValue: (s: string) => void;
+  label: string;
+  value: number | string;
+  onValue?: (s: number | string) => void;
   schema: any;
+  numeric?: boolean;
 }) {
-  const [v, setV] = useState(initialValue);
+  const [v, setV] = useState(String(value));
+  const onValueTimeout = useRef<null | NodeJS.Timeout>(null);
+
   return (
     <div>
-      <Input value={v} />
-      <Button
-        onClick={() => {
-          onValue(v);
+      <Input
+        value={onValue ? v : value}
+        onChange={(e) => {
+          if (!onValue) return;
+          const newValue = e.target.value;
+          setV(newValue);
+          if (typeof onValueTimeout.current === "number")
+            clearTimeout(onValueTimeout.current);
+          onValueTimeout.current = setTimeout(() => {
+            onValue(numeric ? Number(newValue) : newValue);
+            console.log(newValue);
+          }, 200);
         }}
-      >
-        Done
-      </Button>
+      />
     </div>
   );
 }
 
-function ValueDisplay({
-  schema,
+function BooleanDisplay({
+  label,
   value,
   onValue,
+  schema,
 }: {
-  schema: ValueSchema;
-  value: any;
-  onValue?: (v: any) => void;
+  label: string;
+  value: boolean;
+  onValue?: (s: boolean) => void;
+  schema: any;
 }) {
-  debugger;
-  const [isEditing, setIsEditing] = useState(false);
-  if (schema.type === "string") {
-    if (isEditing)
-      return (
-        <StringEditor
-          initialValue={value}
-          onValue={(v) => {
-            setIsEditing(false);
-            onValue && onValue(v);
+  return (
+    <div>
+      {value ? "True" : "False"}
+      <FormControl display="flex" alignItems="center">
+        <FormLabel htmlFor={`${label}-input`} mb="0">
+          {label}
+        </FormLabel>
+        <Switch
+          id={`${label}-input`}
+          isChecked={value}
+          onChange={(e) => {
+            console.log({ yo: e.target.value });
+            debugger;
+            // onValue()
           }}
-          schema={schema}
         />
-      );
-    if (value == null) return <p>Empty</p>;
-    return (
-      <>
-        <StringText>{value}</StringText>
-        <Button
-          onClick={() => {
-            setIsEditing(true);
-          }}
-        >
-          Edit
-        </Button>
-      </>
-    );
-  }
-  if (schema.type === "number") {
-    if (value == null) return <p>Empty</p>;
-    return <NumberText>{value}</NumberText>;
-  }
-  if (schema.type === "boolean") {
-    if (value == null) return <p>Empty</p>;
-    return <BooleanText>{value ? "True" : "False"}</BooleanText>;
-  }
+      </FormControl>
+    </div>
+  );
+}
 
-  if (schema.type === "array") {
+function ArrayDisplay({
+  label,
+  value,
+  onValue,
+  schema,
+}: {
+  label: string;
+  value: any;
+  onValue?: (s: any) => void;
+  schema: any;
+}) {
+  const listValue = value == null ? [] : value;
+
+  if (!Array.isArray(listValue)) {
     return (
       <div>
-        {value.map((v: any, index: number) => (
+        <h3>Whoops! This value should be an array. Instead, it is:</h3>
+        <p>{JSON.stringify(value, null, 2)}</p>
+        <p>You may click here to DELETE this data, and reset this array:</p>
+        {onValue && <Button onClick={() => onValue([])}>Reset Array</Button>}
+      </div>
+    );
+  }
+  return (
+    <div>
+      {listValue.map((v: any, index: number) => (
+        <div>
+          {onValue && (
+            <Button
+              onClick={() => {
+                const a = [...listValue];
+                a.splice(index, 1);
+                onValue(a);
+              }}
+            >
+              <CloseIcon />
+            </Button>
+          )}
           <ValueDisplay
             key={index}
+            label={String(index)}
             schema={schema.items}
             value={v}
             onValue={
@@ -210,33 +254,117 @@ function ValueDisplay({
               })
             }
           />
-        ))}
-      </div>
+        </div>
+      ))}
+
+      {onValue && (
+        <Button
+          onClick={() => {
+            onValue([...value, getDefaultValue(schema.items)]);
+          }}
+        >
+          New Item
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function ObjectDisplay({
+  label,
+  value,
+  onValue,
+  schema,
+}: {
+  label: string;
+  value: any;
+  onValue?: (s: any) => void;
+  schema: any;
+}) {
+  return (
+    <div>
+      {label}
+      {Object.entries(schema.properties).map(
+        ([keyName, v]: [string, any], index: number) => (
+          <div key={keyName}>
+            <ValueDisplay
+              label={keyName}
+              schema={v}
+              value={value && value[keyName]}
+              onValue={
+                onValue &&
+                ((child: any) => {
+                  onValue({ ...value, [keyName]: child });
+                })
+              }
+            />
+          </div>
+        )
+      )}
+    </div>
+  );
+}
+
+function ValueDisplay({
+  label,
+  schema,
+  value,
+  onValue,
+}: {
+  label: string;
+  schema: ValueSchema;
+  value: any;
+  onValue?: (v: any) => void;
+}) {
+  if (schema.type === "string") {
+    return (
+      <TextInputDisplay
+        schema={schema}
+        value={value}
+        onValue={onValue}
+        label={label}
+      />
     );
   }
-
+  if (schema.type === "number") {
+    return (
+      <TextInputDisplay
+        schema={schema}
+        value={value}
+        onValue={onValue}
+        label={label}
+        numeric
+      />
+    );
+  }
+  if (schema.type === "boolean") {
+    return (
+      <BooleanDisplay
+        schema={schema}
+        value={value}
+        onValue={onValue}
+        label={label}
+      />
+    );
+  }
+  if (schema.type === "array") {
+    return (
+      <ArrayDisplay
+        schema={schema}
+        value={value}
+        onValue={onValue}
+        label={label}
+      />
+    );
+  }
   if (schema.type === "object") {
     return (
-      <div>
-        obj
-        {Object.entries(schema.properties).map(
-          ([keyName, v]: [string, any], index: number) => (
-            <div key={keyName}>
-              {keyName}
-              <ValueDisplay
-                schema={v}
-                value={value && value[keyName]}
-                onValue={
-                  onValue &&
-                  ((child: any) => {
-                    onValue({ ...value, [keyName]: child });
-                  })
-                }
-              />
-            </div>
-          )
-        )}
-      </div>
+      <ObjectDisplay
+        schema={schema}
+        value={value}
+        onValue={onValue}
+        label={label}
+      />
     );
   }
   if (value === undefined) return <p>Undefined</p>;
@@ -253,25 +381,47 @@ function RecordContent({
   address: string[];
   node: Node<RecordSchema>;
 }) {
-  let [nodeValue, setNodeValue] = useState(node.value);
-  debugger;
+  const recordSchema = node.schema.record
+    ? node.schema.record
+    : DEFAULT_VALUE_SCHEMA;
+  const initValue =
+    node.value === null ? getDefaultValue(recordSchema) : node.value;
+  let [savedNodeValue, setSavedNodeValue] = useState(initValue);
+  let [nodeValue, setNodeValue] = useState(initValue);
   return (
     <>
-      {node.schema.record && (
-        <ValueDisplay
-          value={nodeValue}
-          schema={node.schema.record}
-          onValue={(value: any) => {
-            api("node-edit", { siteName, address, value })
-              .then(() => {
-                setNodeValue(value);
-              })
-              .catch((e) => {
-                console.error(e);
-                alert("error saving");
-              });
-          }}
-        />
+      <ValueDisplay
+        label={`${siteName}/${address.join("/")}`}
+        value={nodeValue}
+        schema={recordSchema}
+        onValue={(value: any) => {
+          setNodeValue(value);
+        }}
+      />
+      {savedNodeValue !== nodeValue && (
+        <div>
+          <Button
+            onClick={() => {
+              api("node-edit", { siteName, address, value: nodeValue })
+                .then(() => {
+                  setSavedNodeValue(nodeValue);
+                })
+                .catch((e) => {
+                  console.error(e);
+                  alert("error saving");
+                });
+            }}
+          >
+            Save
+          </Button>
+          <Button
+            onClick={() => {
+              setNodeValue(savedNodeValue);
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
       )}
     </>
   );

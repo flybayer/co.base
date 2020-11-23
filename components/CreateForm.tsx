@@ -44,8 +44,8 @@ export function CreateNodeForm({
     <>
       <h3>
         {address.length
-          ? `Create new ${address.join("/")} record`
-          : `Create new node under ${siteName}`}
+          ? `Create under ${address.join("/")}`
+          : `Create under ${siteName}`}
       </h3>
       <form
         onSubmit={handleSubmit((data) => {

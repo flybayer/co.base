@@ -17,12 +17,22 @@ import {
   Select,
   useDisclosure,
 } from "@chakra-ui/core";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
 import { useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser from "../../../../api-utils/getVerifedUser";
+import {
+  ArrayContainer,
+  BooleanContainer,
+  Label,
+  NumberContainer,
+  ObjectContainer,
+  SchemaContainer,
+  StringContainer,
+} from "../../../../components/CommonViews";
 import ControlledInput from "../../../../components/ControlledInput";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
@@ -63,8 +73,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const site = await database.site.findOne({ where: { name: siteName } });
   const siteQuery = { name: siteName };
-  //   const node = await database.siteNode()
-
   const whereQ = childKeys.reduce<any>(
     (last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
       return { site: siteQuery, parentNode: last, key: childKey };
@@ -74,9 +82,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (whereQ === null) throw new Error("Unexpectd nullfail");
   let nodes = await database.siteNode.findMany({
     where: whereQ,
-    // include: { SiteNode: { select: { id: true, key: true } } },
   });
-
   const node = nodes[0];
   if (!node) {
     return {
@@ -102,114 +108,52 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function TypeSelector({
-  onValue,
-  value = "",
-}: {
-  onValue: (v: SchemaType) => void;
-  value: string;
-}) {
-  return (
-    <Select
-      value={value}
-      onChange={(e) => {
-        onValue(e.target.value as SchemaType);
-      }}
-    >
-      <option value="">Select Type..</option>
-      <option value="number">Number</option>
-      <option value="boolean">Boolean</option>
-      <option value="string">String</option>
-      <option value="array">Array</option>
-      <option value="object">Object</option>
-    </Select>
-  );
-}
-
-function AddItemButton({
-  onAdd,
-}: {
-  onAdd: (what: "number" | "boolean" | "string") => void;
-}) {
-  return (
-    <>
-      <Menu>
-        <MenuButton as={Button} variant="ghost">
-          <AddIcon />
-        </MenuButton>
-        <MenuList>
-          <MenuItem
-            onClick={() => {
-              onAdd("number");
-            }}
-          >
-            Number
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              onAdd("boolean");
-            }}
-          >
-            Boolean
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              onAdd("string");
-            }}
-          >
-            String
-          </MenuItem>
-          <MenuItem onClick={() => {}}>Object</MenuItem>
-          <MenuItem onClick={() => {}}>Array</MenuItem>
-        </MenuList>
-      </Menu>
-    </>
-  );
-}
-
-function UntypedSchemaForm({
-  onSchema,
-}: {
-  onSchema: (r: ValueSchema) => void;
-}) {
-  return (
-    <TypeSelector
-      value={"number"}
-      onValue={(type) => {
-        onSchema(getValueSchema(type));
-      }}
-    />
-  );
-}
-
 function StringSchemaEdit({
+  label,
   schema,
   onSchema,
 }: {
+  label: string;
   schema: StringSchema;
   onSchema: (v: ValueSchema) => void;
 }) {
-  return <div>String.</div>;
+  return (
+    <StringContainer>
+      <Label>{label} - Text</Label>
+    </StringContainer>
+  );
 }
 
 function NumberSchemaEdit({
+  label,
   schema,
   onSchema,
 }: {
+  label: string;
   schema: NumberSchema;
   onSchema: (v: ValueSchema) => void;
 }) {
-  return <div>Number.</div>;
+  return (
+    <NumberContainer>
+      <Label>{label} - Number</Label>
+    </NumberContainer>
+  );
 }
 
 function BooleanSchemaEdit({
+  label,
   schema,
   onSchema,
 }: {
+  label: string;
   schema: BooleanSchema;
   onSchema: (v: ValueSchema) => void;
 }) {
-  return <div>Boolean.</div>;
+  return (
+    <BooleanContainer>
+      <Label>{label} - Switch</Label>
+    </BooleanContainer>
+  );
 }
 
 function NewKeyForm({
@@ -261,33 +205,34 @@ function NewKeyForm({
 }
 
 function ObjectSchemaEdit({
+  label,
   schema,
   onSchema,
 }: {
+  label: string;
   schema: ObjectSchema;
   onSchema: (v: ValueSchema) => void;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <>
-      <div>Object.</div>
+    <ObjectContainer>
+      <Label>{label} Record:</Label>
       {Object.entries(schema.properties).map(
         ([key, keySchema]: [string, ValueSchema]) => (
-          <div key={key}>
-            {key}:{" "}
-            <SchemaEdit
-              schema={keySchema}
-              onSchema={(childSchema) => {
-                onSchema({
-                  ...schema,
-                  properties: {
-                    ...schema.properties,
-                    [key]: childSchema,
-                  },
-                });
-              }}
-            />
-          </div>
+          <SchemaEdit
+            label={key}
+            key={key}
+            schema={keySchema}
+            onSchema={(childSchema) => {
+              onSchema({
+                ...schema,
+                properties: {
+                  ...schema.properties,
+                  [key]: childSchema,
+                },
+              });
+            }}
+          />
         )
       )}
       <Button onClick={onOpen}>New Entry</Button>
@@ -311,59 +256,75 @@ function ObjectSchemaEdit({
           />
         </ModalContent>
       </Modal>
-    </>
+    </ObjectContainer>
   );
 }
 
 function ArraySchemaEdit({
+  label,
   schema,
   onSchema,
 }: {
+  label: string;
   schema: ArraySchema;
   onSchema: (v: ValueSchema) => void;
 }) {
   return (
-    <div>
-      Array of:{" "}
+    <ArrayContainer>
+      <Label>{label}: List</Label>
       <SchemaEdit
+        label={`${label} items`}
         schema={schema.items}
         onSchema={(items) => {
           onSchema({ ...schema, items });
         }}
       />
-    </div>
+    </ArrayContainer>
   );
 }
 
 function SchemaEdit({
   schema,
   onSchema,
+  label,
 }: {
+  label: string;
   schema: ValueSchema;
   onSchema: (v: ValueSchema) => void;
 }) {
   let editor = null;
   if (schema?.type === "string") {
-    editor = <StringSchemaEdit schema={schema} onSchema={onSchema} />;
+    editor = (
+      <StringSchemaEdit schema={schema} onSchema={onSchema} label={label} />
+    );
   }
   if (schema?.type === "number") {
-    editor = <NumberSchemaEdit schema={schema} onSchema={onSchema} />;
+    editor = (
+      <NumberSchemaEdit schema={schema} onSchema={onSchema} label={label} />
+    );
   }
   if (schema?.type === "boolean") {
-    editor = <BooleanSchemaEdit schema={schema} onSchema={onSchema} />;
+    editor = (
+      <BooleanSchemaEdit schema={schema} onSchema={onSchema} label={label} />
+    );
   }
   if (schema?.type === "array") {
-    editor = <ArraySchemaEdit schema={schema} onSchema={onSchema} />;
+    editor = (
+      <ArraySchemaEdit schema={schema} onSchema={onSchema} label={label} />
+    );
   }
   if (schema?.type === "object") {
-    editor = <ObjectSchemaEdit schema={schema} onSchema={onSchema} />;
+    editor = (
+      <ObjectSchemaEdit schema={schema} onSchema={onSchema} label={label} />
+    );
   }
   return (
-    <div>
+    <SchemaContainer>
       {editor}
+
       <Menu>
         <MenuButton as={Button} variant="ghost">
-          Reset Type
+          <CloseIcon />
         </MenuButton>
         <MenuList>
           <MenuItem
@@ -403,14 +364,16 @@ function SchemaEdit({
           </MenuItem>
         </MenuList>
       </Menu>
-    </div>
+    </SchemaContainer>
   );
 }
 
 function RecordForm({
   schema,
   onSchema,
+  label,
 }: {
+  label: string;
   schema: RecordSchema;
   onSchema: (r: RecordSchema) => void;
 }) {
@@ -424,6 +387,7 @@ function RecordForm({
   return (
     <>
       <SchemaEdit
+        label={label}
         schema={schema.record || { type: "object", properties: {} }}
         onSchema={handleRecordSchema}
       />
@@ -454,9 +418,12 @@ function SchemaForm({
   const [draftSchema, setDraftSchema] = useState<NodeSchema>(schema);
   return (
     <div>
-      <h2>{siteName}</h2>
       {draftSchema.type === "record" ? (
-        <RecordForm schema={draftSchema} onSchema={setDraftSchema} />
+        <RecordForm
+          schema={draftSchema}
+          onSchema={setDraftSchema}
+          label={address[address.length - 1]}
+        />
       ) : (
         <RecordSetForm schema={draftSchema} onSchema={setDraftSchema} />
       )}

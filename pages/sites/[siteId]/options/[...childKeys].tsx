@@ -142,12 +142,14 @@ export default function NodeOptionsPage({
       content={
         <>
           <SiteTabs tab="options" siteName={siteName} address={address} />
-
-          <DeleteButton
-            siteName={siteName}
-            address={address}
-            nodeType={node.schema?.type}
-          />
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <Button>Rename {address.join("/")}</Button>
+            <DeleteButton
+              siteName={siteName}
+              address={address}
+              nodeType={node.schema?.type}
+            />
+          </div>
         </>
       }
     />

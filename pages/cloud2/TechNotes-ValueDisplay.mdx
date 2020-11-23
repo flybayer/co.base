@@ -1,0 +1,11 @@
+ValueDisplay has _some_ local state.
+
+- props for ValueDisplay:
+  - schema: of course
+  - value: current saved (remote) value
+  - ?draftValue: current local (change) value. Used for array, object
+  - onChangeStarted (initial text input change)
+  - onChange (boolean change, array item add, debounced text input)
+  - onChangeCancelled (when local value goes back to value)
+  - saveGeneration, number that grows by 1 when the discard changes button is pressed, causes ValueDisplay component to abandon local changes and display the current `value`
+  - autofocus: true on the root component, false for list and object children, true when adding a list item

@@ -3,13 +3,19 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
-import { NodeType } from "../../data/NodeSchema";
+import {
+  getValueSchema,
+  NodeSchema,
+  NodeType,
+  SchemaType,
+} from "../../data/NodeSchema";
 
 export type NodeCreatePayload = {
   name: string;
   address: string[];
   siteName: string;
   type: NodeType;
+  schemaType: SchemaType;
 };
 
 export type ManyQuery = null | {
@@ -38,12 +44,13 @@ function validatePayload(input: any): NodeCreatePayload {
     address: input.address,
     siteName: input.siteName,
     type: input.type,
+    schemaType: input.schemaType,
   };
 }
 
 async function nodeCreate(
   user: APIUser,
-  { name, siteName, address, type }: NodeCreatePayload,
+  { name, siteName, address, type, schemaType }: NodeCreatePayload,
   res: NextApiResponse
 ) {
   const whereQ = address.reduce<any>(
@@ -59,12 +66,17 @@ async function nodeCreate(
       select: { id: true },
     }));
   const parentNodeId = nodesResult && nodesResult[0].id;
+  const schema: NodeSchema =
+    type === "record-set"
+      ? { type: "record-set", childRecord: getValueSchema(schemaType) }
+      : { type: "record", record: getValueSchema(schemaType) };
+
   const resp = await database.siteNode.create({
     data: {
       key: name,
       parentNode: parentNodeId ? { connect: { id: parentNodeId } } : undefined,
       site: { connect: { name: siteName } },
-      schema: { type },
+      schema,
     },
     select: {
       id: true,
