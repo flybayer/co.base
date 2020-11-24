@@ -1,12 +1,7 @@
-import { Button, Link } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import React from "react";
-import MainWidth from "./MainWidth";
-const InnerWidth = styled.div`
-  max-width: 950px;
-  margin: 0 auto;
-  padding: 25px;
-`;
+import { InnerWidth } from "./CommonViews";
+
 const FooterText = styled.p`
   color: #bbb;
 `;
@@ -21,18 +16,6 @@ const FooterA = styled.a`
 export default function SiteFooter() {
   return (
     <>
-      <div
-        style={{
-          borderTop: "1px solid #b1c8db",
-          backgroundColor: "#d6e2ed",
-          minHeight: 150,
-          background: "url('/img/CloudFooter.webp')",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "fill",
-        }}
-      >
-        <MainWidth></MainWidth>
-      </div>
       <div
         style={{
           borderTop: "1px solid #b1c8db",

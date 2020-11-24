@@ -1,31 +1,23 @@
 import React from "react";
-import MainWidth from "./MainWidth";
 import styled from "@emotion/styled";
 import Link from "next/link";
+import { InnerWidth } from "./CommonViews";
+import AvenLogo from "./AvenLogo";
 
-const ImageFill = styled.div({
-  background: "url('/img/CloudHeader.webp')",
-  backgroundRepeat: "no-repeat",
-  backgroundSize: "fill",
-  minHeight: 108,
-});
-
-const LinkImage = styled.img`
-  position: relative;
-  left: -8px;
-  max-width: 210px;
-  margin: 20px 10px;
-  cursor: pointer;
+const HeaderContainer = styled.div`
+  background: #0e2b49;
 `;
 
 export default function SiteHeader() {
   return (
-    <ImageFill>
-      <MainWidth hMargin={40}>
+    <HeaderContainer>
+      <InnerWidth>
         <Link href="/">
-          <LinkImage src="/img/AvenPrimary.svg" alt="Aven" />
+          <div style={{ cursor: "pointer" }}>
+            <AvenLogo />
+          </div>
         </Link>
-      </MainWidth>
-    </ImageFill>
+      </InnerWidth>
+    </HeaderContainer>
   );
 }

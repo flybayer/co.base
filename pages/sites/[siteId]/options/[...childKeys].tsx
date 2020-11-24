@@ -14,6 +14,11 @@ import {
   NodeType,
   nodeTypeName,
 } from "../../../../data/NodeSchema";
+import {
+  CenterButtonRow,
+  MainContainer,
+  MainSection,
+} from "../../../../components/CommonViews";
 
 type ManyQuery = null | {
   parentNode: ManyQuery;
@@ -142,14 +147,22 @@ export default function NodeOptionsPage({
       content={
         <>
           <SiteTabs tab="options" siteName={siteName} address={address} />
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <Button>Rename {address.join("/")}</Button>
-            <DeleteButton
-              siteName={siteName}
-              address={address}
-              nodeType={node.schema?.type}
-            />
-          </div>
+          <MainContainer>
+            <MainSection title="Move Node">
+              <CenterButtonRow>
+                <Button>Rename {address.join("/")}</Button>
+              </CenterButtonRow>
+            </MainSection>
+            <MainSection title="Danger">
+              <CenterButtonRow>
+                <DeleteButton
+                  siteName={siteName}
+                  address={address}
+                  nodeType={node.schema?.type}
+                />
+              </CenterButtonRow>
+            </MainSection>
+          </MainContainer>
         </>
       }
     />

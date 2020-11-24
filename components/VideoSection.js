@@ -1,5 +1,5 @@
 import React from "react";
-import MainWidth from "./MainWidth";
+import InnerWidth from "./InnerWidth";
 
 export default function VideoSection({ vimeoId, videoTitle }) {
   return (
@@ -9,7 +9,7 @@ export default function VideoSection({ vimeoId, videoTitle }) {
         padding: "10px 0",
       }}
     >
-      <MainWidth>
+      <InnerWidth>
         <div style={{}}>
           <div
             style={{
@@ -35,7 +35,7 @@ export default function VideoSection({ vimeoId, videoTitle }) {
             ></iframe>
           </div>
         </div>
-      </MainWidth>
+      </InnerWidth>
     </div>
   );
 }

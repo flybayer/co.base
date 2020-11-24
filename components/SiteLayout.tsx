@@ -1,9 +1,9 @@
 import SiteHeader from "./SiteHeader";
-import MainWidth from "./MainWidth";
 import SiteFooter from "./SiteFooter";
 import styled from "@emotion/styled";
 import { ReactNode } from "react";
 import { articleStyles } from "../styles/article";
+import { InnerWidth } from "./CommonViews";
 
 const MainArea = styled.main`
   flex-grow: 1;
@@ -53,11 +53,11 @@ export default function SiteLayout({
       <SiteHeader />
       <MainArea>
         {topContent}
-        <MainWidth>
+        <InnerWidth>
           {headContent}
           <Article>{content}</Article>
           {tailContent}
-        </MainWidth>
+        </InnerWidth>
         {bottomContent}
       </MainArea>
       {!hideFooter && <SiteFooter />}
@@ -85,11 +85,11 @@ export function BasicSiteLayout({
       <SiteHeader />
       <MainArea>
         {topContent}
-        <MainWidth>
+        <InnerWidth>
           {headContent}
           <BasicContainer>{content}</BasicContainer>
           {tailContent}
-        </MainWidth>
+        </InnerWidth>
         {bottomContent}
       </MainArea>
       {!hideFooter && <SiteFooter />}

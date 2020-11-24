@@ -28,6 +28,7 @@ import {
   ArrayContainer,
   BooleanContainer,
   Label,
+  MainSection,
   NumberContainer,
   ObjectContainer,
   SchemaContainer,
@@ -482,11 +483,13 @@ export default function ChildNodePage({
       content={
         <>
           <SiteTabs tab="schema" siteName={siteName} address={address} />
-          <SchemaForm
-            siteName={siteName}
-            address={address}
-            schema={node.schema}
-          />
+          <MainSection>
+            <SchemaForm
+              siteName={siteName}
+              address={address}
+              schema={node.schema}
+            />
+          </MainSection>
         </>
       }
     />

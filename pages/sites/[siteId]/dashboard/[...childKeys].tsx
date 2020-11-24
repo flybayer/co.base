@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import { LinkButton } from "../../../../components/Buttons";
+import { MainSection } from "../../../../components/CommonViews";
 import { ListContainer } from "../../../../components/List";
 import NodeChildren from "../../../../components/NodeChildren";
 
@@ -202,6 +203,32 @@ function BooleanDisplay({
     </div>
   );
 }
+const ArrayItemContainer = styled.div`
+  border-left: 2px solid blue;
+  background: rgba(240, 240, 255, 0.5);
+  padding: 20px;
+  margin: 20px 0;
+  display: flex;
+`;
+const ArrayItemChildren = styled.div`
+  flex-grow: 1;
+`;
+
+function ArrayItem({
+  children,
+  onRemove,
+}: React.PropsWithChildren<{ onRemove?: () => void }>) {
+  return (
+    <ArrayItemContainer>
+      <ArrayItemChildren>{children}</ArrayItemChildren>
+      {onRemove && (
+        <Button onClick={onRemove} variant="ghost">
+          <CloseIcon />
+        </Button>
+      )}
+    </ArrayItemContainer>
+  );
+}
 
 function ArrayDisplay({
   label,
@@ -229,20 +256,18 @@ function ArrayDisplay({
   return (
     <ListContainer>
       {listValue.map((v: any, index: number) => (
-        <div>
-          {onValue && (
-            <Button
-              onClick={() => {
-                const a = [...listValue];
-                a.splice(index, 1);
-                onValue(a);
-              }}
-            >
-              <CloseIcon />
-            </Button>
-          )}
+        <ArrayItem
+          key={index}
+          onRemove={
+            onValue &&
+            (() => {
+              const a = [...listValue];
+              a.splice(index, 1);
+              onValue(a);
+            })
+          }
+        >
           <ValueDisplay
-            key={index}
             label={String(index)}
             schema={schema.items}
             value={v}
@@ -255,7 +280,7 @@ function ArrayDisplay({
               })
             }
           />
-        </div>
+        </ArrayItem>
       ))}
 
       {onValue && (
@@ -382,8 +407,8 @@ function RecordContent({
   address: string[];
   node: Node<RecordSchema>;
 }) {
-  const recordSchema = node.schema.record
-    ? node.schema.record
+  const recordSchema = node.schema?.record
+    ? node.schema?.record
     : DEFAULT_VALUE_SCHEMA;
   const initValue =
     node.value === null ? getDefaultValue(recordSchema) : node.value;
@@ -392,7 +417,8 @@ function RecordContent({
   return (
     <>
       <ValueDisplay
-        label={`${siteName}/${address.join("/")}`}
+        // label={`${siteName}/${address.join("/")}`}
+        label=""
         value={nodeValue}
         schema={recordSchema}
         onValue={(value: any) => {
@@ -465,16 +491,14 @@ export default function NodeDashboard({
   address: string[];
   node: Node;
 }) {
-  const { push } = useRouter();
   return (
     <BasicSiteLayout
       content={
         <>
           <SiteTabs tab="data" siteName={siteName} address={address} />
-
-          <Divider />
-
-          <NodeContent node={node} address={address} siteName={siteName} />
+          <MainSection>
+            <NodeContent node={node} address={address} siteName={siteName} />
+          </MainSection>
         </>
       }
     />

@@ -1,5 +1,5 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import SiteLayout from "../../components/SiteLayout";
+import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
 import redirect from "../../api-utils/redirect";
 import { destroyCookie } from "nookies";
 import Router, { useRouter } from "next/router";
@@ -11,6 +11,7 @@ import { database } from "../../data/database";
 import styled from "@emotion/styled";
 import { api } from "../../api-utils/api";
 import { useState } from "react";
+import { CenterButtonRow, MainSection } from "../../components/CommonViews";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -77,15 +78,25 @@ function PasswordBox({ user }: { user: APIUser }) {
     </>
   );
 }
-
+const SiteName = styled.h3`
+  font-size: 32px;
+`;
 const SiteContainer = styled.div`
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 12px;
-  margin: 10px 0;
-
+  margin: 10px;
+  display: flex;
+  background: #ececec;
+  justify-content: space-between;
+  border: 1px solid #ececec;
+  :hover {
+    background: white;
+    border: 1px solid #eee;
+    cursor: pointer;
+  }
   h3 {
-    font-size: 32px;
+    cursor: pointer:
+    font-size: 132px;
   }
 `;
 
@@ -140,56 +151,75 @@ export default function accountPage({
   emails: Array<{ email: string; primary?: true; unverified?: true }>;
 }) {
   return (
-    <SiteLayout
+    <BasicSiteLayout
       content={
         <>
-          <UserName user={user} />
-          <NameBox user={user} />
-          <PasswordBox user={user} />
-          <h3>Email</h3>
-          {emails.map(({ email, unverified, primary }) => (
-            <div key={email}>
-              {email} {unverified && "(unverified)"}
-              {primary && "(primary)"}
-              {!unverified && !primary && (
-                <MakePrimaryEmailButton email={email} />
-              )}
-              {!primary && <DeleteEmailButton email={email} />}
-            </div>
-          ))}
-          <LinkButton href={`/account/add-email`}>Add Email</LinkButton>
-          <h3>Billing</h3>
-          <PostButton action="/api/billing-session" primary>
-            Manage billing
-          </PostButton>
-          {sites.map((site) => (
-            <Link href={`/sites/${site.name}`} key={site.name}>
-              <SiteContainer>
-                <h3>{site.name}</h3>
-                <Link href={`/sites/${site.name}/dashboard`}>
-                  <Button colorScheme="green">Dashboard</Button>
-                </Link>
-                <Link href={`/sites/${site.name}`}>
-                  <Button>Settings</Button>
-                </Link>
-              </SiteContainer>
-            </Link>
-          ))}
-          <Link href={`/account/new-site`}>
-            <Button colorScheme="green">New Site</Button>
-          </Link>
-          <h3>Account</h3>
-          <Button
-            onClick={() => {
-              destroyCookie(null, "AvenSession");
-              Router.push("/login");
-            }}
-          >
-            Log Out
-          </Button>
-          <LinkButton colorScheme="red" href={"/account/destroy"}>
-            Delete Account
-          </LinkButton>
+          <MainSection title="Sites">
+            {sites.map((site) => (
+              <Link href={`/sites/${site.name}`} key={site.name}>
+                <SiteContainer>
+                  <SiteName>{site.name}</SiteName>
+                  <span>
+                    <LinkButton
+                      href={`/sites/${site.name}/dashboard`}
+                      colorScheme="green"
+                    >
+                      Dashboard
+                    </LinkButton>
+                    <LinkButton href={`/sites/${site.name}`}>
+                      Settings
+                    </LinkButton>
+                  </span>
+                </SiteContainer>
+              </Link>
+            ))}
+            <CenterButtonRow>
+              <Link href={`/account/new-site`}>
+                <Button colorScheme="green">New Site</Button>
+              </Link>
+            </CenterButtonRow>
+          </MainSection>
+          <MainSection title="Name">
+            <UserName user={user} />
+            <NameBox user={user} />
+          </MainSection>
+          <MainSection title="Auth">
+            <PasswordBox user={user} />
+          </MainSection>
+          <MainSection title="Email">
+            {emails.map(({ email, unverified, primary }) => (
+              <div key={email}>
+                {email} {unverified && "(unverified)"}
+                {primary && "(primary)"}
+                {!unverified && !primary && (
+                  <MakePrimaryEmailButton email={email} />
+                )}
+                {!primary && <DeleteEmailButton email={email} />}
+              </div>
+            ))}
+            <LinkButton href={`/account/add-email`}>Add Email</LinkButton>
+          </MainSection>
+          <MainSection title="Billing">
+            <PostButton action="/api/billing-session" primary>
+              Manage billing
+            </PostButton>
+          </MainSection>
+
+          <MainSection title="Account">
+            <CenterButtonRow>
+              <Button
+                onClick={() => {
+                  destroyCookie(null, "AvenSession");
+                  Router.push("/login");
+                }}
+              >
+                Log Out
+              </Button>
+              <LinkButton colorScheme="red" href={"/account/destroy"}>
+                Delete Account
+              </LinkButton>
+            </CenterButtonRow>
+          </MainSection>
         </>
       }
     />
