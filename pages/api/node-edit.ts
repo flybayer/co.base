@@ -48,7 +48,7 @@ async function nodeEdit(
   });
   const schema = (node?.schema as NodeSchema) || DEFAULT_SCHEMA;
   if (schema.type !== "record")
-    throw new Error("may not modify a record set node. use children instead");
+    throw new Error("may not modify a node set. use children instead");
   const recordSchema = schema.record;
   if (!recordSchema) throw new Error("internal error. schema not found.");
   const validate = ajv.compile(recordSchema);

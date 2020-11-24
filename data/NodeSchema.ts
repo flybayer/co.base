@@ -71,18 +71,27 @@ export type RecordSetSchema = {
   type: "record-set";
   childRecord?: ValueSchema;
 };
+export type FolderSchema = {
+  type: "folder";
+};
 
-export type NodeSchema = RecordSchema | RecordSetSchema;
+export type NodeSchema = FolderSchema | RecordSchema | RecordSetSchema;
 
 export type NodeType = NodeSchema["type"];
 
 export function nodeTypeName(n: NodeType): string {
-  if (n === "record") return "Node";
-  if (n === "record-set") return "Node Set";
+  if (n === "record") return "Record";
+  if (n === "record-set") return "Record Set";
+  if (n === "folder") return "Folder";
   return "?";
 }
 
-export const NODE_TYPES: Array<{ key: NodeType; name: string }> = [
-  { key: "record", name: "Node" },
-  { key: "record-set", name: "Node Set" },
+export const NODE_TYPES: Array<{
+  key: NodeType;
+  name: string;
+  hidden: boolean;
+}> = [
+  { key: "record", name: "Record", hidden: false },
+  { key: "record-set", name: "Record Set", hidden: false },
+  { key: "folder", name: "Folder", hidden: false },
 ];

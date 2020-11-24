@@ -417,17 +417,21 @@ function SchemaForm({
 }) {
   const [schemaState, setSchema] = useState<NodeSchema>(schema);
   const [draftSchema, setDraftSchema] = useState<NodeSchema>(schema);
+  let form = null;
+  if (draftSchema.type === "record") {
+    form = (
+      <RecordForm
+        schema={draftSchema}
+        onSchema={setDraftSchema}
+        label={address[address.length - 1]}
+      />
+    );
+  } else if (draftSchema.type === "record-set") {
+    form = <RecordSetForm schema={draftSchema} onSchema={setDraftSchema} />;
+  }
   return (
     <div>
-      {draftSchema.type === "record" ? (
-        <RecordForm
-          schema={draftSchema}
-          onSchema={setDraftSchema}
-          label={address[address.length - 1]}
-        />
-      ) : (
-        <RecordSetForm schema={draftSchema} onSchema={setDraftSchema} />
-      )}
+      {form}
       <Divider />
       {draftSchema !== schemaState && (
         <>

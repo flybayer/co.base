@@ -1,0 +1,25 @@
+{
+  "name": "lake",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "aven": "node aven-cli.js",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "minimist": "^1.2.5",
+    "next": "10.0.1",
+    "node-fetch": "^2.6.1",
+    "pojo-maps": "^0.3.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@types/next": "^9.0.0",
+    "@types/node": "^14.14.9",
+    "@types/react": "^16.14.0",
+    "typescript": "^4.1.2"
+  }
+}

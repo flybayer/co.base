@@ -20,5 +20,5 @@
     "**/*.tsx",
     "pages/cloud2/pricing.mdx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lake"]
 }
