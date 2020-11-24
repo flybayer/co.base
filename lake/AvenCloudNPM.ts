@@ -74,6 +74,7 @@ export function createClient<SiteDataSchema>(options: ClientOptions) {
     return state;
   }
   async function load(query: Record<keyof SiteDataSchema, true>) {
+    // in theory this function returns a Promise<SiteLoad<SiteDataSchema>> , but TS seems to disagree
     let freshFor = 60 * 60 * 24;
     const fetchers = PojoMap.entries(query).map(
       async ([queryKey, _probablyTrue]): Promise<

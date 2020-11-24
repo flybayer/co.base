@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { GetStaticProps } from "next";
-import AvenCloud, { AvenCloudPreload } from "../AvenCloud";
+import AvenCloud, { AvenCloudLoad } from "../AvenCloud";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const preload = await AvenCloud.load({
@@ -14,7 +14,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 };
 
-export default function Home({ preload }: { preload: AvenCloudPreload }) {
+export default function Home({ preload }: { preload: AvenCloudLoad }) {
   const pricingPlans = AvenCloud.useNode("pricing-plans", preload);
   console.log({ pricingPlans });
 
