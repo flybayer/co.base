@@ -41,6 +41,7 @@ import {
   ArraySchema,
   BooleanSchema,
   DEFAULT_SCHEMA,
+  DEFAULT_VALUE_SCHEMA,
   getValueSchema,
   NodeSchema,
   NumberSchema,
@@ -388,7 +389,7 @@ function RecordForm({
     <>
       <SchemaEdit
         label={label}
-        schema={schema.record || { type: "object", properties: {} }}
+        schema={schema.record || DEFAULT_VALUE_SCHEMA}
         onSchema={handleRecordSchema}
       />
     </>

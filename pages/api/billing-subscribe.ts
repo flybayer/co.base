@@ -39,7 +39,7 @@ async function redirectBillingSubscribe(
     ],
     mode: "subscription",
     success_url: getSiteLink("/account/welcome"),
-    cancel_url: getSiteLink("/insiders-edition"),
+    cancel_url: getSiteLink("/pricing"),
     customer: customerId,
   });
   return session;

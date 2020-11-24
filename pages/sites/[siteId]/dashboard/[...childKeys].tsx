@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import { LinkButton } from "../../../../components/Buttons";
+import { ListContainer } from "../../../../components/List";
 import NodeChildren from "../../../../components/NodeChildren";
 
 import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
@@ -152,6 +153,7 @@ function TextInputDisplay({
 
   return (
     <div>
+      {label} :
       <Input
         value={onValue ? v : value}
         onChange={(e) => {
@@ -191,10 +193,9 @@ function BooleanDisplay({
         <Switch
           id={`${label}-input`}
           isChecked={value}
+          disabled={!onValue}
           onChange={(e) => {
-            console.log({ yo: e.target.value });
-            debugger;
-            // onValue()
+            onValue && onValue(e.target.checked);
           }}
         />
       </FormControl>
@@ -226,7 +227,7 @@ function ArrayDisplay({
     );
   }
   return (
-    <div>
+    <ListContainer>
       {listValue.map((v: any, index: number) => (
         <div>
           {onValue && (
@@ -266,7 +267,7 @@ function ArrayDisplay({
           New Item
         </Button>
       )}
-    </div>
+    </ListContainer>
   );
 }
 
