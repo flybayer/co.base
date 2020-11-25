@@ -8,6 +8,20 @@ const HeaderContainer = styled.div`
   background: #0e2b49;
 `;
 
+const HeaderLinkA = styled.a`
+  color: white;
+`;
+
+function HeaderLink({
+  href,
+  children,
+}: React.PropsWithChildren<{ href: string }>) {
+  return (
+    <Link href={href} passHref>
+      <HeaderLinkA>{children}</HeaderLinkA>
+    </Link>
+  );
+}
 export default function SiteHeader() {
   return (
     <HeaderContainer>
@@ -17,6 +31,10 @@ export default function SiteHeader() {
             <AvenLogo />
           </div>
         </Link>
+        <span>
+          <HeaderLink href="/docs">Docs</HeaderLink>
+          <HeaderLink href="/pricing">Pricing</HeaderLink>
+        </span>
       </InnerWidth>
     </HeaderContainer>
   );

@@ -1,7 +1,7 @@
 import React from "react";
-import SiteLayout from "../components/SiteLayout";
-import { FrontMatter } from "../data/frontMatter";
-import SiteHead from "../components/SiteHead";
+import SiteLayout from "../../components/SiteLayout";
+import { FrontMatter } from "../../data/frontMatter";
+import SiteHead from "../../components/SiteHead";
 
 export default function CourseUpdates({
   children,

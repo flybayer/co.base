@@ -1,7 +1,9 @@
+import { Button } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import { APIButton } from "../../../components/APIButton";
+import { CenterButtonRow, MainSection } from "../../../components/CommonViews";
 import SiteLayout, { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteTabs } from "../../../components/SiteTabs";
 import { database } from "../../../data/database";
@@ -39,16 +41,30 @@ export default function SiteTeamPage({
       content={
         <>
           <SiteTabs tab="settings" siteName={siteName} />
-          <APIButton
-            colorScheme="red"
-            endpoint="site-destroy"
-            payload={{ name: siteName }}
-            onDone={() => {
-              push("/account");
-            }}
-          >
-            Delete Site
-          </APIButton>
+          <MainSection title="Site Access">
+            <CenterButtonRow>
+              <Button disabled>Make Site Public</Button>
+            </CenterButtonRow>
+          </MainSection>
+          <MainSection title="Site Ownership">
+            <CenterButtonRow>
+              <Button disabled>Transfer to Another User</Button>
+            </CenterButtonRow>
+          </MainSection>
+          <MainSection title="Danger">
+            <CenterButtonRow>
+              <APIButton
+                colorScheme="red"
+                endpoint="site-destroy"
+                payload={{ name: siteName }}
+                onDone={() => {
+                  push("/account");
+                }}
+              >
+                Delete Site
+              </APIButton>
+            </CenterButtonRow>
+          </MainSection>
         </>
       }
     />

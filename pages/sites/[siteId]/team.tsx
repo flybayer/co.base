@@ -1,9 +1,13 @@
 import {
   Button,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Select,
@@ -11,7 +15,10 @@ import {
 } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+import { api } from "../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
+import ControlledInput from "../../../components/ControlledInput";
 import { ListContainer } from "../../../components/List";
 import { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteTabs } from "../../../components/SiteTabs";
@@ -57,8 +64,52 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
+function InviteRoleForm({ siteName }: { siteName: string }) {
+  const { reload } = useRouter();
+  const { handleSubmit, errors, control } = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      email_username: "",
+    },
+  });
+  return (
+    <form
+      onSubmit={handleSubmit((data) => {
+        api("site-role-invite", {
+          emailUsername: data.email_username,
+          siteName,
+        })
+          .then(() => {
+            reload();
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+      })}
+    >
+      <ModalBody></ModalBody>
+      <FormControl>
+        <FormLabel htmlFor="email-input">
+          Recipient Email or Aven Username
+        </FormLabel>
+        <ControlledInput
+          name="email_username"
+          id="email-input"
+          aria-describedby="email-username-helper-text"
+          control={control}
+        />
+        <FormHelperText id="email-username-helper-text">
+          An invitation will be sent to the recipient via email.
+        </FormHelperText>
+      </FormControl>
+      <ModalFooter>
+        <Button type="submit">Invite</Button>
+      </ModalFooter>
+    </form>
+  );
+}
 
-function NewRoleButton() {
+function NewRoleButton({ siteName }: { siteName: string }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
@@ -68,9 +119,7 @@ function NewRoleButton() {
         <ModalContent>
           <ModalHeader>Add User</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <h2>username or email address plz</h2>
-          </ModalBody>
+          <InviteRoleForm siteName={siteName} />
         </ModalContent>
       </Modal>
     </>
@@ -99,22 +148,24 @@ export default function SiteTeamPage({
             {siteRoles.map(({ user, role }) => (
               <div>
                 {user.name || user.email} ({role})
-                <Select
-                  value="admin"
-                  onChange={(e) => {
-                    const role = e.target.value;
-                  }}
-                >
-                  <option value="owner">Owner</option>
-                  <option value="admin">Administrator</option>
-                  <option value="billing">Billing</option>
-                  <option value="writer">Writer</option>
-                  <option value="reader">Reader</option>
-                </Select>
+                {role !== "owner" && (
+                  <Select
+                    value="admin"
+                    onChange={(e) => {
+                      const role = e.target.value;
+                    }}
+                  >
+                    <option value="owner">Owner</option>
+                    <option value="admin">Administrator</option>
+                    <option value="billing">Billing</option>
+                    <option value="writer">Writer</option>
+                    <option value="reader">Reader</option>
+                  </Select>
+                )}
               </div>
             ))}
           </ListContainer>
-          <NewRoleButton />
+          <NewRoleButton siteName={siteName} />
         </>
       }
     />

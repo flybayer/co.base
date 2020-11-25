@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import Link from "next/link";
 import React from "react";
 import { InnerWidth } from "./CommonViews";
 
@@ -13,6 +14,16 @@ const FooterA = styled.a`
     color: white;
   }
 `;
+function FooterLink({
+  href,
+  children,
+}: React.PropsWithChildren<{ href: string }>) {
+  return (
+    <Link href={href} passHref>
+      <FooterA>{children}</FooterA>
+    </Link>
+  );
+}
 export default function SiteFooter() {
   return (
     <>
@@ -25,15 +36,16 @@ export default function SiteFooter() {
       >
         <InnerWidth>
           <FooterText>
-            © Aven LLC.{" "}
-            <FooterA href="https://github.com/avencloud/sky">
+            © {new Date().getFullYear()} Aven.{" "}
+            {/* <FooterA href="https://github.com/avencloud/sky">
               Open Source
             </FooterA>{" "}
             under{" "}
             <FooterA href="https://github.com/AvenCloud/sky/blob/main/LICENSE.md">
               Apache 2.0
-            </FooterA>
+            </FooterA> */}
           </FooterText>
+          <FooterLink href="/docs">Documentation</FooterLink>
         </InnerWidth>
       </div>
     </>

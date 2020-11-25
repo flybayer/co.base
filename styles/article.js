@@ -74,7 +74,9 @@ export const articleStyles = css`
     margin: 12px 0 0 0;
     font-size: 16px;
   }
-
+  ul {
+    margin-left: 36px;
+  }
   a {
     color: #374453;
     text-decoration: none;

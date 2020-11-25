@@ -3,6 +3,8 @@ export const InnerWidth = styled.div`
   max-width: 950px;
   margin: 0 auto;
   padding: 0 25px;
+  display: flex;
+  justify-content: space-between;
 `;
 export const MainContainer = styled.main`
   display: flex;

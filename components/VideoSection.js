@@ -1,5 +1,5 @@
 import React from "react";
-import InnerWidth from "./InnerWidth";
+import { InnerWidth } from "./CommonViews";
 
 export default function VideoSection({ vimeoId, videoTitle }) {
   return (
