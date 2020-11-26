@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import SiteLayout from "../../components/SiteLayout";
 import { GetServerSideProps } from "next";
 import React from "react";
-import getVerifiedUser from "../../api-utils/getVerifedUser";
+import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import ControlledInput from "../../components/ControlledInput";
 import {
   Button,
@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/router";
 import { api } from "../../api-utils/api";
 import { Error400 } from "../../api-utils/Errors";
+import { LinkButton } from "../../components/Buttons";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = getVerifiedUser(context.req);
@@ -28,7 +29,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  return { props: {} };
+  return {
+    props: {
+      currentUser: user,
+    },
+  };
 };
 
 function PasswordForm({
@@ -170,7 +175,7 @@ function LoginForm({}) {
   );
 }
 
-export default function LoginPage() {
+export default function LoginPage({ currentUser }: { currentUser?: APIUser }) {
   return (
     <>
       <Head>
@@ -178,10 +183,17 @@ export default function LoginPage() {
       </Head>
       <SiteLayout
         content={
-          <>
-            <h1>Login or Register</h1>
-            <LoginForm />
-          </>
+          currentUser ? (
+            <>
+              <h1>You are logged in.</h1>
+              <LinkButton href="/account">Go to Account</LinkButton>
+            </>
+          ) : (
+            <>
+              <h1>Login or Register</h1>
+              <LoginForm />
+            </>
+          )
         }
       />
     </>
