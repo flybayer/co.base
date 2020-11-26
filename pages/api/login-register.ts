@@ -10,6 +10,7 @@ import { getRandomNumbers } from "../../api-utils/getRandomNumbers";
 import { createAPI } from "../../api-utils/createAPI";
 import bcrypt from "bcrypt";
 import { encode } from "../../api-utils/jwt";
+import { looksLikeAnEmail } from "../../api-utils/looksLikeAnEmail";
 
 type Email = string;
 
@@ -43,10 +44,6 @@ function validatePayload(input: any): LoginRegisterPayload {
   }
 
   return { email, phone, method: input.method, password: input.password };
-}
-
-function looksLikeAnEmail(str: string) {
-  return !!str.match(/\@/);
 }
 
 const userSelectQuery = { passwordHash: true, email: true, id: true };

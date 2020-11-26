@@ -61,6 +61,7 @@ export async function verifyEmail(secret: string) {
     }
 
     if (!user) {
+      console.log("creatinguser", { email });
       user = await database.user.create({
         data: {
           username: await findTempUsername(),

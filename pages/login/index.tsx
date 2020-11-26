@@ -20,7 +20,7 @@ import { Error400 } from "../../api-utils/Errors";
 import { LinkButton } from "../../components/Buttons";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const user = getVerifiedUser(context.req);
+  const user = await getVerifiedUser(context.req);
   if (user) {
     return {
       redirect: {
