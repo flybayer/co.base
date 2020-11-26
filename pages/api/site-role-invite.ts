@@ -4,9 +4,12 @@ import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 
+type SiteRole = "admin" | "manager" | "writer" | "reader";
+
 export type SiteRoleInvitePayload = {
   emailUsername: string;
   siteName: string;
+  role: SiteRole;
 };
 
 function validatePayload(input: any): SiteRoleInvitePayload {
@@ -15,10 +18,10 @@ function validatePayload(input: any): SiteRoleInvitePayload {
 
 async function siteRoleInvite(
   user: APIUser,
-  { siteName, emailUsername }: SiteRoleInvitePayload,
+  { siteName, emailUsername, role }: SiteRoleInvitePayload,
   res: NextApiResponse
 ) {
-  console.log({ siteName, emailUsername });
+  console.log({ siteName, emailUsername, role });
   return {};
 }
 

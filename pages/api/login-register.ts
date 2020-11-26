@@ -28,11 +28,7 @@ function validatePayload(input: any): LoginRegisterPayload {
     });
   const { email, phone } = input;
   if (typeof email === "string") {
-    if (!/\S+@\S+\.\S+/.test(email))
-      throw new Error400({
-        message: '"email" string does not look right.',
-        name: "BadEmail",
-      });
+    // meh should validate email+
   } else if (typeof phone === "string") {
     if (!/\+[1-9]\d{1,14}$/.test(phone))
       throw new Error400({
@@ -49,33 +45,51 @@ function validatePayload(input: any): LoginRegisterPayload {
   return { email, phone, method: input.method, password: input.password };
 }
 
+function looksLikeAnEmail(str: string) {
+  return !!str.match(/\@/);
+}
+
+const userSelectQuery = { passwordHash: true, email: true, id: true };
+
 async function loginRegisterEmail(
   email: string,
   password: undefined | string,
   forceSend: boolean,
   res: NextApiResponse
 ) {
-  const verified = await database.verifiedEmail.findOne({
-    where: { email },
-    include: {
-      user: { select: { passwordHash: true, email: true, id: true } },
-    },
-  });
-  let existingUser = verified?.user;
-  if (!existingUser) {
-    // an edge case exists where a verified row does not exist but the user has the email set as a primary email. this makes sure that such a user may still log in:
-    const userPrimaryLookup = await database.user.findOne({
+  let existingUser = null;
+  let emailToVerify = null;
+  if (looksLikeAnEmail(email)) {
+    console.log("EMAIL", email);
+    emailToVerify = email;
+    const verified = await database.verifiedEmail.findOne({
       where: { email },
-      select: { passwordHash: true, email: true, id: true },
+      include: {
+        user: { select: userSelectQuery },
+      },
     });
-    if (userPrimaryLookup) {
-      existingUser = userPrimaryLookup;
+    existingUser = verified?.user;
+    if (!existingUser) {
+      // an edge case exists where a verified row does not exist but the user has the email set as a primary email. this makes sure that such a user may still log in:
+      const userPrimaryLookup = await database.user.findOne({
+        where: { email },
+        select: userSelectQuery,
+      });
+      if (userPrimaryLookup) {
+        existingUser = userPrimaryLookup;
+      }
     }
+  } else {
+    existingUser = await database.user.findOne({
+      where: { username: email },
+      select: userSelectQuery,
+    });
+    emailToVerify = existingUser?.email;
   }
-  const existingUserPw = existingUser?.passwordHash;
-  if (existingUser && existingUserPw && !!password && !forceSend) {
+  const hashedSavedPassword = existingUser?.passwordHash;
+  if (existingUser && hashedSavedPassword && !!password && !forceSend) {
     const doesMatch = await new Promise((resolve, reject) => {
-      bcrypt.compare(password, existingUserPw, (err, doesMatch) => {
+      bcrypt.compare(password, hashedSavedPassword, (err, doesMatch) => {
         if (err) reject(err);
         else resolve(doesMatch);
       });
@@ -90,23 +104,29 @@ async function loginRegisterEmail(
   if (!forceSend && existingUser && existingUser.passwordHash) {
     return { status: 1, email };
   }
-  const validationToken = getRandomLetters(32);
-  // create an anonymous email validation, that is not yet associated to a user account because it remains unverified. at verification time we will associate it to a user account or create one.
-  await database.emailValidation.create({
-    data: {
-      email,
-      secret: validationToken,
-    },
+  if (emailToVerify) {
+    const validationToken = getRandomLetters(32);
+    // create an anonymous email validation, that is not yet associated to a user account because it remains unverified. at verification time we will associate it to a user account or create one.
+    await database.emailValidation.create({
+      data: {
+        email: emailToVerify,
+        secret: validationToken,
+      },
+    });
+    await sendEmail(
+      emailToVerify,
+      existingUser ? "Welcome back to Aven" : "Welcome to Aven",
+      `Click here to log in:
+    
+    ${getSiteLink(`/login/verify?token=${validationToken}`)}
+    `
+    );
+    return { status: 2, email };
+  }
+  throw new Error400({
+    name: "InvalidLoginName",
+    message: "Invalid email or username",
   });
-  await sendEmail(
-    email,
-    existingUser ? "Welcome back to Aven" : "Welcome to Aven",
-    `Click here to log in:
-  
-  ${getSiteLink(`/login/verify?token=${validationToken}`)}
-  `
-  );
-  return { status: 2, email };
 }
 
 async function loginRegisterPhone(phone: string, res: NextApiResponse) {

@@ -92,7 +92,6 @@ export function BasicSiteLayout({
         </InnerWidth>
         {bottomContent}
       </MainArea>
-      {!hideFooter && <SiteFooter />}
     </>
   );
 }

@@ -16,10 +16,11 @@ import {
 } from "@chakra-ui/core";
 import { useRouter } from "next/router";
 import { api } from "../../api-utils/api";
+import { Error400 } from "../../api-utils/Errors";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = getVerifiedUser(context.req);
-  if (!user) {
+  if (user) {
     return {
       redirect: {
         destination: "/account",
@@ -76,7 +77,7 @@ function LoginForm({}) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [status, setStatus] = React.useState(0);
   const { push } = useRouter();
-  const { register, handleSubmit, errors, control } = useForm({
+  const { register, handleSubmit, errors, control, setError } = useForm({
     mode: "onBlur",
     defaultValues: {
       email: "",
@@ -131,8 +132,11 @@ function LoginForm({}) {
             .then((resp) => {
               setStatus(resp.status === 1 ? 1 : 2);
             })
-            .catch((err) => {
-              console.error(err);
+            .catch((err: Error400) => {
+              setError("email", {
+                message: err.detail.message,
+                shouldFocus: true,
+              });
             })
             .finally(() => {
               setIsSubmitting(false);
@@ -140,9 +144,9 @@ function LoginForm({}) {
         })}
       >
         <FormControl>
-          <FormLabel htmlFor="email-input">Login Email</FormLabel>
+          <FormLabel htmlFor="email-input">Login Email or Username</FormLabel>
+          {errors.email && <p>{errors.email.message}</p>}
           <ControlledInput
-            type="email"
             name="email"
             id="email-input"
             aria-describedby="email-helper-text"
@@ -154,8 +158,8 @@ function LoginForm({}) {
         </FormControl>
         <p>
           By logging in, you agree to the{" "}
-          <Link href="/terms-conditions">
-            <a>Terms and Conditions</a>
+          <Link href="/legal/terms-of-service">
+            <a>Terms of Service</a>
           </Link>
           .
         </p>
@@ -170,12 +174,12 @@ export default function LoginPage() {
   return (
     <>
       <Head>
-        <title>Register or Login</title>
+        <title>Login or Register</title>
       </Head>
       <SiteLayout
         content={
           <>
-            <h1>Register or Login</h1>
+            <h1>Login or Register</h1>
             <LoginForm />
           </>
         }

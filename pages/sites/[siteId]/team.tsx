@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
+import { Control, Controller, useForm } from "react-hook-form";
 import { api } from "../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import ControlledInput from "../../../components/ControlledInput";
@@ -23,6 +23,7 @@ import { ListContainer } from "../../../components/List";
 import { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteTabs } from "../../../components/SiteTabs";
 import { database } from "../../../data/database";
+import { SITE_ROLES } from "../../../data/SiteRoles";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -64,12 +65,47 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
+
+function ControlledSelect({
+  options,
+  control,
+  name,
+  id,
+}: {
+  name: string;
+  id: string;
+  control: Control;
+  options: Array<{ key: string; name: string }>;
+}) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ value, onChange }) => (
+        <Select
+          value={value}
+          id={id}
+          onChange={(e) => {
+            onChange(e.target.value);
+          }}
+        >
+          {options.map(({ key, name }) => (
+            <option key={key} value={key}>
+              {name}
+            </option>
+          ))}
+        </Select>
+      )}
+    />
+  );
+}
 function InviteRoleForm({ siteName }: { siteName: string }) {
   const { reload } = useRouter();
   const { handleSubmit, errors, control } = useForm({
     mode: "onBlur",
     defaultValues: {
       email_username: "",
+      role: "admin",
     },
   });
   return (
@@ -78,6 +114,7 @@ function InviteRoleForm({ siteName }: { siteName: string }) {
         api("site-role-invite", {
           emailUsername: data.email_username,
           siteName,
+          role: data.role,
         })
           .then(() => {
             reload();
@@ -87,21 +124,31 @@ function InviteRoleForm({ siteName }: { siteName: string }) {
           });
       })}
     >
-      <ModalBody></ModalBody>
-      <FormControl>
-        <FormLabel htmlFor="email-input">
-          Recipient Email or Aven Username
-        </FormLabel>
-        <ControlledInput
-          name="email_username"
-          id="email-input"
-          aria-describedby="email-username-helper-text"
-          control={control}
-        />
-        <FormHelperText id="email-username-helper-text">
-          An invitation will be sent to the recipient via email.
-        </FormHelperText>
-      </FormControl>
+      <ModalBody>
+        <FormControl>
+          <FormLabel htmlFor="role-input">New Role</FormLabel>
+          <ControlledSelect
+            options={SITE_ROLES}
+            id="role"
+            name="role"
+            control={control}
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel htmlFor="email-input">
+            Recipient Email or Aven Username
+          </FormLabel>
+          <ControlledInput
+            name="email_username"
+            id="email-input"
+            aria-describedby="email-username-helper-text"
+            control={control}
+          />
+          <FormHelperText id="email-username-helper-text">
+            An invitation will be sent to the recipient via email.
+          </FormHelperText>
+        </FormControl>
+      </ModalBody>
       <ModalFooter>
         <Button type="submit">Invite</Button>
       </ModalFooter>

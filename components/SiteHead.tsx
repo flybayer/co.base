@@ -8,7 +8,7 @@ export default function SiteHead({
 }) {
   return (
     <Head>
-      <title>{frontMatter?.title || "Aven"}</title>
+      <title>{frontMatter?.title || "Aven Cloud"}</title>
       {frontMatter?.summary && (
         <meta name="description" content={frontMatter?.summary} />
       )}
