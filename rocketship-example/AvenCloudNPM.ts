@@ -47,35 +47,48 @@ export function createClient<SiteDataSchema>(options: ClientOptions) {
     });
   }
 
-  async function fetch(key: keyof SiteDataSchema) {
+  async function fetch<NodeKey extends keyof SiteDataSchema>(nodeKey: NodeKey) {
     const resp = await api("node-get", {
       siteName,
-      address: [key],
+      address: String(nodeKey).split("/"),
     });
     if (resp.value === null) {
       throw new Error("value not found");
     }
-    const value: SiteDataSchema[typeof key] = resp.value;
-    return { value, freshFor: 30 };
+    const value: SiteDataSchema[NodeKey] = resp.value;
+    return { value, freshFor: resp.freshFor };
   }
-  function useNode<SchemaKey extends keyof SiteDataSchema>(key: SchemaKey, preload?: SiteLoad<SiteDataSchema>) {
-    type NodeType = SiteDataSchema[SchemaKey];
+
+  function useNode<NodeKey extends keyof SiteDataSchema>(nodeKey: NodeKey, preload?: SiteLoad<SiteDataSchema>) {
+    type NodeType = SiteDataSchema[NodeKey];
     const preloadedValues = preload?.values;
-    const preloadedValue = preloadedValues[key];
+    const preloadedValue = preloadedValues[nodeKey];
     const [state, setState] = useState<NodeType | undefined>(preloadedValue);
-    console.log("USE NODE", { key, siteName, preload });
+
+    const [freshFor, setFreshFor] = useState<number>(preload.freshFor);
+
     useEffect(() => {
-      console.log("CLIENT SUBSCRIBE TO ZE VALUE?!", {
-        key,
-        siteName,
-        connectionHost,
-        connectionUseSSL,
-      });
-    }, [siteName, key]);
+      const intHandle = setInterval(() => {
+        fetch(nodeKey)
+          .then((resp) => {
+            setState(resp.value);
+            if (resp.freshFor !== freshFor) setFreshFor(resp.freshFor);
+          })
+          .catch((e) => {
+            console.log(`Error Updating "${nodeKey}"`);
+            console.error(e);
+          });
+      }, freshFor * 1000);
+      return () => {
+        clearInterval(intHandle);
+      };
+    }, [siteName, nodeKey, freshFor]);
+
     return state;
   }
+
   async function load(query: Partial<Record<keyof SiteDataSchema, true>>) {
-    // in theory this function returns a Promise<SiteLoad<SiteDataSchema>> , but TS seems to disagree
+    // in theory this function returns a  , but TS seems to disagree
     let freshFor = 60 * 60 * 24;
     const fetchers = PojoMap.entries(query).map(
       async ([queryKey, _probablyTrue]): Promise<
@@ -95,5 +108,6 @@ export function createClient<SiteDataSchema>(options: ClientOptions) {
       values,
     };
   }
+
   return { fetch, useNode, load };
 }

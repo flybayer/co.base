@@ -21,7 +21,7 @@ async function clipSetCaption(
   { clipId, caption }: ClipSetCaptionPayload,
   _res: NextApiResponse,
 ) {
-  const clip = await database.clip.findOne({
+  const clip = await database.clip.findUnique({
     where: { id: clipId },
   });
   if (clip?.userId !== verifiedUser.id) {

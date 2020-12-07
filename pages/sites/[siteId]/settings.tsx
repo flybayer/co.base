@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  const site = await database.site.findOne({ where: { name: siteName } });
+  const site = await database.site.findUnique({ where: { name: siteName } });
   return {
     props: {
       user: verifiedUser,

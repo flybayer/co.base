@@ -87,7 +87,7 @@ export async function syncSubscription(subscription: StripeSubscription): Promis
     throw new Error(`Customer gone`);
   }
   const userId = Number(customer.metadata.userId);
-  const user = await database.user.findOne({
+  const user = await database.user.findUnique({
     where: { id: userId },
   });
   if (!user) {

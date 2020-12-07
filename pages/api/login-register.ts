@@ -59,7 +59,7 @@ async function loginRegisterEmail(
   if (looksLikeAnEmail(email)) {
     console.log("EMAIL", email);
     emailToVerify = email;
-    const verified = await database.verifiedEmail.findOne({
+    const verified = await database.verifiedEmail.findUnique({
       where: { email },
       include: {
         user: { select: userSelectQuery },
@@ -68,7 +68,7 @@ async function loginRegisterEmail(
     existingUser = verified?.user;
     if (!existingUser) {
       // an edge case exists where a verified row does not exist but the user has the email set as a primary email. this makes sure that such a user may still log in:
-      const userPrimaryLookup = await database.user.findOne({
+      const userPrimaryLookup = await database.user.findUnique({
         where: { email },
         select: userSelectQuery,
       });
@@ -77,7 +77,7 @@ async function loginRegisterEmail(
       }
     }
   } else {
-    existingUser = await database.user.findOne({
+    existingUser = await database.user.findUnique({
       where: { username: email },
       select: userSelectQuery,
     });
@@ -127,7 +127,7 @@ async function loginRegisterEmail(
 }
 
 async function loginRegisterPhone(phone: string, res: NextApiResponse) {
-  const existingUser = await database.user.findOne({
+  const existingUser = await database.user.findUnique({
     where: { phone },
   });
   if (existingUser && existingUser.passwordHash) {

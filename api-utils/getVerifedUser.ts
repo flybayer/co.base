@@ -30,7 +30,7 @@ export default async function getVerifiedUser(req: any): Promise<APIUser | null>
   if (!jwt) {
     return null;
   }
-  const verifiedUser = await database.user.findOne({
+  const verifiedUser = await database.user.findUnique({
     where: { id: jwt.sub },
     select: {
       id: true,

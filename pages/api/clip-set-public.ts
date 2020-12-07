@@ -24,7 +24,7 @@ async function clipSetPublic(
   if (!verifiedUser) {
     throw new Error("Not logged in");
   }
-  const clip = await database.clip.findOne({
+  const clip = await database.clip.findUnique({
     where: { id: clipId },
   });
   if (clip?.userId !== verifiedUser.id) {

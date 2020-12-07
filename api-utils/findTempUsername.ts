@@ -7,7 +7,7 @@ export function getTempUsername(): string {
 
 export async function findTempUsername(): Promise<string> {
   const username = getTempUsername();
-  const existingUser = await database.user.findOne({ where: { username } });
+  const existingUser = await database.user.findUnique({ where: { username } });
   if (existingUser) {
     return await findTempUsername();
   } else {

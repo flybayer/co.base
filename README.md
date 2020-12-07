@@ -1,4 +1,4 @@
-Welcome to the main Aven repository, containing the code and content of the [Sky website on aven.io](https://aven.io).
+The main Aven repository, containing the code and content of the [Sky site an aven.io](https://aven.io).
 
 ## How to run
 
@@ -19,3 +19,7 @@ You're welcome to [join us here on Discord](https://discord.gg/XvhnTHJ).
 ### Code of Conduct
 
 All channels will be moderated and strictly enforced according to our [Code of Conduct](https://aven.io/code-of-conduct).
+
+### License
+
+Licensed under [Apache 2.0](https://github.com/AvenCloud/sky/blob/main/LICENSE.md)

@@ -26,9 +26,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  const site = await database.site.findOne({ where: { name: siteName } });
+  const site = await database.site.findUnique({ where: { name: siteName } });
   const siteQuery = { name: siteName };
-  //   const node = await database.siteNode()
 
   const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
     return { site: siteQuery, parentNode: last, key: childKey };
@@ -39,9 +38,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     include: { SiteNode: { select: { id: true, key: true } } },
   });
 
-  //   const childNodes = await database.siteNode.findMany({
-  //     where: { site: siteQuery, parentNode: { id: 1 } },
-  //   });
   const node = nodes[0];
   if (!node) {
     return {
@@ -52,7 +48,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const children = node.SiteNode;
-  console.log({ site, node, childKeys, children });
 
   return {
     props: {

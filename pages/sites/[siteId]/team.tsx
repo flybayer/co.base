@@ -37,7 +37,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  const site = await database.site.findOne({
+  const site = await database.site.findUnique({
     where: { name: siteName },
     include: {
       owner: { select: { name: true, id: true, username: true, email: true } },

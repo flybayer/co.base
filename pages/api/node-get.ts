@@ -3,6 +3,8 @@ import { database } from "../../data/database";
 import { Error400, Error404 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
+import { NodeSchema } from "../../data/NodeSchema";
+import { setAnyCors } from "../../api-utils/cors";
 
 export type NodeGetPayload = {
   address: string[];
@@ -31,7 +33,12 @@ async function nodeGet({ siteName, address }: NodeGetPayload, res: NextApiRespon
     where: whereQ,
   });
   if (!node) throw new Error404({ message: "Node Not Found", name: "NodeNotFound" });
-  return { value: node.value };
+  const nodeSchema = node.schema as NodeSchema;
+  let freshFor = 60 * 10;
+  if (nodeSchema.type === "record" && nodeSchema.tti != null) {
+    freshFor = nodeSchema.tti;
+  }
+  return { value: node.value, freshFor };
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -39,6 +46,8 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
   // if (!verifiedUser) {
   //   throw new Error400({ message: "No Authenticated User" });
   // }
+  setAnyCors(req, res);
+
   return await nodeGet(validatePayload(req.body), res);
 });
 

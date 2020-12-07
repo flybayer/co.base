@@ -27,7 +27,7 @@ async function siteRoleInvite(
 ) {
   if (looksLikeAnEmail(emailUsername)) {
     const email = emailUsername;
-    const existingVerifiedEmail = await database.verifiedEmail.findOne({
+    const existingVerifiedEmail = await database.verifiedEmail.findUnique({
       where: { email: email },
       select: { user: { select: { id: true } } },
     });
@@ -68,7 +68,7 @@ async function siteRoleInvite(
     );
     console.log({ invite });
   } else {
-    const recipientUser = await database.user.findOne({
+    const recipientUser = await database.user.findUnique({
       where: { username: emailUsername },
     });
     if (!recipientUser) {

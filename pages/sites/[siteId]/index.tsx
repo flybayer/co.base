@@ -17,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  const site = await database.site.findOne({ where: { name: siteName } });
+  const site = await database.site.findUnique({ where: { name: siteName } });
   const nodes = await database.siteNode.findMany({
     where: { site: { name: siteName }, parentNode: null },
     select: { key: true, id: true },

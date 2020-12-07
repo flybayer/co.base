@@ -61,7 +61,7 @@ async function verifyPhone({ secret, phone }: VerifyPhonePayload, res: NextApiRe
     throw new Error400({ name: "InvalidToken", message: "Invalid Token" });
   }
 
-  let user = await database.user.findOne({
+  let user = await database.user.findUnique({
     where: { phone },
   });
   if (!user) {

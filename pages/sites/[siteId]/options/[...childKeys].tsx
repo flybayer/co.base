@@ -9,8 +9,11 @@ import { SiteTabs } from "../../../../components/SiteTabs";
 import { LinkButton } from "../../../../components/Buttons";
 import NodeChildren from "../../../../components/NodeChildren";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
-import { NodeSchema, NodeType, nodeTypeName } from "../../../../data/NodeSchema";
+import { NodeSchema, NodeType, nodeTypeName, RecordSchema } from "../../../../data/NodeSchema";
 import { CenterButtonRow, MainContainer, MainSection } from "../../../../components/CommonViews";
+import styled from "@emotion/styled";
+import { observe, generate } from "fast-json-patch";
+import { handleAsync } from "../../../../data/handleAsync";
 
 type ManyQuery = null | {
   parentNode: ManyQuery;
@@ -29,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-  const site = await database.site.findOne({ where: { name: siteName } });
+  const site = await database.site.findUnique({ where: { name: siteName } });
   const siteQuery = { name: siteName };
   //   const node = await database.siteNode()
 
@@ -112,20 +115,53 @@ const TTL_VALUES = [
   { label: "12 Hours", value: 60 * 60 * 12 },
   { label: "1 Day", value: 60 * 60 * 24 },
 ];
+const RowThing = styled.div`
+  display: flex;
+`;
+function ExpirationSection({
+  schema,
+  siteName,
+  address,
+}: {
+  schema?: NodeSchema;
+  siteName: string;
+  address: string[];
+}): ReactElement | null {
+  const [isSpinning, setIsSpinning] = useState(false);
 
-function ExpirationSection({ schema }: { schema?: NodeSchema }): ReactElement | null {
   if (schema?.type !== "record") return null;
 
   return (
     <MainSection title="Expiration">
       Lifetime before refresh:
-      <Select value={schema.tti}>
-        {TTL_VALUES.map(({ value, label }) => (
-          <option value={value} key={value}>
-            {label}
-          </option>
-        ))}
-      </Select>
+      <RowThing>
+        <Select
+          value={schema.tti}
+          onChange={(e) => {
+            const observer = observe<RecordSchema>(schema);
+            schema.tti = Number(e.target.value);
+            const schemaPatch = generate(observer);
+            setIsSpinning(true);
+            handleAsync(
+              api("node-schema-edit", {
+                schemaPatch,
+                siteName,
+                address,
+              }),
+              () => {
+                setIsSpinning(false);
+              },
+            );
+          }}
+        >
+          {TTL_VALUES.map(({ value, label }) => (
+            <option value={value} key={value}>
+              {label}
+            </option>
+          ))}
+        </Select>
+        <Spinner thickness={isSpinning ? "4px" : "0px"} color="blue.500" />
+      </RowThing>
     </MainSection>
   );
 }
@@ -151,7 +187,7 @@ export default function NodeOptionsPage({
         <>
           <SiteTabs tab="options" siteName={siteName} address={address} />
           <MainContainer>
-            <ExpirationSection schema={node.schema} />
+            <ExpirationSection schema={node.schema} address={address} siteName={siteName} />
 
             <MainSection title="Move Node">
               <CenterButtonRow>

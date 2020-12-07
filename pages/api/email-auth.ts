@@ -9,7 +9,7 @@ import { createAPI } from "../../api-utils/createAPI";
 
 export async function verifyEmail(secret: string) {
   const userSelectQuery = { name: true, id: true, email: true, username: true };
-  const emailValidation = await database.emailValidation.findOne({
+  const emailValidation = await database.emailValidation.findUnique({
     where: { secret },
     include: { user: { select: userSelectQuery } },
   });
@@ -38,7 +38,7 @@ export async function verifyEmail(secret: string) {
     throw new Error400({ message: "Invalid Time", name: "InvalidToken" });
   }
 
-  const verifiedEmail = await database.verifiedEmail.findOne({
+  const verifiedEmail = await database.verifiedEmail.findUnique({
     where: { email },
     include: { user: { select: userSelectQuery } },
   });
@@ -47,7 +47,7 @@ export async function verifyEmail(secret: string) {
   let isNewUser = false;
 
   if (!user) {
-    const primaryEmailUser = await database.user.findOne({
+    const primaryEmailUser = await database.user.findUnique({
       where: { email },
       select: userSelectQuery,
     });

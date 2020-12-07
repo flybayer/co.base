@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: { owner: { id: verifiedUser?.id } },
     select: { name: true, id: true },
   });
-  const userWithEmails = await database.user.findOne({
+  const userWithEmails = await database.user.findUnique({
     where: { id: verifiedUser.id },
     include: {
       VerifiedEmail: { select: { email: true } },

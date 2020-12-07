@@ -10,7 +10,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     props: {
       preload,
     },
-    revalidate: preload.freshFor,
+    revalidate: preload.freshFor > 1 ? preload.freshFor : 1,
   };
 };
 

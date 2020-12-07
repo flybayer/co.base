@@ -20,7 +20,7 @@ async function clipSetTags(verifiedUser: APIUser, { clipId, tags }: ClipSetTagsP
   if (!verifiedUser) {
     throw new Error("Not logged in");
   }
-  const clip = await database.clip.findOne({
+  const clip = await database.clip.findUnique({
     where: { id: clipId },
     include: {
       tags: {

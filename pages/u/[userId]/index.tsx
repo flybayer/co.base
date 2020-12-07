@@ -9,7 +9,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!username) {
     throw Error("Cant look up no user");
   }
-  const user = await database.user.findOne({
+  const user = await database.user.findUnique({
     where: { username: String(username) },
   });
 
