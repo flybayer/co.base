@@ -1,10 +1,16 @@
 export type Doc<StoreDoc> = {
   actions: any;
-  listen: (handler: (docState: StoreDoc) => void) => () => void;
+  id: string;
+  listen: (
+    handler: (docState: StoreDoc) => void
+  ) => {
+    docId: string;
+    close: () => void;
+  };
+  get: () => undefined | StoreDoc;
 };
 
 export type Store<StoreKey, StoreDoc> = {
-  docId: string;
+  storeId: string;
   getDoc: (key: StoreKey) => Doc<StoreDoc>;
-  // subscribe: (handler: (v: StoreDoc) => void) => () => void,
 };

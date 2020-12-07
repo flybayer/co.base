@@ -1,14 +1,24 @@
-const WebSocket = require("ws");
+import { Request, Response } from "express";
+import { Http2Server } from "http2";
+import { StoreServer } from "./defineStoreServer";
+
+const WS = require("ws");
 const stringify = require("json-stable-stringify");
 const bodyParser = require("body-parser");
 
 const parseJSON = bodyParser.json();
 
-function attachStoreServer(httpServer, docStores) {
+export default function attachStoreServer(
+  httpServer: Http2Server,
+  docStores: Record<string, StoreServer<any, any>>
+) {
   const sockets = new Map();
   const socketSubscriptions = new Map();
 
-  function handleSubscribe(clientId, { key, store: storeId }) {
+  function handleSubscribe(
+    clientId: number,
+    { key, store: storeId }: { key: any; store: string }
+  ) {
     const store = docStores[storeId];
     if (!store) {
       clientSend(clientId, {
@@ -39,7 +49,10 @@ function attachStoreServer(httpServer, docStores) {
     const subscriptionId = `${storeId}:${subscription.docId}`;
     subscriptions.set(subscriptionId, subscription);
   }
-  function handleUnsubscribe(clientId, { key, store: storeId }) {
+  function handleUnsubscribe(
+    clientId: number,
+    { key, store: storeId }: { key: any; store: string }
+  ) {
     // hmm this docId abstraction is a bit leaky, no?
     const docId = stringify(key);
     const subscriptionId = `${storeId}:${docId}`;
@@ -55,11 +68,11 @@ function attachStoreServer(httpServer, docStores) {
     }
     subscriptions.delete(subscriptionId);
   }
-  function handleMessage(clientId, message) {
+  function handleMessage(clientId: number, message: any) {
     if (message.t === "sub") return handleSubscribe(clientId, message);
     if (message.t === "unsub") return handleUnsubscribe(clientId, message);
   }
-  function clientSend(clientId, payload) {
+  function clientSend(clientId: number, payload: any) {
     const socket = sockets.get(clientId);
     if (socket) {
       socket.send(JSON.stringify(payload));
@@ -67,11 +80,11 @@ function attachStoreServer(httpServer, docStores) {
       console.error("Cannot send to unknown client " + clientId);
     }
   }
-  const wss = new WebSocket.Server({
+  const wss = new WS.Server({
     server: httpServer,
   });
   let clientIdCount = 0;
-  wss.on("connection", (socket) => {
+  wss.on("connection", (socket: typeof WS) => {
     const clientId = (clientIdCount += 1);
 
     sockets.set(clientId, socket);
@@ -79,7 +92,7 @@ function attachStoreServer(httpServer, docStores) {
 
     clientSend(clientId, { t: "hello", clientId, time: Date.now() });
 
-    socket.on("message", (data) => {
+    socket.on("message", (data: string) => {
       const msg = JSON.parse(data);
       handleMessage(clientId, msg);
     });
@@ -89,7 +102,7 @@ function attachStoreServer(httpServer, docStores) {
     });
   });
 
-  async function dispatch(payload) {
+  async function dispatch(payload: any) {
     const store = docStores[payload.store];
     if (!store) {
       throw new Error("store not found");
@@ -100,7 +113,11 @@ function attachStoreServer(httpServer, docStores) {
     return {};
   }
 
-  function handleHTTP(url, req, res) {
+  function handleHTTP(
+    url: { pathname: string | null; params?: any },
+    req: Request,
+    res: Response
+  ) {
     if (url.pathname === "/dispatch" && req.method === "POST") {
       parseJSON(req, res, () => {
         dispatch(req.body)
@@ -125,5 +142,3 @@ function attachStoreServer(httpServer, docStores) {
     handleHTTP,
   };
 }
-
-module.exports = attachStoreServer;

@@ -2,6 +2,7 @@ import { useEffect, createContext, useMemo, useContext, useState } from "react";
 import ReconnectingWebSocket from "reconnecting-websocket";
 import WS from "ws";
 import stringify from "json-stable-stringify";
+import { Doc } from "./core";
 
 function createClientStore(
   docs,
@@ -173,19 +174,4 @@ export function DocProvider({
 }: React.PropsWithChildren<{ stores: any }>) {
   const client = useMemo(() => createClient(stores, {}), []);
   return <DocContext.Provider value={client}>{children}</DocContext.Provider>;
-}
-
-export function useValue(doc: any, mapper?: any) {
-  const [val, setVal] = useState(undefined);
-  useEffect(() => {
-    if (!doc.listen) setVal(null);
-    return doc.listen((v) => {
-      setVal(v);
-    });
-  }, [doc]);
-  return val;
-}
-
-export function useClient() {
-  return useContext(DocContext);
 }

@@ -1,5 +1,5 @@
 import next from "next";
-
+import express, { Request, Response } from "express";
 import { createServer } from "http";
 import { parse } from "url";
 import attachStoreServer from "../cloud-docs/attachStoreServer";
@@ -12,12 +12,15 @@ const handle = app.getRequestHandler();
 async function startServer() {
   await app.prepare();
 
-  const httpServer = createServer((req, res) => {
+  const server = express();
+
+  server.use("*", (req: Request, res: Response<any>, next: () => void) => {
     const parsedUrl = parse(req.url, true);
     if (storeServer && storeServer.handleHTTP(parsedUrl, req, res)) return;
     handle(req, res, parsedUrl);
   });
 
+  const httpServer = createServer(server);
   const storeServer = attachStoreServer(httpServer, stores);
 
   const serverPort = 3000;
