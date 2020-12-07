@@ -38,26 +38,20 @@ function validatePayload(input: any): UsernamePayload {
   return { username: normalizedUsername };
 }
 
-async function setUsername(
-  user: APIUser,
-  { username }: UsernamePayload,
-  res: NextApiResponse
-) {
+async function setUsername(user: APIUser, { username }: UsernamePayload, res: NextApiResponse) {
   await database.user.update({
     where: { id: user.id },
     data: { username },
   });
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await setUsername(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await setUsername(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

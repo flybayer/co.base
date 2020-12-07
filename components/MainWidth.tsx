@@ -6,10 +6,7 @@ const Outer = styled.div({
   maxWidth: 1280,
 });
 
-export default function MainWidth({
-  children,
-  hMargin,
-}: React.PropsWithChildren<{ hMargin?: number }>) {
+export default function MainWidth({ children, hMargin }: React.PropsWithChildren<{ hMargin?: number }>) {
   const Inner = styled.div({
     margin: `0 ${hMargin}px`,
   });

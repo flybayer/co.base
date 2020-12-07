@@ -1,13 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { setAnyCors } from "../../api-utils/cors";
-
-const cities = require("all-the-cities");
+import cities from "all-the-cities";
 
 interface City {
   name: string;
   population: number;
 }
-export default (req: NextApiRequest, res: NextApiResponse) => {
+export default (req: NextApiRequest, res: NextApiResponse): { name: string; cities: Array<City> } => {
   setAnyCors(req, res);
   const { name } = req.query;
   const exp = new RegExp(String(name), "i");
@@ -16,5 +15,5 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
     return b.population - a.population;
   });
   const limited = sorted.slice(0, 50);
-  res.send(JSON.stringify({ name: String(name), cities: limited }));
+  return { name: String(name), cities: limited };
 };

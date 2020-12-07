@@ -35,9 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       user: verifiedUser,
       emails: [
         { primary: true, email: verifiedUser.email },
-        ...(userWithEmails?.VerifiedEmail.filter(
-          (e) => e.email !== verifiedUser.email
-        ).map((verifiedEmail) => {
+        ...(userWithEmails?.VerifiedEmail.filter((e) => e.email !== verifiedUser.email).map((verifiedEmail) => {
           return { email: verifiedEmail.email };
         }) || []),
         ...(userWithEmails?.EmailValidation.map((unverifiedEmail) => {
@@ -160,15 +158,10 @@ export default function accountPage({
                 <SiteContainer>
                   <SiteName>{site.name}</SiteName>
                   <span>
-                    <LinkButton
-                      href={`/sites/${site.name}/dashboard`}
-                      colorScheme="green"
-                    >
+                    <LinkButton href={`/sites/${site.name}/dashboard`} colorScheme="green">
                       Dashboard
                     </LinkButton>
-                    <LinkButton href={`/sites/${site.name}`}>
-                      Settings
-                    </LinkButton>
+                    <LinkButton href={`/sites/${site.name}`}>Settings</LinkButton>
                   </span>
                 </SiteContainer>
               </Link>
@@ -191,9 +184,7 @@ export default function accountPage({
               <div key={email}>
                 {email} {unverified && "(unverified)"}
                 {primary && "(primary)"}
-                {!unverified && !primary && (
-                  <MakePrimaryEmailButton email={email} />
-                )}
+                {!unverified && !primary && <MakePrimaryEmailButton email={email} />}
                 {!primary && <DeleteEmailButton email={email} />}
               </div>
             ))}

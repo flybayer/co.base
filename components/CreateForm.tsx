@@ -15,21 +15,10 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../api-utils/api";
-import {
-  NodeType,
-  NODE_TYPES,
-  SchemaType,
-  VALUE_TYPES,
-} from "../data/NodeSchema";
+import { NodeType, NODE_TYPES, SchemaType, VALUE_TYPES } from "../data/NodeSchema";
 import ControlledInput from "./ControlledInput";
 
-export function CreateNodeForm({
-  address,
-  siteName,
-}: {
-  address: string[];
-  siteName: string;
-}) {
+export function CreateNodeForm({ address, siteName }: { address: string[]; siteName: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [type, setType] = useState<NodeType>("record");
   const { push } = useRouter();
@@ -42,11 +31,7 @@ export function CreateNodeForm({
   });
   return (
     <>
-      <h3>
-        {address.length
-          ? `Create under ${address.join("/")}`
-          : `Create under ${siteName}`}
-      </h3>
+      <h3>{address.length ? `Create under ${address.join("/")}` : `Create under ${siteName}`}</h3>
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
@@ -57,11 +42,7 @@ export function CreateNodeForm({
             ...data,
           })
             .then(() => {
-              push(
-                `/sites/${siteName}/dashboard/${[...address, data.name].join(
-                  "/"
-                )}`
-              );
+              push(`/sites/${siteName}/dashboard/${[...address, data.name].join("/")}`);
             })
             .catch((e) => {
               console.error(e);
@@ -105,12 +86,7 @@ export function CreateNodeForm({
         </FormControl>
         <FormControl>
           <FormLabel htmlFor="name-input">Unique Key (URL friendly)</FormLabel>
-          <ControlledInput
-            id="name-input"
-            placeholder="my-data"
-            name="name"
-            control={control}
-          />
+          <ControlledInput id="name-input" placeholder="my-data" name="name" control={control} />
         </FormControl>
         <Button type="submit">Create</Button>
         {isSubmitting && <Spinner size="sm" />}

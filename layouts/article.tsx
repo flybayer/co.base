@@ -33,12 +33,7 @@ export default function ArticleLayout({
 }>) {
   let topContent: ReactNode = null;
   if (frontMatter.vimeoId) {
-    topContent = (
-      <VideoSection
-        videoTitle={frontMatter.videoTitle}
-        vimeoId={frontMatter.vimeoId}
-      />
-    );
+    topContent = <VideoSection videoTitle={frontMatter.videoTitle} vimeoId={frontMatter.vimeoId} />;
   }
   return (
     <>

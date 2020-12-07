@@ -17,9 +17,7 @@ export type APIUser = {
   stripeCustomerId: string | null;
 };
 
-export default async function getVerifiedUser(
-  req: any
-): Promise<APIUser | null> {
+export default async function getVerifiedUser(req: any): Promise<APIUser | null> {
   const cookies = parseCookies({ req });
   const { AvenSession } = cookies;
   if (!AvenSession) {
@@ -52,16 +50,7 @@ export default async function getVerifiedUser(
   }
 
   const hasPassword = !!verifiedUser.passwordHash;
-  const {
-    id,
-    email,
-    phone,
-    name,
-    username,
-    giftedAccess,
-    subscribedAccess,
-    stripeCustomerId,
-  } = verifiedUser;
+  const { id, email, phone, name, username, giftedAccess, subscribedAccess, stripeCustomerId } = verifiedUser;
   const apiUser = {
     id,
     email,
@@ -74,10 +63,7 @@ export default async function getVerifiedUser(
     stripeCustomerId,
   };
 
-  if (
-    verifiedUser.subscriptionEndTime &&
-    new Date() > verifiedUser.subscriptionEndTime
-  ) {
+  if (verifiedUser.subscriptionEndTime && new Date() > verifiedUser.subscriptionEndTime) {
     await resetSubscription(apiUser);
   }
 

@@ -20,12 +20,7 @@ export async function verifyEmail(secret: string) {
     where: { secret },
   });
 
-  const {
-    emailTime,
-    email,
-    user: validatedUser,
-    secret: storedSecret,
-  } = emailValidation;
+  const { emailTime, email, user: validatedUser, secret: storedSecret } = emailValidation;
   if (!storedSecret) {
     throw new Error500({
       message: "No validation token to compare",
@@ -82,11 +77,7 @@ export async function verifyEmail(secret: string) {
   return { verifiedEmail: email, jwt, user, isNewUser };
 }
 
-async function emailAuth(
-  secret: string,
-  parsedCookies: any,
-  res: NextApiResponse
-) {
+async function emailAuth(secret: string, parsedCookies: any, res: NextApiResponse) {
   const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(secret);
   setCookie(res, "AvenSession", jwt);
   return {
@@ -97,14 +88,12 @@ async function emailAuth(
   };
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const parsedCookies = parseCookies({ req });
-    const token = req.query.token;
-    await emailAuth(String(token), parsedCookies, res);
-    res.redirect("/account");
-    return res;
-  }
-);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const parsedCookies = parseCookies({ req });
+  const token = req.query.token;
+  await emailAuth(String(token), parsedCookies, res);
+  res.redirect("/account");
+  return res;
+});
 
 export default APIHandler;

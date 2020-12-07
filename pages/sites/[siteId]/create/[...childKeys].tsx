@@ -38,13 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function CreateChildPage({
-  siteName,
-  address,
-}: {
-  siteName: string;
-  address: string[];
-}) {
+export default function CreateChildPage({ siteName, address }: { siteName: string; address: string[] }) {
   return (
     <BasicSiteLayout
       content={

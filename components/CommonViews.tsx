@@ -82,10 +82,7 @@ export const CenterButtonRow = styled.div`
   justify-content: center;
 `;
 
-export function MainSection({
-  title,
-  children,
-}: React.PropsWithChildren<{ title?: string }>) {
+export function MainSection({ title, children }: React.PropsWithChildren<{ title?: string }>) {
   if (title == null) {
     return (
       <MainSectionContainer>

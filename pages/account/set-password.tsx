@@ -2,7 +2,7 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
-import { useForm } from "react-hook-form";
+import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React from "react";
 import Router from "next/router";
@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function ChangePasswordForm({}: {}) {
+function ChangePasswordForm({}: EmptyObject) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorText, setErrorText] = React.useState<null | string>(null);
   const { register, handleSubmit, errors, control } = useForm({
@@ -54,13 +54,7 @@ function ChangePasswordForm({}: {}) {
       >
         <FormControl>
           <FormLabel htmlFor="password-input">Login password</FormLabel>
-          <ControlledInput
-            name="password"
-            placeholder=""
-            type="password"
-            id="password-input"
-            control={control}
-          />
+          <ControlledInput name="password" placeholder="" type="password" id="password-input" control={control} />
         </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
         <Button type="submit">Set PW</Button>

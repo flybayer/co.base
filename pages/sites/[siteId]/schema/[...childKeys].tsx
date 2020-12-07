@@ -75,23 +75,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const site = await database.site.findOne({ where: { name: siteName } });
   const siteQuery = { name: siteName };
-  const whereQ = childKeys.reduce<any>(
-    (last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
-      return { site: siteQuery, parentNode: last, key: childKey };
-    },
-    null
-  ) as ManyQuery;
+  const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
+    return { site: siteQuery, parentNode: last, key: childKey };
+  }, null) as ManyQuery;
   if (whereQ === null) throw new Error("Unexpectd nullfail");
-  let nodes = await database.siteNode.findMany({
+  const nodes = await database.siteNode.findMany({
     where: whereQ,
   });
   const node = nodes[0];
   if (!node) {
     return {
       redirect: {
-        destination: `/sites/${siteName}/dashboard/${childKeys
-          .slice(0, childKeys.length - 1)
-          .join("/")}`,
+        destination: `/sites/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
         permanent: false,
       },
     };
@@ -219,24 +214,23 @@ function ObjectSchemaEdit({
   return (
     <ObjectContainer>
       <Label>{label} Record:</Label>
-      {Object.entries(schema.properties).map(
-        ([key, keySchema]: [string, ValueSchema]) => (
-          <SchemaEdit
-            label={key}
-            key={key}
-            schema={keySchema}
-            onSchema={(childSchema) => {
-              onSchema({
-                ...schema,
-                properties: {
-                  ...schema.properties,
-                  [key]: childSchema,
-                },
-              });
-            }}
-          />
-        )
-      )}
+      {Object.entries(schema.properties).map(([key, keySchema]: [string, ValueSchema]) => (
+        <SchemaEdit
+          label={key}
+          key={key}
+          schema={keySchema}
+          onSchema={(childSchema) => {
+            onSchema({
+              ...schema,
+              additionalProperties: false,
+              properties: {
+                ...schema.properties,
+                [key]: childSchema,
+              },
+            });
+          }}
+        />
+      ))}
       <Button onClick={onOpen}>New Entry</Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -248,6 +242,7 @@ function ObjectSchemaEdit({
             onSubmit={({ name, type }) => {
               onSchema({
                 ...schema,
+                additionalProperties: false,
                 properties: {
                   ...schema.properties,
                   [name]: getValueSchema(type),
@@ -296,29 +291,19 @@ function SchemaEdit({
 }) {
   let editor = null;
   if (schema?.type === "string") {
-    editor = (
-      <StringSchemaEdit schema={schema} onSchema={onSchema} label={label} />
-    );
+    editor = <StringSchemaEdit schema={schema} onSchema={onSchema} label={label} />;
   }
   if (schema?.type === "number") {
-    editor = (
-      <NumberSchemaEdit schema={schema} onSchema={onSchema} label={label} />
-    );
+    editor = <NumberSchemaEdit schema={schema} onSchema={onSchema} label={label} />;
   }
   if (schema?.type === "boolean") {
-    editor = (
-      <BooleanSchemaEdit schema={schema} onSchema={onSchema} label={label} />
-    );
+    editor = <BooleanSchemaEdit schema={schema} onSchema={onSchema} label={label} />;
   }
   if (schema?.type === "array") {
-    editor = (
-      <ArraySchemaEdit schema={schema} onSchema={onSchema} label={label} />
-    );
+    editor = <ArraySchemaEdit schema={schema} onSchema={onSchema} label={label} />;
   }
   if (schema?.type === "object") {
-    editor = (
-      <ObjectSchemaEdit schema={schema} onSchema={onSchema} label={label} />
-    );
+    editor = <ObjectSchemaEdit schema={schema} onSchema={onSchema} label={label} />;
   }
   return (
     <SchemaContainer>
@@ -352,7 +337,11 @@ function SchemaEdit({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              onSchema({ type: "object", properties: {} });
+              onSchema({
+                type: "object",
+                properties: {},
+                additionalProperties: false,
+              });
             }}
           >
             Object
@@ -383,50 +372,26 @@ function RecordForm({
     (record) => {
       onSchema({ ...schema, record });
     },
-    [schema]
+    [schema],
   );
 
   return (
     <>
-      <SchemaEdit
-        label={label}
-        schema={schema.record || DEFAULT_VALUE_SCHEMA}
-        onSchema={handleRecordSchema}
-      />
+      <SchemaEdit label={label} schema={schema.record || DEFAULT_VALUE_SCHEMA} onSchema={handleRecordSchema} />
     </>
   );
 }
 
-function RecordSetForm({
-  schema,
-  onSchema,
-}: {
-  schema: RecordSetSchema;
-  onSchema: (r: RecordSetSchema) => void;
-}) {
+function RecordSetForm({ schema, onSchema }: { schema: RecordSetSchema; onSchema: (r: RecordSetSchema) => void }) {
   return null;
 }
 
-function SchemaForm({
-  siteName,
-  address,
-  schema,
-}: {
-  siteName: string;
-  address: string[];
-  schema: NodeSchema;
-}) {
+function SchemaForm({ siteName, address, schema }: { siteName: string; address: string[]; schema: NodeSchema }) {
   const [schemaState, setSchema] = useState<NodeSchema>(schema);
   const [draftSchema, setDraftSchema] = useState<NodeSchema>(schema);
   let form = null;
   if (draftSchema.type === "record") {
-    form = (
-      <RecordForm
-        schema={draftSchema}
-        onSchema={setDraftSchema}
-        label={address[address.length - 1]}
-      />
-    );
+    form = <RecordForm schema={draftSchema} onSchema={setDraftSchema} label={address[address.length - 1]} />;
   } else if (draftSchema.type === "record-set") {
     form = <RecordSetForm schema={draftSchema} onSchema={setDraftSchema} />;
   }
@@ -484,11 +449,7 @@ export default function ChildNodePage({
         <>
           <SiteTabs tab="schema" siteName={siteName} address={address} />
           <MainSection>
-            <SchemaForm
-              siteName={siteName}
-              address={address}
-              schema={node.schema}
-            />
+            <SchemaForm siteName={siteName} address={address} schema={node.schema} />
           </MainSection>
         </>
       }

@@ -12,11 +12,7 @@ function validatePayload(input: any): PrimaryEmailPayload {
   return { email: String(input.email) };
 }
 
-async function accountSetPrimaryEmail(
-  user: APIUser,
-  { email }: PrimaryEmailPayload,
-  res: NextApiResponse
-) {
+async function accountSetPrimaryEmail(user: APIUser, { email }: PrimaryEmailPayload, res: NextApiResponse) {
   const verifiedList = await database.verifiedEmail.findMany({
     where: { email, user: { id: user.id } },
   });
@@ -26,15 +22,13 @@ async function accountSetPrimaryEmail(
   }
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await accountSetPrimaryEmail(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await accountSetPrimaryEmail(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

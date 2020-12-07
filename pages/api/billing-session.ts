@@ -21,7 +21,7 @@ async function redirectBillingSession(user: APIUser, res: NextApiResponse) {
     });
     stripeCustomer = customer.id;
   }
-  var session = await stripe.billingPortal.sessions.create({
+  const session = await stripe.billingPortal.sessions.create({
     customer: stripeCustomer,
     return_url: getSiteLink("/account"),
   });
@@ -31,16 +31,14 @@ async function redirectBillingSession(user: APIUser, res: NextApiResponse) {
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (verifiedUser == null) {
-      redirect(res, "/login");
-      return {};
-    } else {
-      return await redirectBillingSession(verifiedUser, res);
-    }
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (verifiedUser == null) {
+    redirect(res, "/login");
+    return {};
+  } else {
+    return await redirectBillingSession(verifiedUser, res);
   }
-);
+});
 
 export default APIHandler;

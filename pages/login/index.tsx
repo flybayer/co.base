@@ -6,14 +6,7 @@ import { GetServerSideProps } from "next";
 import React from "react";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import ControlledInput from "../../components/ControlledInput";
-import {
-  Button,
-  Divider,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Spinner,
-} from "@chakra-ui/core";
+import { Button, Divider, FormControl, FormHelperText, FormLabel, Spinner } from "@chakra-ui/core";
 import { useRouter } from "next/router";
 import { api } from "../../api-utils/api";
 import { Error400 } from "../../api-utils/Errors";
@@ -62,12 +55,7 @@ function PasswordForm({
         <h2>Password?</h2>
         <FormControl>
           <FormLabel htmlFor="password-input">Password</FormLabel>
-          <ControlledInput
-            type="password"
-            name="password"
-            id="password-input"
-            control={control}
-          />
+          <ControlledInput type="password" name="password" id="password-input" control={control} />
         </FormControl>
         <Button type="submit">Log In</Button>
       </form>
@@ -151,15 +139,8 @@ function LoginForm({}) {
         <FormControl>
           <FormLabel htmlFor="email-input">Login Email or Username</FormLabel>
           {errors.email && <p>{errors.email.message}</p>}
-          <ControlledInput
-            name="email"
-            id="email-input"
-            aria-describedby="email-helper-text"
-            control={control}
-          />
-          <FormHelperText id="email-helper-text">
-            Your email will be kept private.
-          </FormHelperText>
+          <ControlledInput name="email" id="email-input" aria-describedby="email-helper-text" control={control} />
+          <FormHelperText id="email-helper-text">Your email will be kept private.</FormHelperText>
         </FormControl>
         <p>
           By logging in, you agree to the{" "}

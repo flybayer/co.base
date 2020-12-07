@@ -1,6 +1,7 @@
 export type ObjectSchema = {
   type: "object";
   properties: Record<string, ValueSchema>;
+  additionalProperties: false;
 };
 
 export type NumberSchema = {
@@ -17,12 +18,7 @@ export type ArraySchema = {
   type: "array";
   items: ValueSchema;
 };
-export type ValueSchema =
-  | NumberSchema
-  | BooleanSchema
-  | StringSchema
-  | ArraySchema
-  | ObjectSchema;
+export type ValueSchema = NumberSchema | BooleanSchema | StringSchema | ArraySchema | ObjectSchema;
 export type SchemaType = ValueSchema["type"];
 export type RecordSchema = {
   type: "record";
@@ -46,7 +42,7 @@ export const VALUE_TYPES: Array<{ name: string; key: SchemaType }> = [
 
 export function getValueSchema(t: SchemaType): ValueSchema {
   if (t === "array") return { type: "array", items: { type: "string" } };
-  if (t === "object") return { type: "object", properties: {} };
+  if (t === "object") return { type: "object", properties: {}, additionalProperties: false };
   if (t === "string") return { type: "string" };
   if (t === "boolean") return { type: "boolean" };
   if (t === "number") return { type: "number" };
@@ -60,10 +56,7 @@ export function getDefaultValue(schema: ValueSchema): any {
   if (schema.type === "array") return [];
   if (schema.type === "object")
     return Object.fromEntries(
-      Object.entries(schema.properties).map(([keyName, keySchema]) => [
-        keyName,
-        getDefaultValue(keySchema),
-      ])
+      Object.entries(schema.properties).map(([keyName, keySchema]) => [keyName, getDefaultValue(keySchema)]),
     );
 }
 

@@ -19,7 +19,7 @@ function validatePayload(input: any): ClipSetPublicPayload {
 async function clipSetPublic(
   verifiedUser: APIUser,
   { clipId, isPublished }: ClipSetPublicPayload,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (!verifiedUser) {
     throw new Error("Not logged in");
@@ -37,14 +37,12 @@ async function clipSetPublic(
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    return await clipSetPublic(verifiedUser, validatePayload(req.body), res);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  return await clipSetPublic(verifiedUser, validatePayload(req.body), res);
+});
 
 export default APIHandler;

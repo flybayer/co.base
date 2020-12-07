@@ -25,13 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function APITokensPage({
-  user,
-  siteName,
-}: {
-  user: APIUser;
-  siteName: string;
-}) {
+export default function APITokensPage({ user, siteName }: { user: APIUser; siteName: string }) {
   const { push } = useRouter();
   return (
     <BasicSiteLayout

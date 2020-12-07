@@ -26,11 +26,7 @@ type SiteState = {
 
 type TerraformState = string;
 
-export async function applySite(
-  siteKey: string,
-  siteState: SiteState,
-  tfState: TerraformState
-) {
+export async function applySite(siteKey: string, siteState: SiteState, tfState: TerraformState) {
   init();
   console.log("will apply site.", siteKey, siteState, tfState);
   // yarn terraform apply -auto-approve -var-file="tf-tmp/var.tfvars.json" tf-tmp

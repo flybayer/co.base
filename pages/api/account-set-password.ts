@@ -13,16 +13,12 @@ function validatePayload(input: any): SetPasswordPayload {
   return { password: String(input.password) };
 }
 
-async function setPassword(
-  user: APIUser,
-  { password }: SetPasswordPayload,
-  res: NextApiResponse
-) {
+async function setPassword(user: APIUser, { password }: SetPasswordPayload, res: NextApiResponse) {
   const passwordHash = await new Promise<string>((resolve, reject) =>
     bcrypt.hash(password, 14, (err, result) => {
       if (err) reject(err);
       else resolve(result);
-    })
+    }),
   );
   await database.user.update({
     where: { id: user.id },
@@ -30,15 +26,13 @@ async function setPassword(
   });
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await setPassword(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await setPassword(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

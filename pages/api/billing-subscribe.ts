@@ -3,17 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import redirect from "../../api-utils/redirect";
 import getSiteLink from "../../api-utils/getSiteLink";
-import {
-  SubscriptionLevel,
-  getPriceIdOfSubscriptionLevel,
-} from "../../data/subscription";
+import { SubscriptionLevel, getPriceIdOfSubscriptionLevel } from "../../data/subscription";
 import { createAPI } from "../../api-utils/createAPI";
 
-async function redirectBillingSubscribe(
-  verifiedUser: APIUser | null,
-  level: SubscriptionLevel,
-  res: NextApiResponse
-) {
+async function redirectBillingSubscribe(verifiedUser: APIUser | null, level: SubscriptionLevel, res: NextApiResponse) {
   if (!verifiedUser) {
     return {};
   }
@@ -45,20 +38,14 @@ async function redirectBillingSubscribe(
   return session;
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (verifiedUser == null) {
-      redirect(res, "/login");
-      return {};
-    } else {
-      return await redirectBillingSubscribe(
-        verifiedUser,
-        Number(req.query.level),
-        res
-      );
-    }
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (verifiedUser == null) {
+    redirect(res, "/login");
+    return {};
+  } else {
+    return await redirectBillingSubscribe(verifiedUser, Number(req.query.level), res);
   }
-);
+});
 
 export default APIHandler;

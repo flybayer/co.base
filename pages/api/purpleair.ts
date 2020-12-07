@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Cors from "cors";
 import { setAnyCors } from "../../api-utils/cors";
-
-const cities = require("all-the-cities");
+import cities from "all-the-cities";
 
 const cache: any = {};
 const idCache: any = {};
@@ -89,16 +87,10 @@ function getCity(id: number) {
     lat,
     lon,
     sensorCount: sensors.length,
-    avgTempF:
-      readingsTempF.reduce((prev, v) => prev + v, 0) / readingsTempF.length,
-    avgHumidity:
-      readingsHumidity.reduce((prev, v) => prev + v, 0) /
-      readingsHumidity.length,
-    avgPM2_5:
-      readingsPM2_5.reduce((prev, v) => prev + v, 0) / readingsPM2_5.length,
-    avgPressure:
-      readingsPressure.reduce((prev, v) => prev + v, 0) /
-      readingsPressure.length,
+    avgTempF: readingsTempF.reduce((prev, v) => prev + v, 0) / readingsTempF.length,
+    avgHumidity: readingsHumidity.reduce((prev, v) => prev + v, 0) / readingsHumidity.length,
+    avgPM2_5: readingsPM2_5.reduce((prev, v) => prev + v, 0) / readingsPM2_5.length,
+    avgPressure: readingsPressure.reduce((prev, v) => prev + v, 0) / readingsPressure.length,
     sensors,
     ...city,
   };

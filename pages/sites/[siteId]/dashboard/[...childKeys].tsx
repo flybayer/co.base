@@ -1,11 +1,4 @@
-import {
-  Button,
-  Divider,
-  FormControl,
-  FormLabel,
-  Input,
-  Switch,
-} from "@chakra-ui/core";
+import { Button, Divider, FormControl, FormLabel, Input, Switch } from "@chakra-ui/core";
 import { CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
@@ -52,14 +45,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const siteQuery = { name: siteName };
   //   const node = await database.siteNode()
 
-  const whereQ = childKeys.reduce<any>(
-    (last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
-      return { site: siteQuery, parentNode: last, key: childKey };
-    },
-    null
-  ) as ManyQuery;
+  const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
+    return { site: siteQuery, parentNode: last, key: childKey };
+  }, null) as ManyQuery;
   if (whereQ === null) throw new Error("Unexpectd nullfail");
-  let nodes = await database.siteNode.findMany({
+  const nodes = await database.siteNode.findMany({
     where: whereQ,
     include: { SiteNode: { select: { id: true, key: true } } },
   });
@@ -71,9 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!node) {
     return {
       redirect: {
-        destination: `/sites/${siteName}/dashboard/${childKeys
-          .slice(0, childKeys.length - 1)
-          .join("/")}`,
+        destination: `/sites/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
         permanent: false,
       },
     };
@@ -103,13 +91,7 @@ function RecordSetContent({
   address: string[];
   node: Node<RecordSetSchema>;
 }) {
-  return (
-    <NodeChildren
-      childs={node.children}
-      address={address}
-      siteName={siteName}
-    />
-  );
+  return <NodeChildren childs={node.children} address={address} siteName={siteName} />;
 }
 
 const StringText = styled.p`
@@ -160,8 +142,7 @@ function TextInputDisplay({
           if (!onValue) return;
           const newValue = e.target.value;
           setV(newValue);
-          if (typeof onValueTimeout.current === "number")
-            clearTimeout(onValueTimeout.current);
+          if (typeof onValueTimeout.current === "number") clearTimeout(onValueTimeout.current);
           onValueTimeout.current = setTimeout(() => {
             onValue(numeric ? Number(newValue) : newValue);
             console.log(newValue);
@@ -213,10 +194,7 @@ const ArrayItemChildren = styled.div`
   flex-grow: 1;
 `;
 
-function ArrayItem({
-  children,
-  onRemove,
-}: React.PropsWithChildren<{ onRemove?: () => void }>) {
+function ArrayItem({ children, onRemove }: React.PropsWithChildren<{ onRemove?: () => void }>) {
   return (
     <ArrayItemContainer>
       <ArrayItemChildren>{children}</ArrayItemChildren>
@@ -309,23 +287,21 @@ function ObjectDisplay({
   return (
     <div>
       {label}
-      {Object.entries(schema.properties).map(
-        ([keyName, v]: [string, any], index: number) => (
-          <div key={keyName}>
-            <ValueDisplay
-              label={keyName}
-              schema={v}
-              value={value && value[keyName]}
-              onValue={
-                onValue &&
-                ((child: any) => {
-                  onValue({ ...value, [keyName]: child });
-                })
-              }
-            />
-          </div>
-        )
-      )}
+      {Object.entries(schema.properties).map(([keyName, v]: [string, any], index: number) => (
+        <div key={keyName}>
+          <ValueDisplay
+            label={keyName}
+            schema={v}
+            value={value && value[keyName]}
+            onValue={
+              onValue &&
+              ((child: any) => {
+                onValue({ ...value, [keyName]: child });
+              })
+            }
+          />
+        </div>
+      ))}
     </div>
   );
 }
@@ -342,77 +318,30 @@ function ValueDisplay({
   onValue?: (v: any) => void;
 }) {
   if (schema.type === "string") {
-    return (
-      <TextInputDisplay
-        schema={schema}
-        value={value}
-        onValue={onValue}
-        label={label}
-      />
-    );
+    return <TextInputDisplay schema={schema} value={value} onValue={onValue} label={label} />;
   }
   if (schema.type === "number") {
-    return (
-      <TextInputDisplay
-        schema={schema}
-        value={value}
-        onValue={onValue}
-        label={label}
-        numeric
-      />
-    );
+    return <TextInputDisplay schema={schema} value={value} onValue={onValue} label={label} numeric />;
   }
   if (schema.type === "boolean") {
-    return (
-      <BooleanDisplay
-        schema={schema}
-        value={value}
-        onValue={onValue}
-        label={label}
-      />
-    );
+    return <BooleanDisplay schema={schema} value={value} onValue={onValue} label={label} />;
   }
   if (schema.type === "array") {
-    return (
-      <ArrayDisplay
-        schema={schema}
-        value={value}
-        onValue={onValue}
-        label={label}
-      />
-    );
+    return <ArrayDisplay schema={schema} value={value} onValue={onValue} label={label} />;
   }
   if (schema.type === "object") {
-    return (
-      <ObjectDisplay
-        schema={schema}
-        value={value}
-        onValue={onValue}
-        label={label}
-      />
-    );
+    return <ObjectDisplay schema={schema} value={value} onValue={onValue} label={label} />;
   }
   if (value === undefined) return <p>Undefined</p>;
   if (value === null) return <p>Null</p>;
   return <p>{JSON.stringify(value)}</p>;
 }
 
-function RecordContent({
-  siteName,
-  address,
-  node,
-}: {
-  siteName: string;
-  address: string[];
-  node: Node<RecordSchema>;
-}) {
-  const recordSchema = node.schema?.record
-    ? node.schema?.record
-    : DEFAULT_VALUE_SCHEMA;
-  const initValue =
-    node.value === null ? getDefaultValue(recordSchema) : node.value;
-  let [savedNodeValue, setSavedNodeValue] = useState(initValue);
-  let [nodeValue, setNodeValue] = useState(initValue);
+function RecordContent({ siteName, address, node }: { siteName: string; address: string[]; node: Node<RecordSchema> }) {
+  const recordSchema = node.schema?.record ? node.schema?.record : DEFAULT_VALUE_SCHEMA;
+  const initValue = node.value === null ? getDefaultValue(recordSchema) : node.value;
+  const [savedNodeValue, setSavedNodeValue] = useState(initValue);
+  const [nodeValue, setNodeValue] = useState(initValue);
   return (
     <>
       <ValueDisplay
@@ -453,32 +382,12 @@ function RecordContent({
   );
 }
 
-function NodeContent({
-  siteName,
-  address,
-  node,
-}: {
-  siteName: string;
-  address: string[];
-  node: Node;
-}) {
+function NodeContent({ siteName, address, node }: { siteName: string; address: string[]; node: Node }) {
   const nodeType = node.schema?.type || "record";
   if (nodeType === "record-set") {
-    return (
-      <RecordSetContent
-        siteName={siteName}
-        address={address}
-        node={node as Node<RecordSetSchema>}
-      />
-    );
+    return <RecordSetContent siteName={siteName} address={address} node={node as Node<RecordSetSchema>} />;
   }
-  return (
-    <RecordContent
-      siteName={siteName}
-      address={address}
-      node={node as Node<RecordSchema>}
-    />
-  );
+  return <RecordContent siteName={siteName} address={address} node={node as Node<RecordSchema>} />;
 }
 
 export default function NodeDashboard({

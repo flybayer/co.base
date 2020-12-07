@@ -54,12 +54,7 @@ function ChangeUsernameForm({ username }: { username: string | null }) {
       >
         <FormControl>
           <FormLabel htmlFor="username-input">Login username</FormLabel>
-          <ControlledInput
-            name="username"
-            placeholder="jane-doe"
-            id="username-input"
-            control={control}
-          />
+          <ControlledInput name="username" placeholder="jane-doe" id="username-input" control={control} />
         </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
         <Button type="submit">Set Username</Button>

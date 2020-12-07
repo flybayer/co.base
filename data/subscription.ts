@@ -54,9 +54,7 @@ const stripeProducts = dev ? STRIPE_PRODUCTS_DEV : STRIPE_PRODUCTS_LIVE;
 const stripePrices = dev ? STRIPE_PRICES_DEV : STRIPE_PRICES_LIVE;
 const stripeProductEntries = PojoMap.entries(stripeProducts);
 
-export function getPriceIdOfSubscriptionLevel(
-  level: SubscriptionLevel
-): string {
+export function getPriceIdOfSubscriptionLevel(level: SubscriptionLevel): string {
   const plan = stripePrices[level];
   if (plan) {
     return plan;
@@ -65,9 +63,7 @@ export function getPriceIdOfSubscriptionLevel(
 }
 
 export function getLevelOfProductId(productId: string): SubscriptionLevel {
-  const entry = stripeProductEntries.find(
-    ([_, p]: [SubscriptionLevel, string]) => p === productId
-  );
+  const entry = stripeProductEntries.find(([_, p]: [SubscriptionLevel, string]) => p === productId);
   if (entry) {
     return Number(entry[0]);
   }

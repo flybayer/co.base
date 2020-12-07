@@ -5,7 +5,7 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { database } from "../../data/database";
 import { createAPI } from "../../api-utils/createAPI";
 
-export type ClipUploadPayload = {};
+export type ClipUploadPayload = { [a: string]: never };
 
 function validatePayload(_input: any): ClipUploadPayload {
   return {};
@@ -20,24 +20,19 @@ async function clipUpload(user: APIUser, {}: ClipUploadPayload) {
       user: { connect: { id: user.id } },
     },
   });
-  const uploadURI = await s3Client.presignedPutObject(
-    S3_BUCKET,
-    `clips/upload/c_${clip.id}.mov`
-  );
+  const uploadURI = await s3Client.presignedPutObject(S3_BUCKET, `clips/upload/c_${clip.id}.mov`);
   return {
     uploadURI,
     clip,
   };
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, _res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    return await clipUpload(verifiedUser, validatePayload(req.body));
+const APIHandler = createAPI(async (req: NextApiRequest, _res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  return await clipUpload(verifiedUser, validatePayload(req.body));
+});
 
 export default APIHandler;

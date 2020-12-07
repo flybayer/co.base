@@ -27,14 +27,11 @@ function validatePayload(input: any): NodeSchemaEditPayload {
 async function nodeSchemaEdit(
   user: APIUser,
   { schema, siteName, address }: NodeSchemaEditPayload,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
-  const whereQ = address.reduce<any>(
-    (last: ManyQuery, childKey: string): ManyQuery => {
-      return { site: { name: siteName }, parentNode: last, key: childKey };
-    },
-    null
-  ) as ManyQuery;
+  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
+    return { site: { name: siteName }, parentNode: last, key: childKey };
+  }, null) as ManyQuery;
   if (!whereQ) throw new Error("unknown address");
   await database.siteNode.updateMany({
     where: whereQ,
@@ -44,15 +41,13 @@ async function nodeSchemaEdit(
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await nodeSchemaEdit(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await nodeSchemaEdit(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

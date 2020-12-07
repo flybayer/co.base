@@ -18,11 +18,7 @@ function validatePayload(input: any): AccountInfoPayload {
   return { name };
 }
 
-async function setPublicInfo(
-  user: APIUser,
-  { name }: AccountInfoPayload,
-  res: NextApiResponse
-) {
+async function setPublicInfo(user: APIUser, { name }: AccountInfoPayload, res: NextApiResponse) {
   const userUpdate: { name?: string } = {};
   if (name) {
     userUpdate.name = name;
@@ -33,14 +29,12 @@ async function setPublicInfo(
   });
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    return await setPublicInfo(verifiedUser, validatePayload(req.body), res);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  return await setPublicInfo(verifiedUser, validatePayload(req.body), res);
+});
 
 export default APIHandler;

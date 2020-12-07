@@ -23,7 +23,7 @@ function validatePayload(input: any): SiteRoleInvitePayload {
 async function siteRoleInvite(
   user: APIUser,
   { siteName, emailUsername, role }: SiteRoleInvitePayload,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (looksLikeAnEmail(emailUsername)) {
     const email = emailUsername;
@@ -37,9 +37,7 @@ async function siteRoleInvite(
         site: { connect: { name: siteName } },
         fromUser: { connect: { id: user.id } },
         toEmail: email,
-        recipientUser: existingVerifiedEmail
-          ? { connect: { id: existingVerifiedEmail.user.id } }
-          : undefined,
+        recipientUser: existingVerifiedEmail ? { connect: { id: existingVerifiedEmail.user.id } } : undefined,
         name: role,
       },
     });
@@ -56,9 +54,7 @@ async function siteRoleInvite(
           secret: validationToken,
         },
       });
-      destLink = `/login/verify?token=${validationToken}&redirect=${encodeURIComponent(
-        destLink
-      )}`;
+      destLink = `/login/verify?token=${validationToken}&redirect=${encodeURIComponent(destLink)}`;
     }
 
     await sendEmail(
@@ -68,7 +64,7 @@ async function siteRoleInvite(
     hello and welcome, this is your invite email.
 
     ${getSiteLink(destLink)}
-    `
+    `,
     );
     console.log({ invite });
   } else {
@@ -86,15 +82,13 @@ async function siteRoleInvite(
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await siteRoleInvite(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await siteRoleInvite(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

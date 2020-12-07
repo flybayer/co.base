@@ -23,28 +23,26 @@ async function getClipWithReadURL(clip: { id: number }) {
   };
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    if (!s3Client || !S3_BUCKET) {
-      throw new Error("S3 not configured");
-    }
-    const clips = await database.clip.findMany({
-      where: {
-        publishTime: { not: null },
-      },
-      include: {
-        user: {
-          select: {
-            username: true,
-          },
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  if (!s3Client || !S3_BUCKET) {
+    throw new Error("S3 not configured");
+  }
+  const clips = await database.clip.findMany({
+    where: {
+      publishTime: { not: null },
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
         },
       },
-      take: -5, // grab the last 5
-    });
-    return {
-      clips: await Promise.all(clips.map(getClipWithReadURL)),
-    };
-  }
-);
+    },
+    take: -5, // grab the last 5
+  });
+  return {
+    clips: await Promise.all(clips.map(getClipWithReadURL)),
+  };
+});
 
 export default APIHandler;

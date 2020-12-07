@@ -19,7 +19,7 @@ function validatePayload(input: any): ClipSetCaptionPayload {
 async function clipSetCaption(
   verifiedUser: APIUser,
   { clipId, caption }: ClipSetCaptionPayload,
-  _res: NextApiResponse
+  _res: NextApiResponse,
 ) {
   const clip = await database.clip.findOne({
     where: { id: clipId },
@@ -34,14 +34,12 @@ async function clipSetCaption(
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    return await clipSetCaption(verifiedUser, validatePayload(req.body), res);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  return await clipSetCaption(verifiedUser, validatePayload(req.body), res);
+});
 
 export default APIHandler;

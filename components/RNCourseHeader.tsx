@@ -23,13 +23,7 @@ const Container = styled.div`
   }
 `;
 
-export default function RNCourseHeader({
-  title,
-  number,
-}: {
-  title: string;
-  number?: string;
-}) {
+export default function RNCourseHeader({ title, number }: { title: string; number?: string }) {
   return (
     <Container>
       <Link href="/react-native">Intro to React Native » </Link>

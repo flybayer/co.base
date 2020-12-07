@@ -64,12 +64,7 @@ function NewCommentForm() {
       >
         <FormControl>
           <FormLabel htmlFor="comment-input">Comment</FormLabel>
-          <ControlledInput
-            id="comment-input"
-            placeholder="please be polite!"
-            name="comment"
-            control={control}
-          />
+          <ControlledInput id="comment-input" placeholder="please be polite!" name="comment" control={control} />
         </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
         <Button type="submit">Publish Comment</Button>

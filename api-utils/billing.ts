@@ -44,9 +44,7 @@ export interface StripeCustomer {
 }
 
 export async function resetSubscription(user: APIUser) {
-  const customer: StripeCustomer = await stripe.customers.retrieve(
-    user.stripeCustomerId
-  );
+  const customer: StripeCustomer = await stripe.customers.retrieve(user.stripeCustomerId);
   const subscription = customer.subscriptions.data[0];
   if (!subscription) {
     await database.user.update({
@@ -75,9 +73,7 @@ export async function syncSubscription(subscription: StripeSubscription) {
   // a notification from stripe that a subscription has added or changed.
   const productId = subscription.plan.product;
   const newSubscriptionLevel = getLevelOfProductId(productId);
-  const customer: StripeCustomer = await stripe.customers.retrieve(
-    subscription.customer
-  );
+  const customer: StripeCustomer = await stripe.customers.retrieve(subscription.customer);
   const userId = Number(customer.metadata.userId);
   const user = await database.user.findOne({
     where: { id: userId },
@@ -89,10 +85,7 @@ export async function syncSubscription(subscription: StripeSubscription) {
   if (user.subscribedAccess > newSubscriptionLevel) {
     // do not save a lower subscribedAccess, but make sure that we reset the subs at the earliest reasonable time.
     const currentPeriodEnd = new Date(subscription.current_period_end * 1000);
-    if (
-      user.subscriptionEndTime == null ||
-      currentPeriodEnd < user.subscriptionEndTime
-    )
+    if (user.subscriptionEndTime == null || currentPeriodEnd < user.subscriptionEndTime)
       await database.user.update({
         where: { id: userId },
         data: {

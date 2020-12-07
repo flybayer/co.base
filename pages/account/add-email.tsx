@@ -2,7 +2,7 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
-import { useForm } from "react-hook-form";
+import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React from "react";
 import Router, { useRouter } from "next/router";
@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function AddEmailForm({}: {}) {
+function AddEmailForm({}: EmptyObject) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorText, setErrorText] = React.useState<null | string>(null);
   const { register, handleSubmit, errors, control } = useForm({
@@ -52,13 +52,7 @@ function AddEmailForm({}: {}) {
       >
         <FormControl>
           <FormLabel htmlFor="email-input">New Email</FormLabel>
-          <ControlledInput
-            name="email"
-            type="email"
-            placeholder="me@example.com"
-            id="email-input"
-            control={control}
-          />
+          <ControlledInput name="email" type="email" placeholder="me@example.com" id="email-input" control={control} />
         </FormControl>
         {errorText && <p style={{ color: "#a66" }}>{errorText}</p>}
         <Button type="submit">Add Email</Button>

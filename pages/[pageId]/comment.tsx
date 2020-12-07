@@ -5,7 +5,15 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { database } from "../../data/database";
 import PostButton, { LinkButton } from "../../components/Buttons";
 import { Error400 } from "../../api-utils/Errors";
-
+type Comment = {
+  id: number;
+  publishTime: string;
+  message: string;
+  user: {
+    name: string;
+    id: number;
+  };
+};
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
   const page = context.params?.pageId;
@@ -31,13 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function CommentPage({
-  comments,
-  user,
-}: {
-  comments: any;
-  user: APIUser;
-}) {
+export default function CommentPage({ comments, user }: { comments: Comment[]; user: APIUser }): React.ReactNode {
   const router = useRouter();
   const { pageId } = router.query;
 
@@ -46,9 +48,9 @@ export default function CommentPage({
       content={
         <>
           <h2>Comments on {pageId}</h2>
-          {comments.map((comment: any) => {
+          {comments.map((comment: Comment) => {
             return (
-              <div>
+              <div key={comment.id}>
                 <p>
                   <strong>{comment.user.name}</strong> {comment.publishTime}
                 </p>

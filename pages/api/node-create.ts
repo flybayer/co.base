@@ -3,12 +3,7 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
-import {
-  getValueSchema,
-  NodeSchema,
-  NodeType,
-  SchemaType,
-} from "../../data/NodeSchema";
+import { getValueSchema, NodeSchema, NodeType, SchemaType } from "../../data/NodeSchema";
 
 export type NodeCreatePayload = {
   name: string;
@@ -51,14 +46,11 @@ function validatePayload(input: any): NodeCreatePayload {
 async function nodeCreate(
   user: APIUser,
   { name, siteName, address, type, schemaType }: NodeCreatePayload,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
-  const whereQ = address.reduce<any>(
-    (last: ManyQuery, childKey: string): ManyQuery => {
-      return { site: { name: siteName }, parentNode: last, key: childKey };
-    },
-    null
-  ) as ManyQuery;
+  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
+    return { site: { name: siteName }, parentNode: last, key: childKey };
+  }, null) as ManyQuery;
   const nodesResult =
     whereQ &&
     (await database.siteNode.findMany({
@@ -85,15 +77,13 @@ async function nodeCreate(
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await nodeCreate(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await nodeCreate(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

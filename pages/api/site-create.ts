@@ -37,25 +37,19 @@ function validatePayload(input: any): SiteCreatePayload {
   return { name: normalized };
 }
 
-async function siteCreate(
-  user: APIUser,
-  { name }: SiteCreatePayload,
-  res: NextApiResponse
-) {
+async function siteCreate(user: APIUser, { name }: SiteCreatePayload, res: NextApiResponse) {
   await database.site.create({
     data: { name, owner: { connect: { id: user.id } } },
   });
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await siteCreate(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await siteCreate(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

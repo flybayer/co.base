@@ -1,6 +1,4 @@
-export function explodeAddress(
-  address?: string[]
-): Array<{ key: string; fullAddress: string }> {
+export function explodeAddress(address?: string[]): Array<{ key: string; fullAddress: string }> {
   const exploded: Array<{ key: string; fullAddress: string }> = [];
   let fullAddress = "";
   address &&

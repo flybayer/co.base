@@ -42,23 +42,11 @@ export function SiteTabs({
   address,
 }: {
   siteName: string;
-  tab:
-    | "site"
-    | "team"
-    | "api-tokens"
-    | "events"
-    | "settings"
-    | "data"
-    | "options"
-    | "schema";
+  tab: "site" | "team" | "api-tokens" | "events" | "settings" | "data" | "options" | "schema";
   address?: string[];
 }) {
   let tabs = (
-    <Tabs
-      index={["site", "team", "api-tokens", "events", "settings"].findIndex(
-        (t) => t === tab
-      )}
-    >
+    <Tabs index={["site", "team", "api-tokens", "events", "settings"].findIndex((t) => t === tab)}>
       <TabList>
         <Link href={`/sites/${siteName}`}>
           <Tab>Site</Tab>
@@ -103,11 +91,7 @@ export function SiteTabs({
       <TitleContainer>
         <HeaderLink href={`/sites/${siteName}`} label={siteName} />
         {explodeAddress(address).map(({ key, fullAddress }) => (
-          <HeaderLink
-            key={fullAddress}
-            href={`/sites/${siteName}/dashboard${fullAddress}`}
-            label={`/${key}`}
-          />
+          <HeaderLink key={fullAddress} href={`/sites/${siteName}/dashboard${fullAddress}`} label={`/${key}`} />
         ))}
       </TitleContainer>
       {tabs}

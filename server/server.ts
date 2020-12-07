@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 import { createServer } from "http";
 import { Store, Subscription } from "./store";
+import * as dotenv from "dotenv";
+import next from "next";
+import { parse } from "url";
+import WebSocket from "ws";
+import express from "express";
+import spawn from "@expo/spawn-async";
+import cookieParser from "cookie-parser";
 
-require("dotenv").config();
-
-const WebSocket = require("ws");
-const express = require("express");
-const { parse } = require("url");
-const next = require("next");
-const spawn = require("@expo/spawn-async");
+dotenv.config();
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
-const cookieParser = require("cookie-parser");
 
 const port = dev ? 3001 : 3000;
 
@@ -24,7 +24,7 @@ async function startServer() {
   server.use(
     express.static(__dirname + "/public", {
       maxAge: "30d",
-    })
+    }),
   );
   server.use(cookieParser());
   server.use((req: any, res: Response) => {
@@ -48,7 +48,7 @@ async function startServer() {
 
   let clientIdCount = 0;
 
-  const sockets = new Map<number, typeof WebSocket>();
+  const sockets = new Map<number, WebSocket>();
   const socketSubscriptions = new Map<number, Map<string, Subscription>>();
 
   function clientSend(clientId: number, data: any) {
@@ -57,7 +57,7 @@ async function startServer() {
     socket.send(JSON.stringify(data));
   }
 
-  function getStore(key: string): null | Store<{}> {
+  function getStore(key: string): null | Store<unknown> {
     return null;
   }
 
@@ -83,9 +83,7 @@ async function startServer() {
     });
     const clientSubs = socketSubscriptions.get(clientId);
     if (!clientSubs) {
-      throw new Error(
-        "unexpected condition. we are subscribing while the socket is disconnected??"
-      );
+      throw new Error("unexpected condition. we are subscribing while the socket is disconnected??");
     }
     clientSubs.set(key, subscription);
   }
@@ -96,9 +94,7 @@ async function startServer() {
     }
     const clientSubs = socketSubscriptions.get(clientId);
     if (!clientSubs) {
-      throw new Error(
-        "unexpected condition. we are unsubscribing while the socket is disconnected??"
-      );
+      throw new Error("unexpected condition. we are unsubscribing while the socket is disconnected??");
     }
     const subscription = clientSubs.get(key);
     if (subscription) {
@@ -110,7 +106,7 @@ async function startServer() {
     if (message.t === "sub") return handleSubscribe(clientId, message.key);
     if (message.t === "unsub") return handleUnsubscribe(clientId, message.key);
   }
-  wss.on("connection", (socket: typeof WebSocket) => {
+  wss.on("connection", (socket: WebSocket) => {
     const clientId = clientIdCount++;
     sockets.set(clientId, socket);
     socketSubscriptions.set(clientId, new Map());
@@ -137,17 +133,13 @@ async function prepareDockerDev() {
 
 async function prepareDatabase() {
   console.log("Migrating database..");
-  await spawn(
-    "node_modules/@prisma/cli/build/index.js",
-    ["migrate", "up", "--experimental", "--auto-approve"],
-    {
-      env: {
-        // relying on dotenv to pull this from .env.production.local
-        ...process.env,
-        DATABASE_URL: process.env.DATABASE_URL || DEFAULT_DB_URL,
-      },
-    }
-  );
+  await spawn("node_modules/@prisma/cli/build/index.js", ["migrate", "up", "--experimental", "--auto-approve"], {
+    env: {
+      // relying on dotenv to pull this from .env.production.local
+      ...process.env,
+      DATABASE_URL: process.env.DATABASE_URL || DEFAULT_DB_URL,
+    },
+  });
 }
 
 async function runServer() {

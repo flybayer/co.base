@@ -30,14 +30,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const siteQuery = { name: siteName };
   //   const node = await database.siteNode()
 
-  const whereQ = childKeys.reduce<any>(
-    (last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
-      return { site: siteQuery, parentNode: last, key: childKey };
-    },
-    null
-  ) as ManyQuery;
+  const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
+    return { site: siteQuery, parentNode: last, key: childKey };
+  }, null) as ManyQuery;
   if (whereQ === null) throw new Error("Unexpectd nullfail");
-  let nodes = await database.siteNode.findMany({
+  const nodes = await database.siteNode.findMany({
     where: whereQ,
     include: { SiteNode: { select: { id: true, key: true } } },
   });
@@ -49,9 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!node) {
     return {
       redirect: {
-        destination: `/sites/${siteName}/dashboard/${childKeys
-          .slice(0, childKeys.length - 1)
-          .join("/")}`,
+        destination: `/sites/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
         permanent: false,
       },
     };
@@ -71,15 +66,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function EditForm({
-  value,
-  siteName,
-  address,
-}: {
-  value: any;
-  siteName: string;
-  address: string[];
-}) {
+function EditForm({ value, siteName, address }: { value: any; siteName: string; address: string[] }) {
   const { control, handleSubmit } = useForm({
     mode: "onBlur",
     defaultValues: { jsonValue: JSON.stringify(value, null, 2) },

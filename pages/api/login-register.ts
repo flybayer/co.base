@@ -52,7 +52,7 @@ async function loginRegisterEmail(
   email: string,
   password: undefined | string,
   forceSend: boolean,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   let existingUser = null;
   let emailToVerify = null;
@@ -116,7 +116,7 @@ async function loginRegisterEmail(
       `Click here to log in:
     
     ${getSiteLink(`/login/verify?token=${validationToken}`)}
-    `
+    `,
     );
     return { status: 2, email };
   }
@@ -145,10 +145,7 @@ async function loginRegisterPhone(phone: string, res: NextApiResponse) {
   }
 }
 
-async function loginRegister(
-  { email, phone, password, method }: LoginRegisterPayload,
-  res: NextApiResponse
-) {
+async function loginRegister({ email, phone, password, method }: LoginRegisterPayload, res: NextApiResponse) {
   if (email) {
     return loginRegisterEmail(email, password, method === "email", res);
   } else if (phone) {
@@ -156,11 +153,9 @@ async function loginRegister(
   } else throw new Error("Insufficient login details");
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const action = validatePayload(req.body);
-    return await loginRegister(action, res);
-  }
-);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const action = validatePayload(req.body);
+  return await loginRegister(action, res);
+});
 
 export default APIHandler;

@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Error400, Error403, Error404 } from "./Errors";
 
-export function createAPI(
-  asyncHandler: (req: NextApiRequest, res: NextApiResponse) => Promise<any>
-) {
+export function createAPI(asyncHandler: (req: NextApiRequest, res: NextApiResponse) => Promise<any>) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     await asyncHandler(req, res)
       .then((resp) => {

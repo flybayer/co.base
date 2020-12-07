@@ -54,12 +54,7 @@ function ChangeNameForm({ name }: { name: string | null }) {
       >
         <FormControl>
           <FormLabel htmlFor="name-input">Public Name</FormLabel>
-          <ControlledInput
-            id="name-input"
-            placeholder="Jane Doe"
-            name="name"
-            control={control}
-          />
+          <ControlledInput id="name-input" placeholder="Jane Doe" name="name" control={control} />
         </FormControl>
         <Button type="submit">Set Name</Button>
         {isSubmitting && <Spinner size="sm" />}

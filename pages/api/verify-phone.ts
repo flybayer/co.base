@@ -36,10 +36,7 @@ function validatePayload(input: any): VerifyPhonePayload {
   return { secret, phone };
 }
 
-async function verifyPhone(
-  { secret, phone }: VerifyPhonePayload,
-  res: NextApiResponse
-) {
+async function verifyPhone({ secret, phone }: VerifyPhonePayload, res: NextApiResponse) {
   const validations = await database.phoneValidation.findMany({
     where: {
       secret,
@@ -57,8 +54,7 @@ async function verifyPhone(
   const acceptedValidation = validations.find((validation) => {
     if (!secret || validation.secret !== secret) return false;
     if (!phone || validation.phone !== phone) return false;
-    if (Date.now() - 60 * 60 * 1000 > validation.sendTime.getTime())
-      return false;
+    if (Date.now() - 60 * 60 * 1000 > validation.sendTime.getTime()) return false;
     return true;
   });
   if (!acceptedValidation) {
@@ -80,11 +76,9 @@ async function verifyPhone(
   return { sessionPayload, user: { id, username }, jwt };
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const action = validatePayload(req.body);
-    return await verifyPhone(action, res);
-  }
-);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const action = validatePayload(req.body);
+  return await verifyPhone(action, res);
+});
 
 export default APIHandler;

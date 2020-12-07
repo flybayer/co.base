@@ -17,10 +17,7 @@ const HeaderLinkA = styled.a`
   font-size: 18px;
 `;
 
-function HeaderLink({
-  href,
-  children,
-}: React.PropsWithChildren<{ href: string }>) {
+function HeaderLink({ href, children }: React.PropsWithChildren<{ href: string }>) {
   return (
     <Link href={href} passHref>
       <HeaderLinkA>{children}</HeaderLinkA>

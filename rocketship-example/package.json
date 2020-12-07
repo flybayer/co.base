@@ -9,6 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "fs-extra": "^9.0.1",
+    "json-schema-to-typescript": "^10.0.0",
     "minimist": "^1.2.5",
     "next": "10.0.1",
     "node-fetch": "^2.6.1",

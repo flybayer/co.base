@@ -1,10 +1,10 @@
-import Head from "next/head";
-import { GetStaticProps } from "next";
-import AvenCloud, { AvenCloudLoad } from "../AvenCloud";
+import Head from 'next/head';
+import { GetStaticProps } from 'next';
+import AvenCloud, { AvenCloudLoad } from '../AvenCloud';
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const preload = await AvenCloud.load({
-    "pricing-plans": true,
+    'pricing-plans': true,
   });
   return {
     props: {
@@ -15,7 +15,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 };
 
 export default function Home({ preload }: { preload: AvenCloudLoad }) {
-  const pricingPlans = AvenCloud.useNode("pricing-plans", preload);
+  const pricingPlans = AvenCloud.useNode('pricing-plans', preload);
   console.log({ pricingPlans });
 
   return (
@@ -31,7 +31,7 @@ export default function Home({ preload }: { preload: AvenCloudLoad }) {
         <p>Pricing Plans:</p>
         {pricingPlans.map((t) => (
           <p key={t.key}>
-            {t.title} : {t["price-per-month"]}
+            {t.title} : {t['price-per-month']}
           </p>
         ))}
       </main>

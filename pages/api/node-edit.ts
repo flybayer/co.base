@@ -30,34 +30,24 @@ function validatePayload(input: any): NodeEditPayload {
   };
 }
 
-async function nodeEdit(
-  user: APIUser,
-  { value, siteName, address }: NodeEditPayload,
-  res: NextApiResponse
-) {
-  const whereQ = address.reduce<any>(
-    (last: ManyQuery, childKey: string): ManyQuery => {
-      return { site: { name: siteName }, parentNode: last, key: childKey };
-    },
-    null
-  ) as ManyQuery;
+async function nodeEdit(user: APIUser, { value, siteName, address }: NodeEditPayload, res: NextApiResponse) {
+  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
+    return { site: { name: siteName }, parentNode: last, key: childKey };
+  }, null) as ManyQuery;
   if (!whereQ) throw new Error("unknown address");
   const node = await database.siteNode.findFirst({
     where: whereQ,
     select: { schema: true, id: true },
   });
   const schema = (node?.schema as NodeSchema) || DEFAULT_SCHEMA;
-  if (schema.type !== "record")
-    throw new Error("may not modify a node set. use children instead");
+  if (schema.type !== "record") throw new Error("may not modify a node set. use children instead");
   const recordSchema = schema.record;
   if (!recordSchema) throw new Error("internal error. schema not found.");
   const validate = ajv.compile(recordSchema);
   if (!validate(value)) {
     const errors = validate.errors as DefinedError[];
     throw new Error400({
-      message: `Invalid: ${errors
-        .map((e) => `${e.dataPath} ${e.message}`)
-        .join(", ")}`,
+      message: `Invalid: ${errors.map((e) => `${e.dataPath} ${e.message}`).join(", ")}`,
       name: "ValidationError",
       data: { validationErrors: errors },
     });
@@ -70,15 +60,13 @@ async function nodeEdit(
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await nodeEdit(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await nodeEdit(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

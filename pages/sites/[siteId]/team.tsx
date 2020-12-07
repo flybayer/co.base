@@ -127,17 +127,10 @@ function InviteRoleForm({ siteName }: { siteName: string }) {
       <ModalBody>
         <FormControl>
           <FormLabel htmlFor="role-input">New Role</FormLabel>
-          <ControlledSelect
-            options={SITE_ROLES}
-            id="role"
-            name="role"
-            control={control}
-          />
+          <ControlledSelect options={SITE_ROLES} id="role" name="role" control={control} />
         </FormControl>
         <FormControl>
-          <FormLabel htmlFor="email-input">
-            Recipient Email or Aven Username
-          </FormLabel>
+          <FormLabel htmlFor="email-input">Recipient Email or Aven Username</FormLabel>
           <ControlledInput
             name="email_username"
             id="email-input"
@@ -184,7 +177,7 @@ export default function SiteTeamPage({
     role: string;
     user: { username: string; name: string | null; id: number; email: string };
   }>;
-}) {
+}): React.ReactNode {
   const { push } = useRouter();
   return (
     <BasicSiteLayout
@@ -193,7 +186,7 @@ export default function SiteTeamPage({
           <SiteTabs tab="team" siteName={siteName} />
           <ListContainer>
             {siteRoles.map(({ user, role }) => (
-              <div>
+              <div key={user.id}>
                 {user.name || user.email} ({role})
                 {role !== "owner" && (
                   <Select

@@ -14,17 +14,10 @@ function validatePayload(input: any): NodeDestroyPayload {
   return { siteName: input.siteName, address: input.address };
 }
 
-async function nodeDestroy(
-  user: APIUser,
-  { siteName, address }: NodeDestroyPayload,
-  res: NextApiResponse
-) {
-  const whereQ = address.reduce<any>(
-    (last: ManyQuery, childKey: string): ManyQuery => {
-      return { site: { name: siteName }, parentNode: last, key: childKey };
-    },
-    null
-  ) as ManyQuery;
+async function nodeDestroy(user: APIUser, { siteName, address }: NodeDestroyPayload, res: NextApiResponse) {
+  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
+    return { site: { name: siteName }, parentNode: last, key: childKey };
+  }, null) as ManyQuery;
   if (!whereQ) {
     throw new Error("could not even construct a wuwqery");
   }
@@ -33,15 +26,13 @@ async function nodeDestroy(
   });
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    await nodeDestroy(verifiedUser, validatePayload(req.body), res);
-    return {};
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  await nodeDestroy(verifiedUser, validatePayload(req.body), res);
+  return {};
+});
 
 export default APIHandler;

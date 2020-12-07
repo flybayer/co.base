@@ -16,11 +16,7 @@ function validatePayload(input: any): ClipSetTagsPayload {
   };
 }
 
-async function clipSetTags(
-  verifiedUser: APIUser,
-  { clipId, tags }: ClipSetTagsPayload,
-  _res: NextApiResponse
-) {
+async function clipSetTags(verifiedUser: APIUser, { clipId, tags }: ClipSetTagsPayload, _res: NextApiResponse) {
   if (!verifiedUser) {
     throw new Error("Not logged in");
   }
@@ -39,14 +35,12 @@ async function clipSetTags(
   return {};
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    return await clipSetTags(verifiedUser, validatePayload(req.body), res);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  return await clipSetTags(verifiedUser, validatePayload(req.body), res);
+});
 
 export default APIHandler;

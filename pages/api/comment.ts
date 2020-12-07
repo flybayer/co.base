@@ -31,11 +31,7 @@ function validatePayload(input: any): CommentPayload {
   return { message, page };
 }
 
-async function publishComment(
-  user: APIUser,
-  { message, page }: CommentPayload,
-  res: NextApiResponse
-) {
+async function publishComment(user: APIUser, { message, page }: CommentPayload, res: NextApiResponse) {
   const comment = await database.comment.create({
     data: {
       user: { connect: { id: user.id } },
@@ -46,14 +42,12 @@ async function publishComment(
   return { id: comment.id };
 }
 
-const APIHandler = createAPI(
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const verifiedUser = await getVerifiedUser(req);
-    if (!verifiedUser) {
-      throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
-    }
-    return await publishComment(verifiedUser, validatePayload(req.body), res);
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  if (!verifiedUser) {
+    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-);
+  return await publishComment(verifiedUser, validatePayload(req.body), res);
+});
 
 export default APIHandler;
