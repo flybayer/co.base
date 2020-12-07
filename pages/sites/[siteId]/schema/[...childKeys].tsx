@@ -326,7 +326,7 @@ function SchemaEdit({
               onSchema({ type: "boolean" });
             }}
           >
-            Boolean
+            Switch
           </MenuItem>
           <MenuItem
             onClick={() => {

@@ -1,8 +1,8 @@
-import { PojoMap } from 'pojo-maps';
-import { useEffect, useState } from 'react';
-import fetchHTTP from 'node-fetch';
+import { PojoMap } from "pojo-maps";
+import { useEffect, useState } from "react";
+import fetchHTTP from "node-fetch";
 
-const DEFAULT_HOST = 'aven.io';
+const DEFAULT_HOST = "aven.io";
 const DEFAULT_USE_SSL = true;
 
 export type SiteLoad<SiteDataSchema> = {
@@ -34,10 +34,10 @@ export function createClient<SiteDataSchema>(options: ClientOptions) {
   const { siteName } = options;
 
   async function api(endpoint: string, payload: any) {
-    return fetchHTTP(`http${connectionUseSSL ? 's' : ''}://${connectionHost}/api/${endpoint}`, {
-      method: 'post',
+    return fetchHTTP(`http${connectionUseSSL ? "s" : ""}://${connectionHost}/api/${endpoint}`, {
+      method: "post",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     }).then(async (res) => {
@@ -48,23 +48,24 @@ export function createClient<SiteDataSchema>(options: ClientOptions) {
   }
 
   async function fetch(key: keyof SiteDataSchema) {
-    const resp = await api('node-get', {
+    const resp = await api("node-get", {
       siteName,
       address: [key],
     });
     if (resp.value === null) {
-      throw new Error('value not found');
+      throw new Error("value not found");
     }
     const value: SiteDataSchema[typeof key] = resp.value;
     return { value, freshFor: 30 };
   }
-  function useNode(key: keyof SiteDataSchema, preload?: SiteLoad<SiteDataSchema>) {
-    type A = SiteDataSchema[keyof SiteDataSchema];
-    const preloadedValue = preload?.values[key];
-    const [state, setState] = useState<A | undefined>(preloadedValue);
-    console.log('USE NODE', { key, siteName, preload });
+  function useNode<SchemaKey extends keyof SiteDataSchema>(key: SchemaKey, preload?: SiteLoad<SiteDataSchema>) {
+    type NodeType = SiteDataSchema[SchemaKey];
+    const preloadedValues = preload?.values;
+    const preloadedValue = preloadedValues[key];
+    const [state, setState] = useState<NodeType | undefined>(preloadedValue);
+    console.log("USE NODE", { key, siteName, preload });
     useEffect(() => {
-      console.log('CLIENT SUBSCRIBE TO ZE VALUE?!', {
+      console.log("CLIENT SUBSCRIBE TO ZE VALUE?!", {
         key,
         siteName,
         connectionHost,

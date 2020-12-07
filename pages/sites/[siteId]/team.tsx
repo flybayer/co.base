@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import { Control, Controller, useForm } from "react-hook-form";
 import { api } from "../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
@@ -177,7 +178,7 @@ export default function SiteTeamPage({
     role: string;
     user: { username: string; name: string | null; id: number; email: string };
   }>;
-}): React.ReactNode {
+}): ReactElement {
   const { push } = useRouter();
   return (
     <BasicSiteLayout

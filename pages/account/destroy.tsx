@@ -1,10 +1,11 @@
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
+import { ReactElement } from "react";
 import { EmptyObject } from "react-hook-form";
 import { APIButton } from "../../components/APIButton";
 import SiteLayout from "../../components/SiteLayout";
 
-export default function DestroyAccountPage({}: EmptyObject): React.ReactNode {
+export default function DestroyAccountPage({}: EmptyObject): ReactElement {
   const { push } = useRouter();
   return (
     <SiteLayout

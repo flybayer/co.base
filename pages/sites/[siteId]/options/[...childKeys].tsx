@@ -3,8 +3,8 @@ import { useRouter } from "next/router";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import { database } from "../../../../data/database";
-import { Button, Divider, Spinner } from "@chakra-ui/core";
-import { useState } from "react";
+import { Button, Divider, Select, Spinner } from "@chakra-ui/core";
+import { ReactElement, ReactNode, useState } from "react";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { LinkButton } from "../../../../components/Buttons";
 import NodeChildren from "../../../../components/NodeChildren";
@@ -102,6 +102,33 @@ function DeleteButton({ siteName, address, nodeType }: { siteName: string; addre
   );
 }
 
+const TTL_VALUES = [
+  { label: "Live Connection", value: 0 },
+  { label: "10 Seconds", value: 10 },
+  { label: "1 Minute", value: 60 },
+  { label: "5 Minutes", value: 60 * 5 },
+  { label: "15 Minutes", value: 60 * 15 },
+  { label: "1 Hour", value: 60 * 60 },
+  { label: "12 Hours", value: 60 * 60 * 12 },
+  { label: "1 Day", value: 60 * 60 * 24 },
+];
+
+function ExpirationSection({ schema }: { schema?: NodeSchema }): ReactElement | null {
+  if (schema?.type !== "record") return null;
+
+  return (
+    <MainSection title="Expiration">
+      Lifetime before refresh:
+      <Select value={schema.tti}>
+        {TTL_VALUES.map(({ value, label }) => (
+          <option value={value} key={value}>
+            {label}
+          </option>
+        ))}
+      </Select>
+    </MainSection>
+  );
+}
 export default function NodeOptionsPage({
   siteName,
   address,
@@ -116,7 +143,7 @@ export default function NodeOptionsPage({
       key: string;
     }>;
   };
-}): React.ReactNode {
+}): ReactElement {
   const { push } = useRouter();
   return (
     <BasicSiteLayout
@@ -124,6 +151,8 @@ export default function NodeOptionsPage({
         <>
           <SiteTabs tab="options" siteName={siteName} address={address} />
           <MainContainer>
+            <ExpirationSection schema={node.schema} />
+
             <MainSection title="Move Node">
               <CenterButtonRow>
                 <Button>Rename {address.join("/")}</Button>

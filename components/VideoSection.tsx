@@ -1,13 +1,7 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { InnerWidth } from "./CommonViews";
 
-export default function VideoSection({
-  vimeoId,
-  videoTitle,
-}: {
-  vimeoId: string;
-  videoTitle: string;
-}): React.ReactNode {
+export default function VideoSection({ vimeoId, videoTitle }: { vimeoId: string; videoTitle: string }): ReactElement {
   return (
     <div
       style={{

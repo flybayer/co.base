@@ -22,6 +22,7 @@ export type ValueSchema = NumberSchema | BooleanSchema | StringSchema | ArraySch
 export type SchemaType = ValueSchema["type"];
 export type RecordSchema = {
   type: "record";
+  tti?: number;
   record?: ValueSchema;
 };
 

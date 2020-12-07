@@ -1,10 +1,10 @@
 import "../styles/globals.css";
 import Head from "next/head";
-import React from "react";
+import React, { ReactElement } from "react";
 import { MDXProvider } from "@mdx-js/react";
 import Title from "../components/Title";
 import { Global } from "@emotion/react";
-import prism from "../styles/prism.js";
+import prism from "../styles/prism";
 import { ChakraProvider } from "@chakra-ui/core";
 
 const mdComponents = {
@@ -34,7 +34,7 @@ export default function getMDXPageComponent<PageProps>({
 }: {
   Component: React.ComponentType<PageProps>;
   pageProps: PageProps;
-}): React.ReactNode {
+}): ReactElement {
   return (
     <Page>
       <Global styles={prism} />
