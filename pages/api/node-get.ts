@@ -5,6 +5,7 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 import { NodeSchema } from "../../data/NodeSchema";
 import { setAnyCors } from "../../api-utils/cors";
+import Ajv from "ajv";
 
 export type NodeGetPayload = {
   address: string[];
@@ -16,12 +17,26 @@ export type ManyQuery = null | {
   key: string;
   site: { name: string };
 };
+const ajv = new Ajv();
+const validate = ajv.compile({
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    siteName: { type: "string" },
+    address: { type: "array", items: { type: "string" } },
+  },
+});
 
 function validatePayload(input: any): NodeGetPayload {
-  return {
-    address: input.address,
-    siteName: input.siteName,
-  };
+  if (validate(input)) {
+    return input as NodeGetPayload;
+  }
+  throw new Error(ajv.errorsText());
+
+  // return {
+  //   address: input.address,
+  //   siteName: input.siteName,
+  // };
 }
 
 async function nodeGet({ siteName, address }: NodeGetPayload, res: NextApiResponse) {

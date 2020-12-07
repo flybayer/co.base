@@ -7,6 +7,7 @@ import { looksLikeAnEmail } from "../../api-utils/looksLikeAnEmail";
 import { sendEmail } from "../../api-utils/email";
 import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import getSiteLink from "../../api-utils/getSiteLink";
+import { btoa } from "../../api-utils/Base64";
 
 type SiteRole = "admin" | "manager" | "writer" | "reader";
 
@@ -54,7 +55,7 @@ async function siteRoleInvite(
           secret: validationToken,
         },
       });
-      destLink = `/login/verify?token=${validationToken}&redirect=${encodeURIComponent(destLink)}`;
+      destLink = `/login/verify?token=${validationToken}&redirect=${encodeURIComponent(destLink)}&email=${btoa(email)}`;
     }
 
     await sendEmail(

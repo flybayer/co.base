@@ -6,8 +6,22 @@ import { parseCookies } from "nookies";
 import setCookie from "../../api-utils/setCookie";
 import { encode } from "../../api-utils/jwt";
 import { createAPI } from "../../api-utils/createAPI";
+import { atob } from "../../api-utils/Base64";
 
-export async function verifyEmail(secret: string) {
+export async function verifyEmail(
+  secret: string,
+  email: string,
+): Promise<{
+  verifiedEmail: string;
+  jwt: string;
+  user: {
+    email: string | null;
+    name: string | null;
+    id: number;
+    username: string;
+  };
+  isNewUser: boolean;
+}> {
   const userSelectQuery = { name: true, id: true, email: true, username: true };
   const emailValidation = await database.emailValidation.findUnique({
     where: { secret },
@@ -20,7 +34,11 @@ export async function verifyEmail(secret: string) {
     where: { secret },
   });
 
-  const { emailTime, email, user: validatedUser, secret: storedSecret } = emailValidation;
+  if (email !== emailValidation.email) {
+    // not sure how this would happen. in theory the token is sufficient proof and this check is not needed at all
+    throw new Error500({ message: "Invalid email", name: "WrongEmail" });
+  }
+  const { emailTime, user: validatedUser, secret: storedSecret } = emailValidation;
   if (!storedSecret) {
     throw new Error500({
       message: "No validation token to compare",
@@ -77,8 +95,8 @@ export async function verifyEmail(secret: string) {
   return { verifiedEmail: email, jwt, user, isNewUser };
 }
 
-async function emailAuth(secret: string, parsedCookies: any, res: NextApiResponse) {
-  const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(secret);
+async function emailAuth(secret: string, email: string, parsedCookies: any, res: NextApiResponse) {
+  const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(secret, email);
   setCookie(res, "AvenSession", jwt);
   return {
     verifiedEmail,
@@ -90,8 +108,11 @@ async function emailAuth(secret: string, parsedCookies: any, res: NextApiRespons
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const parsedCookies = parseCookies({ req });
+  // todo, shouldn't we verify the users current jwt??
   const token = req.query.token;
-  await emailAuth(String(token), parsedCookies, res);
+  const emailEncoded = req.query.email;
+  const email = atob(String(emailEncoded));
+  await emailAuth(String(token), email, parsedCookies, res);
   res.redirect("/account");
   return res;
 });
