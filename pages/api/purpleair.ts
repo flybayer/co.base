@@ -55,6 +55,7 @@ function getCity(id: number) {
   const cached = cityCache[id];
   if (cached) return cached;
   const city = cities.find((c: any) => c.cityId === id);
+  if (!city) throw new Error("City not found");
   const lon = city.loc.coordinates[0];
   const lat = city.loc.coordinates[1];
   const sensors = [];

@@ -5,14 +5,16 @@ import redirect from "../../api-utils/redirect";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { SubscriptionLevel, getPriceIdOfSubscriptionLevel } from "../../data/subscription";
 import { createAPI } from "../../api-utils/createAPI";
+import { Error500 } from "../../api-utils/Errors";
 
 async function redirectBillingSubscribe(verifiedUser: APIUser | null, level: SubscriptionLevel, res: NextApiResponse) {
   if (!verifiedUser) {
     return {};
   }
+  if (!stripe) throw new Error500({ name: "SripeNotReady" });
   const existingCustomerId = verifiedUser.stripeCustomerId;
   let newCustomer = null;
-  if (!existingCustomerId) {
+  if (!existingCustomerId && verifiedUser.email) {
     newCustomer = await stripe.customers.create({
       email: verifiedUser.email,
       metadata: {
@@ -21,7 +23,7 @@ async function redirectBillingSubscribe(verifiedUser: APIUser | null, level: Sub
       },
     });
   }
-  const customerId = existingCustomerId || newCustomer.id;
+  const customerId = existingCustomerId || newCustomer?.id;
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [

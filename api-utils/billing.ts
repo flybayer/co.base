@@ -2,6 +2,8 @@ import { getLevelOfProductId } from "../data/subscription";
 import stripe from "./stripe";
 import { database } from "../data/database";
 import { APIUser } from "./getVerifedUser";
+import { ReactElement } from "react";
+import { Error500 } from "./Errors";
 
 export interface StripePlan {
   object: "plan";
@@ -43,9 +45,14 @@ export interface StripeCustomer {
   };
 }
 
-export async function resetSubscription(user: APIUser) {
-  const customer: StripeCustomer = await stripe.customers.retrieve(user.stripeCustomerId);
-  const subscription = customer.subscriptions.data[0];
+export async function resetSubscription(user: APIUser): Promise<void> {
+  if (!user.stripeCustomerId) {
+    throw new Error("No customer set on user");
+  }
+  if (!stripe) throw new Error500({ name: "SripeNotReady" });
+  const customer = await stripe.customers.retrieve(user.stripeCustomerId);
+  if (customer.deleted) throw new Error("Customer gone from stripe");
+  const subscription = customer.subscriptions?.data[0];
   if (!subscription) {
     await database.user.update({
       where: { id: user.id },
@@ -56,7 +63,8 @@ export async function resetSubscription(user: APIUser) {
     });
     return;
   }
-  const productId = subscription.plan.product;
+  const plan = (subscription as any).plan as StripePlan;
+  const productId = plan.product;
   const newSubscriptionLevel = getLevelOfProductId(productId);
   await database.user.update({
     where: { id: user.id },
@@ -69,11 +77,15 @@ export async function resetSubscription(user: APIUser) {
   // console.log(customer);
 }
 
-export async function syncSubscription(subscription: StripeSubscription) {
+export async function syncSubscription(subscription: StripeSubscription): Promise<void> {
   // a notification from stripe that a subscription has added or changed.
   const productId = subscription.plan.product;
   const newSubscriptionLevel = getLevelOfProductId(productId);
-  const customer: StripeCustomer = await stripe.customers.retrieve(subscription.customer);
+  if (!stripe) throw new Error500({ name: "SripeNotReady" });
+  const customer = await stripe.customers.retrieve(subscription.customer);
+  if (customer.deleted) {
+    throw new Error(`Customer gone`);
+  }
   const userId = Number(customer.metadata.userId);
   const user = await database.user.findOne({
     where: { id: userId },

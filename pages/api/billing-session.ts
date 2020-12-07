@@ -5,10 +5,13 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import stripe from "../../api-utils/stripe";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { createAPI } from "../../api-utils/createAPI";
+import { Error500 } from "../../api-utils/Errors";
 
 async function redirectBillingSession(user: APIUser, res: NextApiResponse) {
   let stripeCustomer = user.stripeCustomerId;
+  if (!stripe) throw new Error500({ name: "SripeNotReady" });
   if (!stripeCustomer) {
+    if (!user.email) throw new Error500({ name: "InternalError11", message: "Internal Error 11" });
     const customer = await stripe.customers.create({
       metadata: {
         userId: user.id,

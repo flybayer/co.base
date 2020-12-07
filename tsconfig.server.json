@@ -17,5 +17,5 @@
     "jsx": "preserve"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "rocketship-example"]
+  "exclude": ["node_modules", "rocketship-example", "cloud-example", "cloud-ancient-archive"]
 }

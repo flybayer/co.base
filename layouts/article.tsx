@@ -1,8 +1,7 @@
 import { GetServerSideProps, GetStaticProps } from "next";
-import React, { ReactNode } from "react";
+import React, { ReactElement, ReactNode } from "react";
 import SiteLayout from "../components/SiteLayout";
 import { FrontMatter } from "../data/frontMatter";
-import VideoLayout from "./video";
 import SiteHead from "../components/SiteHead";
 import VideoSection from "../components/VideoSection";
 
@@ -25,15 +24,14 @@ export default function ArticleLayout({
   frontMatter,
   page,
   comments,
-  ...restProps
 }: React.PropsWithChildren<{
   frontMatter: FrontMatter;
   page: string;
   comments: Comment[];
-}>) {
+}>): ReactElement {
   let topContent: ReactNode = null;
   if (frontMatter.vimeoId) {
-    topContent = <VideoSection videoTitle={frontMatter.videoTitle} vimeoId={frontMatter.vimeoId} />;
+    topContent = <VideoSection videoTitle={frontMatter.videoTitle || ""} vimeoId={frontMatter.vimeoId} />;
   }
   return (
     <>
