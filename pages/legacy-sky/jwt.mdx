@@ -1,0 +1,21 @@
+---
+title: "JWT"
+publishedAt: "2020-08-16"
+summary: "What is a JWT and how does it power your session?"
+---
+
+A session is the information that the server has to keep you logged in. Usually this is held in server memory, a database, or in the case of a JWT, you can give the session to the client.
+
+A JWT is unique because it is securely signed and then given to the client for ve-verification.
+
+## Cookies
+
+A cookie is a convenient mechanism to store the JWT because the client and server both have the ability to rewrite the cookie.
+
+This comes in handy because the server performs the login, and the client can cut off its own access by clearing the cookie.
+
+## How Aven does it
+
+We store a JWT as a cookie when the user logs in, which includes their user ID.
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

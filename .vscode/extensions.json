@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "pflannery.vscode-versionlens",
+    "anseki.vscode-color",
+    "esbenp.prettier-vscode",
+    "prisma.prisma",
+    "hashicorp.terraform",
+    "dbaeumer.vscode-eslint"
+  ]
+}

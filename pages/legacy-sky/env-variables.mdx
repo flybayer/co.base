@@ -1,0 +1,38 @@
+---
+title: "Env Variables"
+publishedAt: "2020-08-25"
+summary: "What are env variables, and how do we use them?"
+---
+
+Environment variables are the best way to pass secrets into your application, because it allows you to keep them out of your codebase. Never put secrets inside of your code!
+
+## ENV in your shell
+
+These are variables that are always available in your command line.
+
+## Access Env Variables from nodejs
+
+The variables in node are available in an object called `process.env`, so if you had a variable called `STRIPE_SECRET_KEY`, it would be available inside your application with `process.env.STRIPE_SECRET_KEY`
+
+## Home dotfiles preload your env
+
+Usually the env variables can be set in your `~/.profile` file, but if you're using ZSH, you will need them in your `~/.zshrc` file. Also if you're using bash, you can use a `~/.bashrc` file.
+
+These files are shell scripts that are run before your shell opens. They can include snippets that set the environment variable.
+
+```bash
+export MY_VAR="SECRET VALUE HERE"
+```
+
+Changes to these files are not picked up in your existing shells.  So if you want the 
+
+## Dotenv Files
+
+Next.js uses a package called dotenv to load files from your local repository to set environment variables during runtime.
+
+
+Files you place inside your codebase that allow you to define additional environment variables.
+
+
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

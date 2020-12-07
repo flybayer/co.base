@@ -1,0 +1,114 @@
+---
+title: "Aven Product Design"
+publishedAt: "2020-08-14"
+summary: "Documenting the design of the Aven app"
+---
+
+Currently it is very complicated to develop with the [Aven Stack](/aven-stack).
+
+### The Problem
+
+Deploying a web app with the "raw stack" is not easy. The process involves:
+
+- Create Next.js app
+- Set up MDX
+- Build app with TypeScript+React and CSS+emotion theme
+- Set up db schema with prisma
+- Configure local database in docker container
+- Build email-based user authentication
+- Set local env variables
+- Commit with Git and publish to GitHub over SSH
+- Register domain
+- Create VPS with Debian, SSH
+- Setup DNS
+- Install nginx, configure nginx for domain
+- Install LetsEncrypt for https
+- Set up production database
+- Set up deploy key
+- Check out repo for production, configure production env file
+- Set up systemd service for production app
+- Deploy script
+- Github workflow to trigger deployment
+
+This "raw stack" allows you to deploy your custom app for $5/month, plus the cost of your domain.
+
+And even after all of this complexity, the app will be a bit fragile and may lack important features.
+
+### Approach to Solution
+
+This "raw stack" attempts to follow the best practices for deploying an application in an affordable way. So we will not fundamentally change the technology.
+
+Instead, we will provide tools and education which automate the tricky parts, while still providing full control of the raw stack. The framework will provide additional glue code to keep your code simple. Eventually the framework will add features and become more robust, but your application will never need to change.
+
+Our tools will be built with a modern UI, to assist people who are unfamiliar with the command line. We will eventually build CLI and programmatic access for those who prefer it.
+
+### MVP Solution
+
+Distribute a cross-platform app which guides the developer through the app setup and deployment process.
+
+Ideally we would use a cross-platform technology like React Native to build a beautiful destop app for each platform. But for the sake of simplicity, it will be easiest to build a web application that runs with a local nodejs server.
+
+#### Distribution
+
+The application can be distributed on npm, with a very simple distribution: Users run `npx aven-cloud-manager`, which downloads the framework, starts the server, and opens the cloud manager in your browser.
+
+#### Configuration
+
+First, the manager needs to be configured. If it finds a configuration file at `~/.aven-cloud.json`, it is loaded. Otherwise, it asks for a pre-existing config file location, or it walks you through the initial setup.
+
+The configuration json file contains:
+
+- Validate version of nodejs and yarn
+- The SSH key pair location (default to `~/.ssh/id_rsa`)
+  - Ensure the key exists. Create it if not.
+- Git
+  - Prompt for public key installation into github
+  - Name and Email
+- List of local app paths
+- Global secrets / env variables
+  - DigitalOcean (required for deployment)
+  - SendGrid (optional)
+  - Stripe (optional)
+- Ensure docker is running
+- Server and Deployment state
+
+If there are no local apps configured, the manager offers the ability to initialize a new app, or add a local path.
+
+When the manager is launched from a local app path, it automatically opens the development workflow for that app.
+
+#### Initialization
+
+The init flow is a form that gets the name, path, and possibly other basic metadata. Then it copies the template app to your path, and opens the development workflow.
+
+#### Development
+
+There is a start button that runs `yarn dev`. Once running, there is a stop button and a restart button.
+
+The UI shows the terminal output of your application, and a link to the running app.
+
+The development page has a deployment button to configure 
+
+#### Deployment
+
+If the config lacks a Digital Ocean API key, it is prompted at this time.
+
+On the initial run of the deployment workflow, the server will not exist. The workflow will create one for you, and save it in the config file.
+
+The deploy process will write the configuration files, install dependencies on the server, copy and build the app, and start it.
+
+
+
+#### Github Action
+
+The manager helps enable automatic deployment of production upon commits to GitHub. It produces the workflow file and outputs the secrets that you will provide to GitHub.
+
+### Features after MVP
+
+#### Optional Local Docker
+
+#### Improved Migration & Git Integration
+
+
+
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

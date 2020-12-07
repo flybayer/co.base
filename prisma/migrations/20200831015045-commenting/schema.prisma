@@ -1,0 +1,38 @@
+datasource db {
+  provider = "postgresql"
+  url = "***"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  Int       @default(autoincrement()) @id
+  username            String    @unique
+  email               String    @unique
+  name                String?
+  passwordSalt        String?
+  passwordHash        String?
+  stripeCustomerId    String?
+  giftedAccess        Int       @default(0)
+  subscribedAccess    Int       @default(0)
+  subscriptionEndTime DateTime?
+  Comment             Comment[]
+}
+
+model EmailValidation {
+  id        Int      @default(autoincrement()) @id
+  emailTime DateTime @default(now())
+  email     String
+  secret    String   @unique
+}
+
+model Comment {
+  id          Int      @default(autoincrement()) @id
+  publishTime DateTime @default(now())
+  page        String
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  message     String
+}

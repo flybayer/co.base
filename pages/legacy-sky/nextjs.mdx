@@ -1,0 +1,40 @@
+Aven uses [Next.js](https://nextjs.org/) because it provides a powerful system for building and rendering a React website, while still giving control to the developer.
+
+Under the hood, Next.js uses [WebPack](https://webpack.js.org/) to perform many development and building tasks.
+
+This page describes some great features provided by Next.js
+
+## File-Based Routing
+
+Inside the `pages` directory of our code is all of the URLs that are publicly accessable on the site.
+
+There are wildcard urls such as the comment page at `pages/[pageId]/comment.tsx`, such that any pageId can have a comment page. The comment page can then access the pageId from the nextjs router.
+
+```
+// import { useRouter } from "next/router";
+
+// Inside your page:
+  const router = useRouter();
+  const { pageId } = router.query;
+```
+
+## Supporting Live Reloads
+
+In development mode, your site automatically changes when you change your code, thanks to Nextjs (and Webpack under the hood).
+
+## Links
+
+Nextjs has a link component that is smarter than the HTML `<a>` tag you would traditionally use.
+
+When you use the Link component from next.js, it will transition to the page in javascript for a faster user experience. But if the user clicks before the app has loaded, the link works normally.
+
+
+## MDX
+
+We use next-mdx-enhanced to configure the front-matter of our MDX content.
+
+## TypeScript Support
+
+Coming soon.
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

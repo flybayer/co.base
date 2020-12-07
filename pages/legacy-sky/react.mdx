@@ -1,0 +1,41 @@
+---
+title: "React"
+publishedAt: 2020-09-02
+summary: "Why and how does Aven use React?"
+---
+
+React allows us to create components, which encapsulate blocks of user interface and application logic.
+
+Thanks to React we write our components as JSX, which provides a HTML-looking feature within JavaScript or TypeScript.
+
+Aven uses React because it allows us to share components between the client, server, native mobile apps. Another key component is [next.js](/nextjs), which manages the setup of your React code on the client and server.
+
+### Example Component
+
+A simple "title" component in `components/Title.js` may look like this:
+
+```jsx
+function Title({ text }) {
+  return <h1>{text}</h1>
+}
+```
+
+Here you can see that it will render a h1 tag. You can also see that an object of props is passed into the function, and this component gets a `text` prop.
+
+To use this component in your app or `.mdx` files, you also use JSX:
+
+```jsx
+import Title from '../components/Title';
+
+// inside MDX or some other component:
+
+<Title text="Hello, React!" />
+```
+
+Check GitHub to see [the components in use by this site](https://github.com/AvenCloud/sky/tree/main/components).
+
+### Hooks
+
+https://reactjs.org/docs/hooks-overview.html
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

@@ -1,0 +1,82 @@
+---
+title: React Native Local Storage
+layout: course-chapter
+seriesNumber: 8
+vimeoId: 464445622
+---
+
+We need to persist the favorites after the app re-launches, so we will use a local storage module to save the data.
+
+### Install AsyncStorage
+
+The [AsyncStorage](https://react-native-community.github.io/async-storage/docs/usage/) is a basic key-value database for React Native. Because the module involves native code, [Expo reccomends](https://docs.expo.io/versions/latest/sdk/async-storage/): 
+
+```
+expo install @react-native-community/async-storage
+```
+
+
+### Usage
+
+AsyncStorage has two essential functions for storing and retreiving data. To store data, use `setItem`:
+
+```jsx
+await AsyncStorage.setItem('message', 'hello!')
+```
+
+And to retreive that string we saved:
+
+```jsx
+const message = await AsyncStorage.getItem('message')
+if (message === null) {
+  console.log('Could not find message!')
+} else {
+  console.log(message)
+}
+```
+
+
+### Store Integration
+
+```jsx:CityFavorites.js
+import AsyncStorage from "@react-native-community/async-storage";
+
+let favorites = null;
+const subscriptions = new Set();
+
+const FAVS_STORAGE_KEY = "FavoriteCities-0";
+
+AsyncStorage.getItem(FAVS_STORAGE_KEY)
+  .then((result) => {
+    if (data === null) {
+      favorites = [];
+    } else {
+      const storedFavorites = JSON.parse(data);
+      favorites = storedFavorites;
+    }
+    subscriptions.forEach((handle) => {
+      handle(favorites);
+    });
+  })
+  .catch((err) => {
+    console.error("Could not load favorites", err);
+  });
+
+function setFavorites(transaction) {
+  favorites = transaction(favorites);
+  subscriptions.forEach((handle) => {
+    handle(favorites);
+  });
+  AsyncStorage.setItem(FAVS_STORAGE_KEY, JSON.stringify(favorites)).catch(
+    (err) => {
+      console.error("Could not write favorites", err);
+    }
+  );
+}
+```
+
+Now even after our app restarts, we persist the favorite cities. Now that the city favorite feature is complete, we will move on to the map component to display our city's air sensors.
+
+#### [Next: Maps](/react-native-maps)
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

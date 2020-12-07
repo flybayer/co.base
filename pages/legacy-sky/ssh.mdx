@@ -1,0 +1,30 @@
+SSH is a technology that allows computers to securely connect with one-another. You can run the ssh program on your computer to access the command line of another computer, or run any program on the other computer. The "other computer" will be running the SSH server, usually openSSH or "sshd".
+
+A number of other programs use SSH to securely communicate, including git and [SFTP](/ftp-sftp#sftp) clients.
+
+## Local Setup
+
+- [Set up SSH on a mac](./setup-ssh-github-mac)
+- Windows coming soon
+
+## SSH Server Setup
+
+macOS and most distributions of linux come with a ssh server pre-installed.
+
+### Enable SSH: MacOS
+
+Go to your System Preferences, open "Sharing", and make sure "Remote Login" is enabled.
+
+### Enable SSH: Linux (or at least, Debian/Ubuntu)
+
+To see if your SSH server is running: `systemctl status sshd`
+
+To start it: `sudo systemctl start sshd`, or if you don't have it, you can `sudo apt-get install openssh-server`
+
+### Set up Authorized Hosts
+
+By default, nobody is allowed to remotely log in to your user account (good!).
+
+To grant somebody access, you can put their public key in the ~/.ssh/authorized_keys file
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

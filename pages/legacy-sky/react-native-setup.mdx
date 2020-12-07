@@ -1,0 +1,62 @@
+---
+title: React Native Setup
+layout: course-chapter
+seriesNumber: 1
+vimeoId: 464102654
+---
+
+### Javascript
+
+This course assumes you are familiar with modern [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Introduction).
+
+### Expo 
+
+Expo is a suite of tools for building apps with React Native. It provides great development tools, and services like push notifications and code updates.
+
+### React Native
+
+RN allows us to build native experiences for iOS and Android. In addition to mobile, you can use React Native to build web sites and desktop apps.
+
+### React
+
+React Native builds upon React, a library that allows you to construct apps with components, and use a HTML-like language extension called JSX to declare the components.
+
+### Dependencies and Setup
+
+Works on any Windows, Linux or macOS computer. You will need:
+
+- A code editor - [VSCode](https://code.visualstudio.com/) is reccommended
+- [Expo CLI](https://docs.expo.io/get-started/installation/#1-expo-cli)
+- [Expo App on your smartphone](https://docs.expo.io/get-started/installation/#2-expo-client-app-for-ios-and).
+
+The Expo CLI requires:
+
+- [NodeJS LTS](https://nodejs.org/en/)
+- [Git](https://git-scm.com/)
+- If you're on macOS, [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall)
+
+To install the Expo CLI, run `npm install --global expo-cli`
+
+The Expo development app can be found in the iOS App Store or Google's Play Store.
+
+If you don't want to use your phone, you can set up an [Android emulator](https://docs.expo.io/workflow/android-studio-emulator/) or if you're on a mac, an [iOS simulator](https://docs.expo.io/workflow/ios-simulator/).
+
+### Create your app
+
+Run `expo init violet` (or you can choose a different name than violet), choose managed blank app.
+
+Now enter your app directory with `cd violet`
+
+## Run your app
+
+Open the app folder in your code editor. 
+
+Start the server with `expo start`. The server will start and the web browser will open, or you can go to the URL that the server prints out.
+
+Make sure your phone is on the same wifi, and the home screen of the Expo app should show your app, which you can tap on. Or, you can open the app by scanning the QR code with your phone.
+
+Open `App.js`, and see that the text matches on your phone. Try editing the text and saving the file to make sure changes go to your phone.
+
+#### [Next: React Native Components](/react-native-components)
+
+<!--- © Aven LLC and Aven Contributors. Licensed under Creative Commons BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/ -->

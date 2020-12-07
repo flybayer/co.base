@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="479px" height="398px" viewBox="0 0 479 398" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Slice</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="AvenLogoPlain" transform="translate(0.000000, 143.000000)" fill="#0E2B49">
+            <polygon id="Combined-Shape-path" points="373 0 341.073394 0 330.431193 21.2 288.926606 21.2 278.284404 42.4 319.788991 42.4 309.172225 63.5998839 267.642202 63.6 257 84.8 298.504587 84.8 287.862385 106 319.788991 106"></polygon>
+            <polygon id="Combined-Shape-path" points="230.5 0 178 106 209.5 106 262 0"></polygon>
+            <polygon id="Combined-Shape-path" points="106.5 0 75 0 127.5 106 159 106"></polygon>
+            <polygon id="Combined-Shape-path" points="168 53 189 11 147 11"></polygon>
+            <polygon id="Combined-Shape-path" points="416 53 437 11 395 11"></polygon>
+            <polygon id="Combined-Shape-path" points="383 53 362 95 404 95"></polygon>
+            <polygon id="Combined-Shape-path" points="63 53 42 95 84 95"></polygon>
+            <polygon id="Combined-Shape-path" points="0 0 1.20508048e-14 106 53 0"></polygon>
+            <polygon id="Combined-Shape-path" transform="translate(452.500000, 53.000000) scale(-1, -1) translate(-452.500000, -53.000000) " points="426 0 426 106 479 1.47104551e-15"></polygon>
+        </g>
+        <rect id="Rectangle" fill="#0E2B49" x="0" y="277" width="479" height="121"></rect>
+        <rect id="Rectangle" fill="#0E2B49" x="0" y="0" width="479" height="121"></rect>
+    </g>
+</svg>
