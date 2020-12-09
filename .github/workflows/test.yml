@@ -5,15 +5,29 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    name: Basic Tests
+  ts-build:
+    name: TS Build Server
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Latest
+        uses: AvenCloud/actions/checkout@v1
       - name: Yarn
         run: yarn
+      - name: Prisma Client Generate
+        run: yarn prisma generate
+      - name: Build TS
+        run: yarn build:server
+
+  test:
+    name: Lint
+    needs: [ts-build]
+    steps:
       - name: Lint
         run: yarn lint
-      - name: Build
-        run: yarn build
-      - name: Test
-        run: yarn test
+
+  build-next:
+    name: Build Next
+    needs: [ts-build]
+    steps:
+      - name: Build Next
+        run: yarn build:next
