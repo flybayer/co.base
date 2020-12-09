@@ -10,18 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Yarn
-        shell: bash
-        run: |
-          yarn
+        run: yarn
       - name: Lint
-        shell: bash
-        run: |
-          yarn lint
+        run: yarn lint
       - name: Build
-        shell: bash
-        run: |
-          yarn build
+        run: yarn build
       - name: Test
-        shell: bash
-        run: |
-          yarn test
+        run: yarn test
