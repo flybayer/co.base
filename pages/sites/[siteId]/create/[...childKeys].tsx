@@ -1,7 +1,7 @@
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { useForm } from "react-hook-form";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
@@ -32,15 +32,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      user: verifiedUser,
       siteName,
       address: childKeys,
     },
   };
 };
 
-export default function CreateChildPage({ siteName, address }: { siteName: string; address: string[] }) {
+export default function CreateChildPage({
+  user,
+  siteName,
+  address,
+}: {
+  user: APIUser;
+  siteName: string;
+  address: string[];
+}): ReactElement {
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="data" siteName={siteName} address={address} />

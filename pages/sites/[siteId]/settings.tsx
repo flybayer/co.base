@@ -1,6 +1,7 @@
 import { Button } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import { APIButton } from "../../../components/APIButton";
 import { CenterButtonRow, MainSection } from "../../../components/CommonViews";
@@ -28,10 +29,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function SiteTeamPage({ user, siteName }: { user: APIUser; siteName: string }) {
+export default function SiteTeamPage({ user, siteName }: { user: APIUser; siteName: string }): ReactElement {
   const { push } = useRouter();
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="settings" siteName={siteName} />

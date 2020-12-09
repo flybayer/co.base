@@ -11,6 +11,7 @@ import { createAPI } from "../../api-utils/createAPI";
 import bcrypt from "bcrypt";
 import { encode } from "../../api-utils/jwt";
 import { looksLikeAnEmail } from "../../api-utils/looksLikeAnEmail";
+import { btoa } from "../../api-utils/Base64";
 
 type Email = string;
 
@@ -115,7 +116,7 @@ async function loginRegisterEmail(
       existingUser ? "Welcome back to Aven" : "Welcome to Aven",
       `Click here to log in:
     
-    ${getSiteLink(`/login/verify?token=${validationToken}`)}
+    ${getSiteLink(`/login/verify?token=${validationToken}&email=${btoa(emailToVerify)}`)}
     `,
     );
     return { status: 2, email };

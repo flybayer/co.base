@@ -1,0 +1,27 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: Basic Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Yarn
+        shell: bash
+        run: |
+          yarn
+      - name: Lint
+        shell: bash
+        run: |
+          yarn lint
+      - name: Build
+        shell: bash
+        run: |
+          yarn build
+      - name: Test
+        shell: bash
+        run: |
+          yarn test

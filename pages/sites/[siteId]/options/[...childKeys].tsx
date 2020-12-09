@@ -166,10 +166,12 @@ function ExpirationSection({
   );
 }
 export default function NodeOptionsPage({
+  user,
   siteName,
   address,
   node,
 }: {
+  user: APIUser;
   siteName: string;
   address: string[];
   node: {
@@ -183,6 +185,7 @@ export default function NodeOptionsPage({
   const { push } = useRouter();
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="options" siteName={siteName} address={address} />

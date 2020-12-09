@@ -1,9 +1,11 @@
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import styled from "@emotion/styled";
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 import { articleStyles } from "../styles/article";
 import { InnerWidth } from "./CommonViews";
+import { APIUser } from "../api-utils/getVerifedUser";
+import Head from "next/head";
 
 const MainArea = styled.main`
   flex-grow: 1;
@@ -34,6 +36,7 @@ const BasicContainer = styled.div`
 `;
 
 export default function SiteLayout({
+  user,
   topContent,
   headContent,
   content,
@@ -41,16 +44,17 @@ export default function SiteLayout({
   bottomContent,
   hideFooter = false,
 }: {
+  user?: APIUser;
   topContent?: ReactNode;
   headContent?: ReactNode;
   content: ReactNode;
   tailContent?: ReactNode;
   bottomContent?: ReactNode;
   hideFooter?: boolean;
-}) {
+}): ReactElement {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader user={user} />
       <MainArea>
         {topContent}
         <InnerWidth>
@@ -66,23 +70,29 @@ export default function SiteLayout({
 }
 
 export function BasicSiteLayout({
+  title,
+  user,
   topContent,
   headContent,
   content,
   tailContent,
   bottomContent,
-  hideFooter = false,
 }: {
+  title?: string;
+  user?: APIUser;
   topContent?: ReactNode;
   headContent?: ReactNode;
   content: ReactNode;
   tailContent?: ReactNode;
   bottomContent?: ReactNode;
   hideFooter?: boolean;
-}) {
+}): ReactElement {
   return (
     <>
-      <SiteHeader />
+      <Head>
+        <title>{title || "Aven Cloud"}</title>
+      </Head>
+      <SiteHeader user={user} />
       <MainArea>
         {topContent}
         <InnerWidth>

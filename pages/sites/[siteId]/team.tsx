@@ -182,6 +182,7 @@ export default function SiteTeamPage({
   const { push } = useRouter();
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="team" siteName={siteName} />

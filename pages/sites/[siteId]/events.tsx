@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteTabs } from "../../../components/SiteTabs";
@@ -25,10 +26,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function SiteTeamPage({ user, siteName }: { user: APIUser; siteName: string }) {
+export default function SiteTeamPage({ user, siteName }: { user: APIUser; siteName: string }): ReactElement {
   const { push } = useRouter();
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="events" siteName={siteName} />

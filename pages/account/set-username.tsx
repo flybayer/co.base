@@ -1,10 +1,10 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import SiteLayout from "../../components/SiteLayout";
+import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
 import { useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
-import React from "react";
+import React, { ReactElement } from "react";
 import Router from "next/router";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../api-utils/api";
@@ -64,9 +64,10 @@ function ChangeUsernameForm({ username }: { username: string | null }) {
   );
 }
 
-export default function setNamePage({ user }: { user: APIUser }) {
+export default function setNamePage({ user }: { user: APIUser }): ReactElement {
   return (
-    <SiteLayout
+    <BasicSiteLayout
+      user={user}
       content={
         <>
           <h3>Set Public Username</h3>

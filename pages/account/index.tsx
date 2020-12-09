@@ -10,7 +10,7 @@ import Link from "next/link";
 import { database } from "../../data/database";
 import styled from "@emotion/styled";
 import { api } from "../../api-utils/api";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { CenterButtonRow, MainSection } from "../../components/CommonViews";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -139,7 +139,7 @@ function DeleteEmailButton({ email }: { email: string }) {
   );
 }
 
-export default function accountPage({
+export default function AccountPage({
   user,
   sites,
   emails,
@@ -147,9 +147,10 @@ export default function accountPage({
   user: APIUser;
   sites: Array<{ id: number; name: string }>;
   emails: Array<{ email: string; primary?: true; unverified?: true }>;
-}) {
+}): ReactElement {
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <MainSection title="Sites">

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import SiteLayout from "../../components/SiteLayout";
 import { GetServerSideProps } from "next";
-import React from "react";
+import React, { ReactElement } from "react";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import ControlledInput from "../../components/ControlledInput";
 import { Button, Divider, FormControl, FormHelperText, FormLabel, Spinner } from "@chakra-ui/core";
@@ -156,7 +156,7 @@ function LoginForm({}) {
   );
 }
 
-export default function LoginPage({ currentUser }: { currentUser?: APIUser }) {
+export default function LoginPage({ currentUser }: { currentUser?: APIUser }): ReactElement {
   return (
     <>
       <Head>

@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import NodeChildren from "../../../components/NodeChildren";
 import { BasicSiteLayout } from "../../../components/SiteLayout";
@@ -41,10 +42,11 @@ export default function SiteSettingsPage({
   nodes: Array<{
     key: string;
   }>;
-}) {
+}): ReactElement {
   const { push } = useRouter();
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="site" siteName={siteName} />

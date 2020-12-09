@@ -6,6 +6,7 @@ import { createAPI } from "../../api-utils/createAPI";
 import bcrypt from "bcrypt";
 import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import { sendEmail } from "../../api-utils/email";
+import { btoa } from "../../api-utils/Base64";
 import getSiteLink from "../../api-utils/getSiteLink";
 
 export type AddEmailPayload = {
@@ -32,7 +33,7 @@ async function addEmail(user: APIUser, { email }: AddEmailPayload, res: NextApiR
     "Verify New Email Address",
     `Click here to verify your email:
   
-  ${getSiteLink(`/account/verify?token=${validationToken}`)}
+  ${getSiteLink(`/account/verify?token=${validationToken}&email=${btoa(email)}`)}
   `,
   );
 }

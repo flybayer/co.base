@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import SiteLayout from "../../components/SiteLayout";
+import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import React, { PropsWithChildren, ReactNode, useState } from "react";
 import Router from "next/router";
@@ -64,7 +64,8 @@ function CreateSiteForm({}: PropsWithChildren<EmptyObject>) {
 
 export default function setNamePage({ user }: { user: APIUser }): ReactNode {
   return (
-    <SiteLayout
+    <BasicSiteLayout
+      user={user}
       content={
         <>
           <h3>Create Site</h3>

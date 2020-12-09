@@ -1,14 +1,28 @@
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
 import { ReactElement } from "react";
-import { EmptyObject } from "react-hook-form";
+import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { APIButton } from "../../components/APIButton";
-import SiteLayout from "../../components/SiteLayout";
+import { BasicSiteLayout } from "../../components/SiteLayout";
 
-export default function DestroyAccountPage({}: EmptyObject): ReactElement {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const verifiedUser = await getVerifiedUser(context.req);
+  if (!verifiedUser) {
+    return { redirect: { destination: "/login", permanent: false } };
+  }
+  return {
+    props: {
+      user: verifiedUser,
+    },
+  };
+};
+
+export default function DestroyAccountPage({ user }: { user: APIUser }): ReactElement {
   const { push } = useRouter();
   return (
-    <SiteLayout
+    <BasicSiteLayout
+      user={user}
       content={
         <>
           <h3>Destroy User Account</h3>

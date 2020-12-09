@@ -20,10 +20,10 @@ import {
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
-import { useCallback, useState } from "react";
+import { ReactElement, useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../../../../api-utils/api";
-import getVerifiedUser from "../../../../api-utils/getVerifedUser";
+import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import {
   ArrayContainer,
   BooleanContainer,
@@ -432,19 +432,22 @@ function SchemaForm({ siteName, address, schema }: { siteName: string; address: 
 }
 
 export default function ChildNodePage({
+  user,
   siteName,
   address,
   node,
 }: {
+  user: APIUser;
   siteName: string;
   address: string[];
   node: {
     value: any;
     schema: NodeSchema;
   };
-}) {
+}): ReactElement {
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="schema" siteName={siteName} address={address} />

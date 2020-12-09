@@ -3,7 +3,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import { LinkButton } from "../../../../components/Buttons";
@@ -391,16 +391,19 @@ function NodeContent({ siteName, address, node }: { siteName: string; address: s
 }
 
 export default function NodeDashboard({
+  user,
   siteName,
   address,
   node,
 }: {
+  user: APIUser;
   siteName: string;
   address: string[];
   node: Node;
-}) {
+}): ReactElement {
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="data" siteName={siteName} address={address} />

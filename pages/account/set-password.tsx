@@ -1,7 +1,7 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import SiteLayout from "../../components/SiteLayout";
+import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React from "react";
@@ -66,7 +66,8 @@ function ChangePasswordForm({}: EmptyObject) {
 
 export default function setNamePage({ user }: { user: APIUser }) {
   return (
-    <SiteLayout
+    <BasicSiteLayout
+      user={user}
       content={
         <>
           <h3>Set Password</h3>

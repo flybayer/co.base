@@ -1,9 +1,10 @@
 import { Button } from "@chakra-ui/core";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { api } from "../../../../api-utils/api";
-import getVerifiedUser from "../../../../api-utils/getVerifedUser";
+import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import ControlledInput from "../../../../components/ControlledInput";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
@@ -91,18 +92,21 @@ function EditForm({ value, siteName, address }: { value: any; siteName: string; 
 }
 
 export default function ChildNodePage({
+  user,
   siteName,
   address,
   node,
 }: {
+  user: APIUser;
   siteName: string;
   address: string[];
   node: {
     value: any;
   };
-}) {
+}): ReactElement {
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <SiteTabs tab="data" siteName={siteName} address={address} />

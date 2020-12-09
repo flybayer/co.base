@@ -1,6 +1,7 @@
 import { push } from "all-the-cities";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
+import { ReactElement } from "react";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import { APIButton } from "../../../components/APIButton";
 import { MainSection } from "../../../components/CommonViews";
@@ -32,10 +33,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function siteInvitePage({ user, siteName }: { user: APIUser; siteName: string }) {
+export default function siteInvitePage({ user, siteName }: { user: APIUser; siteName: string }): ReactElement {
   const { push } = useRouter();
   return (
     <BasicSiteLayout
+      user={user}
       content={
         <>
           <MainSection title={`Invite to ${siteName}`}>

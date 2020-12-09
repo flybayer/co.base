@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import styled from "@emotion/styled";
 import Link from "next/link";
 import { InnerWidth } from "./CommonViews";
 import AvenLogo from "./AvenLogo";
 import { Button } from "@chakra-ui/core";
+import { APIUser } from "../api-utils/getVerifedUser";
 
 const HeaderContainer = styled.div`
   background: #0e2b49;
@@ -24,7 +25,7 @@ function HeaderLink({ href, children }: React.PropsWithChildren<{ href: string }
     </Link>
   );
 }
-export default function SiteHeader() {
+export default function SiteHeader({ user }: { user?: APIUser }): ReactElement {
   return (
     <HeaderContainer>
       <InnerWidth>
@@ -53,8 +54,16 @@ export default function SiteHeader() {
             alignItems: "center",
           }}
         >
-          <HeaderLink href="/login">Log In</HeaderLink>
-          <Button colorScheme="blue">Create a Data Site</Button>
+          {user ? (
+            <>
+              <HeaderLink href="/account">Account</HeaderLink>
+            </>
+          ) : (
+            <>
+              <HeaderLink href="/login">Log In</HeaderLink>
+              <Button colorScheme="blue">Create a Data Site</Button>
+            </>
+          )}
         </span>
       </InnerWidth>
     </HeaderContainer>

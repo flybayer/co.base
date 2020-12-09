@@ -4,7 +4,7 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
-import React from "react";
+import React, { ReactElement } from "react";
 import Router, { useRouter } from "next/router";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../api-utils/api";
@@ -62,9 +62,10 @@ function AddEmailForm({}: EmptyObject) {
   );
 }
 
-export default function AddEmailPage({ user }: { user: APIUser }) {
+export default function AddEmailPage({ user }: { user: APIUser }): ReactElement {
   return (
     <SiteLayout
+      user={user}
       content={
         <>
           <h3>Add an Email to your Account</h3>
