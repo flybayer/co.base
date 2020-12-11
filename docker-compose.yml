@@ -16,7 +16,7 @@ services:
       MINIO_ACCESS_KEY: test-minio-access
       MINIO_SECRET_KEY: test-minio-secret
     ports:
-      - 9000:9000
+      - 5998:9000
     volumes:
       - s3-data:/data
 
