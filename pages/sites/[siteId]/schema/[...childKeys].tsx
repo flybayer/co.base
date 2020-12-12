@@ -54,12 +54,7 @@ import {
   ValueSchema,
   VALUE_TYPES,
 } from "../../../../data/NodeSchema";
-
-type ManyQuery = null | {
-  parentNode: ManyQuery;
-  key: string;
-  site: { name: string };
-};
+import { siteNodeQuery } from "../../../../data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -75,12 +70,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const site = await database.site.findUnique({ where: { name: siteName } });
   const siteQuery = { name: siteName };
-  const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
-    return { site: siteQuery, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (whereQ === null) throw new Error("Unexpectd nullfail");
+  const nodesQuery = siteNodeQuery(siteName, childKeys);
+  if (nodesQuery === null) throw new Error("Unexpectd nullfail");
   const nodes = await database.siteNode.findMany({
-    where: whereQ,
+    where: nodesQuery,
   });
   const node = nodes[0];
   if (!node) {
@@ -382,8 +375,32 @@ function RecordForm({
   );
 }
 
-function RecordSetForm({ schema, onSchema }: { schema: RecordSetSchema; onSchema: (r: RecordSetSchema) => void }) {
-  return null;
+function RecordSetForm({
+  label,
+  schema,
+  onSchema,
+}: {
+  label: string;
+  schema: RecordSetSchema;
+  onSchema: (r: RecordSetSchema) => void;
+}) {
+  const handleRecordSchema = useCallback(
+    (childRecord) => {
+      onSchema({ ...schema, childRecord });
+    },
+    [schema],
+  );
+
+  return (
+    <>
+      <h3>&quot;{label}&quot; nodes follow the following schema:</h3>
+      <SchemaEdit
+        label={`${label} type`}
+        schema={schema.childRecord || DEFAULT_VALUE_SCHEMA}
+        onSchema={handleRecordSchema}
+      />
+    </>
+  );
 }
 
 function SchemaForm({ siteName, address, schema }: { siteName: string; address: string[]; schema: NodeSchema }) {
@@ -393,7 +410,7 @@ function SchemaForm({ siteName, address, schema }: { siteName: string; address: 
   if (draftSchema.type === "record") {
     form = <RecordForm schema={draftSchema} onSchema={setDraftSchema} label={address[address.length - 1]} />;
   } else if (draftSchema.type === "record-set") {
-    form = <RecordSetForm schema={draftSchema} onSchema={setDraftSchema} />;
+    form = <RecordSetForm schema={draftSchema} onSchema={setDraftSchema} label={address[address.length - 1]} />;
   }
   return (
     <div>

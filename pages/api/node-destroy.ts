@@ -3,7 +3,7 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
-import { ManyQuery } from "./node-create";
+import { siteNodeQuery } from "../../data/SiteNodes";
 
 export type NodeDestroyPayload = {
   siteName: string;
@@ -15,14 +15,12 @@ function validatePayload(input: any): NodeDestroyPayload {
 }
 
 async function nodeDestroy(user: APIUser, { siteName, address }: NodeDestroyPayload, res: NextApiResponse) {
-  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
-    return { site: { name: siteName }, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (!whereQ) {
+  const nodesQuery = siteNodeQuery(siteName, address);
+  if (!nodesQuery) {
     throw new Error("could not even construct a wuwqery");
   }
   await database.siteNode.deleteMany({
-    where: whereQ,
+    where: nodesQuery,
   });
 }
 

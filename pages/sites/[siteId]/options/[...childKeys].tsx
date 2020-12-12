@@ -14,12 +14,8 @@ import { CenterButtonRow, MainContainer, MainSection } from "../../../../compone
 import styled from "@emotion/styled";
 import { observe, generate } from "fast-json-patch";
 import { handleAsync } from "../../../../data/handleAsync";
+import { siteNodeQuery } from "../../../../data/SiteNodes";
 
-type ManyQuery = null | {
-  parentNode: ManyQuery;
-  key: string;
-  site: { name: string };
-};
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
   const siteName = String(context.params?.siteId);
@@ -36,12 +32,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const siteQuery = { name: siteName };
   //   const node = await database.siteNode()
 
-  const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
-    return { site: siteQuery, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (whereQ === null) throw new Error("Unexpectd nullfail");
+  const nodeQuery = siteNodeQuery(siteName, childKeys);
+  if (nodeQuery === null) throw new Error("Unexpectd nullfail");
   const nodes = await database.siteNode.findMany({
-    where: whereQ,
+    where: nodeQuery,
     include: { SiteNode: { select: { id: true, key: true } } },
   });
 

@@ -47,7 +47,7 @@ export function getValueSchema(t: SchemaType): ValueSchema {
   if (t === "string") return { type: "string" };
   if (t === "boolean") return { type: "boolean" };
   if (t === "number") return { type: "number" };
-  throw new Error("Uknown vnaaluwelc hew");
+  throw new Error(`Could not find SchemaType "${t}"`);
 }
 
 export function getDefaultValue(schema: ValueSchema): any {

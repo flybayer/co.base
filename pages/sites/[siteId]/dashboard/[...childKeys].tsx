@@ -23,12 +23,8 @@ import {
   RecordSetSchema,
   ValueSchema,
 } from "../../../../data/NodeSchema";
+import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../data/SiteNodes";
 
-type ManyQuery = null | {
-  parentNode: ManyQuery;
-  key: string;
-  site: { name: string };
-};
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
   const siteName = String(context.params?.siteId);
@@ -45,13 +41,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const siteQuery = { name: siteName };
   //   const node = await database.siteNode()
 
-  const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
-    return { site: siteQuery, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (whereQ === null) throw new Error("Unexpectd nullfail");
+  const nodesQuery = siteNodeQuery(siteName, childKeys);
+  if (nodesQuery === null) throw new Error("Unexpectd nullfail");
   const nodes = await database.siteNode.findMany({
-    where: whereQ,
-    include: { SiteNode: { select: { id: true, key: true } } },
+    where: nodesQuery,
+    include: {
+      SiteNode: { select: { id: true, key: true } },
+      ...parentNodeSchemaQuery,
+    },
   });
 
   //   const childNodes = await database.siteNode.findMany({
@@ -76,6 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       node: {
         value: node.value,
         schema: node.schema,
+        parentSchemas: digSchemas(node.parentNode as any),
         children,
       },
     },
@@ -111,7 +109,8 @@ const BooleanText = styled.p`
 
 type Node<Schema = NodeSchema> = {
   value: any;
-  schema: Schema;
+  schema: Schema | null;
+  parentSchemas: Schema[];
   children: Array<{
     key: string;
   }>;
@@ -337,9 +336,18 @@ function ValueDisplay({
   return <p>{JSON.stringify(value)}</p>;
 }
 
-function RecordContent({ siteName, address, node }: { siteName: string; address: string[]; node: Node<RecordSchema> }) {
-  const recordSchema = node.schema?.record ? node.schema?.record : DEFAULT_VALUE_SCHEMA;
-  const initValue = node.value === null ? getDefaultValue(recordSchema) : node.value;
+function RecordContent({
+  siteName,
+  address,
+  node,
+  contentSchema,
+}: {
+  siteName: string;
+  address: string[];
+  node: Node<RecordSchema>;
+  contentSchema: ValueSchema;
+}) {
+  const initValue = node.value === null ? getDefaultValue(contentSchema) : node.value;
   const [savedNodeValue, setSavedNodeValue] = useState(initValue);
   const [nodeValue, setNodeValue] = useState(initValue);
   return (
@@ -348,7 +356,7 @@ function RecordContent({ siteName, address, node }: { siteName: string; address:
         // label={`${siteName}/${address.join("/")}`}
         label=""
         value={nodeValue}
-        schema={recordSchema}
+        schema={contentSchema}
         onValue={(value: any) => {
           setNodeValue(value);
         }}
@@ -383,11 +391,23 @@ function RecordContent({ siteName, address, node }: { siteName: string; address:
 }
 
 function NodeContent({ siteName, address, node }: { siteName: string; address: string[]; node: Node }) {
-  const nodeType = node.schema?.type || "record";
-  if (nodeType === "record-set") {
+  const parent = node.parentSchemas[0];
+  if (parent?.type === "record") {
+    return <p>Unexpected condition: this node is the child of a record.</p>;
+  }
+  if (node.schema?.type === "record-set") {
     return <RecordSetContent siteName={siteName} address={address} node={node as Node<RecordSetSchema>} />;
   }
-  return <RecordContent siteName={siteName} address={address} node={node as Node<RecordSchema>} />;
+  let schema = node.schema?.type === "record" ? node.schema?.record : undefined;
+  if (parent?.type === "record-set" && parent.childRecord) {
+    schema = parent.childRecord;
+  }
+  if (schema === undefined) {
+    return <p>Unexpected condition: Schema not found.</p>;
+  }
+  return (
+    <RecordContent siteName={siteName} address={address} node={node as Node<RecordSchema>} contentSchema={schema} />
+  );
 }
 
 export default function NodeDashboard({

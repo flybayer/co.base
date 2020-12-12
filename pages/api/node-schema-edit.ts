@@ -5,18 +5,13 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 import { NodeSchema } from "../../data/NodeSchema";
 import { applyPatch } from "fast-json-patch";
+import { siteNodeQuery } from "../../data/SiteNodes";
 
 export type NodeSchemaEditPayload = {
   address: string[];
   siteName: string;
   schema?: NodeSchema;
   schemaPatch?: any;
-};
-
-export type ManyQuery = null | {
-  parentNode: ManyQuery;
-  key: string;
-  site: { name: string };
 };
 
 function validatePayload(input: any): NodeSchemaEditPayload {
@@ -33,18 +28,16 @@ async function nodeSchemaEdit(
   { schema, schemaPatch, siteName, address }: NodeSchemaEditPayload,
   res: NextApiResponse,
 ) {
-  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
-    return { site: { name: siteName }, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (!whereQ) throw new Error("unknown address");
+  const nodesQuery = siteNodeQuery(siteName, address);
+  if (!nodesQuery) throw new Error("unknown address");
   if (schema) {
     await database.siteNode.updateMany({
-      where: whereQ,
+      where: nodesQuery,
       data: { schema },
     });
   } else if (schemaPatch) {
     const prevNode = await database.siteNode.findFirst({
-      where: whereQ,
+      where: nodesQuery,
       select: { id: true, schema: true }, // todo: save a version number. then when doing the write, add a where version clause so that race conditions are avoided. also for values of course.
     });
     if (!prevNode) {
@@ -52,7 +45,7 @@ async function nodeSchemaEdit(
     }
     const newSchema = applyPatch(prevNode.schema, schemaPatch);
     await database.siteNode.updateMany({
-      where: whereQ,
+      where: nodesQuery,
       data: { schema: newSchema.newDocument },
     });
   }

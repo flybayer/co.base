@@ -1,12 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
+import { Error400, Error404 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
-import { DEFAULT_SCHEMA, NodeSchema } from "../../data/NodeSchema";
+import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../data/NodeSchema";
 
 import Ajv, { JSONSchemaType, DefinedError } from "ajv";
 import { InputJsonObject, JsonArray, JsonObject } from "@prisma/client";
+import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../data/SiteNodes";
 
 const ajv = new Ajv();
 
@@ -14,12 +15,6 @@ export type NodeEditPayload = {
   address: string[];
   siteName: string;
   value: InputJsonObject;
-};
-
-export type ManyQuery = null | {
-  parentNode: ManyQuery;
-  key: string;
-  site: { name: string };
 };
 
 function validatePayload(input: any): NodeEditPayload {
@@ -31,17 +26,22 @@ function validatePayload(input: any): NodeEditPayload {
 }
 
 async function nodeEdit(user: APIUser, { value, siteName, address }: NodeEditPayload, res: NextApiResponse) {
-  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
-    return { site: { name: siteName }, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (!whereQ) throw new Error("unknown address");
+  const nodesQuery = siteNodeQuery(siteName, address);
+  if (!nodesQuery) throw new Error("unknown address");
   const node = await database.siteNode.findFirst({
-    where: whereQ,
-    select: { schema: true, id: true },
+    where: nodesQuery,
+    select: { schema: true, id: true, ...parentNodeSchemaQuery },
   });
-  const schema = (node?.schema as NodeSchema) || DEFAULT_SCHEMA;
-  if (schema.type !== "record") throw new Error("may not modify a node set. use children instead");
-  const recordSchema = schema.record;
+  if (!node) throw new Error404({ name: "NodeNotFound" });
+  const parentSchemas = digSchemas(node.parentNode as any);
+  let recordSchema: ValueSchema | null = null;
+  if (parentSchemas[0]?.type === "record-set") {
+    if (parentSchemas[0]?.childRecord) recordSchema = parentSchemas[0]?.childRecord;
+  } else {
+    const schema = (node?.schema as NodeSchema) || DEFAULT_SCHEMA;
+    if (schema.type !== "record") throw new Error("may not modify a node set. use children instead");
+    if (schema.record) recordSchema = schema.record;
+  }
   if (!recordSchema) throw new Error("internal error. schema not found.");
   const validate = ajv.compile(recordSchema);
   if (!validate(value)) {
@@ -53,7 +53,7 @@ async function nodeEdit(user: APIUser, { value, siteName, address }: NodeEditPay
     });
   }
   await database.siteNode.updateMany({
-    where: whereQ,
+    where: nodesQuery,
     data: { value },
   });
 

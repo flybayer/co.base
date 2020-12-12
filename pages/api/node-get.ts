@@ -6,17 +6,13 @@ import { createAPI } from "../../api-utils/createAPI";
 import { NodeSchema } from "../../data/NodeSchema";
 import { setAnyCors } from "../../api-utils/cors";
 import Ajv from "ajv";
+import { siteNodeQuery } from "../../data/SiteNodes";
 
 export type NodeGetPayload = {
   address: string[];
   siteName: string;
 };
 
-export type ManyQuery = null | {
-  parentNode: ManyQuery;
-  key: string;
-  site: { name: string };
-};
 const ajv = new Ajv();
 const validate = ajv.compile({
   type: "object",
@@ -40,12 +36,10 @@ function validatePayload(input: any): NodeGetPayload {
 }
 
 async function nodeGet({ siteName, address }: NodeGetPayload, res: NextApiResponse) {
-  const whereQ = address.reduce<any>((last: ManyQuery, childKey: string): ManyQuery => {
-    return { site: { name: siteName }, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (!whereQ) throw new Error("unknown address");
+  const nodesQuery = siteNodeQuery(siteName, address);
+  if (!nodesQuery) throw new Error("unknown address");
   const node = await database.siteNode.findFirst({
-    where: whereQ,
+    where: nodesQuery,
   });
   if (!node) throw new Error404({ message: "Node Not Found", name: "NodeNotFound" });
   const nodeSchema = node.schema as NodeSchema;

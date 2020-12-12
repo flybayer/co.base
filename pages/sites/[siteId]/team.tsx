@@ -26,6 +26,8 @@ import { SiteTabs } from "../../../components/SiteTabs";
 import { database } from "../../../data/database";
 import { SITE_ROLES } from "../../../data/SiteRoles";
 
+const BasicUserQuery = { select: { name: true, id: true, username: true, email: true } };
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
   const siteName = String(context.params?.siteId);
@@ -40,22 +42,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const site = await database.site.findUnique({
     where: { name: siteName },
     include: {
-      owner: { select: { name: true, id: true, username: true, email: true } },
+      owner: BasicUserQuery,
+      SiteRoleInvitation: {
+        include: { recipientUser: BasicUserQuery },
+      },
       SiteRole: {
         include: {
-          user: {
-            select: { name: true, id: true, username: true, email: true },
-          },
+          user: BasicUserQuery,
         },
       },
     },
   });
   const owner = site?.owner;
-  const siteRoles =
-    site?.SiteRole.map((siteRole) => ({
+  const siteRoles = [
+    ...(site?.SiteRole.map((siteRole) => ({
       role: siteRole.name,
       user: siteRole.user,
-    })) || [];
+    })) || []),
+    ...(site?.SiteRoleInvitation.map((siteRoleInvite) => ({
+      role: siteRoleInvite.name,
+      user: siteRoleInvite.recipientUser,
+    })) || []),
+  ];
   owner && siteRoles.unshift({ user: owner, role: "owner" });
 
   return {

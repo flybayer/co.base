@@ -9,12 +9,8 @@ import ControlledInput from "../../../../components/ControlledInput";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
+import { siteNodeQuery } from "../../../../data/SiteNodes";
 
-type ManyQuery = null | {
-  parentNode: ManyQuery;
-  key: string;
-  site: { name: string };
-};
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
   const siteName = String(context.params?.siteId);
@@ -30,12 +26,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const site = await database.site.findUnique({ where: { name: siteName } });
   const siteQuery = { name: siteName };
 
-  const whereQ = childKeys.reduce<any>((last: ManyQuery, childKey: string, childKeyIndex: number): ManyQuery => {
-    return { site: siteQuery, parentNode: last, key: childKey };
-  }, null) as ManyQuery;
-  if (whereQ === null) throw new Error("Unexpectd nullfail");
+  const nodesQuery = siteNodeQuery(siteName, childKeys);
+  if (nodesQuery === null) throw new Error("Unexpectd nullfail");
   const nodes = await database.siteNode.findMany({
-    where: whereQ,
+    where: nodesQuery,
     include: { SiteNode: { select: { id: true, key: true } } },
   });
 

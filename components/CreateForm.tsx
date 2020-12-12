@@ -12,13 +12,14 @@ import {
   Spinner,
 } from "@chakra-ui/core";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../api-utils/api";
-import { NodeType, NODE_TYPES, SchemaType, VALUE_TYPES } from "../data/NodeSchema";
+import { handleAsync } from "../data/handleAsync";
+import { NodeSchema, NodeType, NODE_TYPES, SchemaType, VALUE_TYPES } from "../data/NodeSchema";
 import ControlledInput from "./ControlledInput";
 
-export function CreateNodeForm({ address, siteName }: { address: string[]; siteName: string }) {
+export function CreateAnyNodeForm({ address, siteName }: { address: string[]; siteName: string }): ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [type, setType] = useState<NodeType>("record");
   const { push } = useRouter();
@@ -35,22 +36,19 @@ export function CreateNodeForm({ address, siteName }: { address: string[]; siteN
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          api("node-create", {
-            address,
-            siteName,
-            type,
-            ...data,
-          })
-            .then(() => {
+          handleAsync(
+            api("node-create", {
+              address,
+              siteName,
+              type,
+              ...data,
+            }),
+            () => {
               push(`/sites/${siteName}/dashboard/${[...address, data.name].join("/")}`);
-            })
-            .catch((e) => {
-              console.error(e);
-              alert("failed");
-            })
-            .finally(() => {
-              setIsSubmitting(false);
-            });
+            },
+          ).finally(() => {
+            setIsSubmitting(false);
+          });
         })}
       >
         <FormControl>
@@ -93,4 +91,65 @@ export function CreateNodeForm({ address, siteName }: { address: string[]; siteN
       </form>
     </>
   );
+}
+
+export function CreateRecordSetNodeForm({ address, siteName }: { address: string[]; siteName: string }): ReactElement {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { push } = useRouter();
+  const { register, handleSubmit, errors, control } = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      name: "",
+    },
+  });
+  return (
+    <>
+      <h3>Create &quot;{address.join("/")}&quot; record</h3>
+      <form
+        onSubmit={handleSubmit((data) => {
+          setIsSubmitting(true);
+          api("node-create", {
+            address,
+            siteName,
+            ...data,
+          })
+            .then(() => {
+              push(`/sites/${siteName}/dashboard/${[...address, data.name].join("/")}`);
+            })
+            .catch((e) => {
+              console.error(e);
+              alert("failed");
+            })
+            .finally(() => {
+              setIsSubmitting(false);
+            });
+        })}
+      >
+        <FormControl>
+          <FormLabel htmlFor="name-input">Unique Key (URL friendly)</FormLabel>
+          <ControlledInput id="name-input" placeholder="my-data" name="name" control={control} />
+        </FormControl>
+        <Button type="submit">Create</Button>
+        {isSubmitting && <Spinner size="sm" />}
+      </form>
+    </>
+  );
+}
+
+export function CreateNodeForm({
+  address,
+  siteName,
+  parentSchema,
+}: {
+  address: string[];
+  siteName: string;
+  parentSchema?: NodeSchema;
+}): ReactElement | null {
+  if (parentSchema?.type === "record") {
+    return null;
+  }
+  if (parentSchema?.type === "record-set") {
+    return <CreateRecordSetNodeForm address={address} siteName={siteName} />;
+  }
+  return <CreateAnyNodeForm address={address} siteName={siteName} />;
 }
