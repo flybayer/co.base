@@ -52,7 +52,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
-function NewTokenForm({ siteName }: { siteName: string }): ReactElement {
+function NewTokenForm({
+  siteName,
+  onNewToken,
+}: {
+  siteName: string;
+  onNewToken: (t: { token: string; label: string; type: string }) => void;
+}): ReactElement {
   const { handleSubmit, errors, control } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -63,8 +69,8 @@ function NewTokenForm({ siteName }: { siteName: string }): ReactElement {
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        handleAsync(api("site-token-create", { siteName, ...data }), (result) => {
-          debugger;
+        handleAsync(api("site-token-create", { siteName, ...data }), ({ token }) => {
+          onNewToken({ token, ...data });
         });
       })}
     >
