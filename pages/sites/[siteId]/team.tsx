@@ -16,7 +16,7 @@ import {
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
-import { Control, Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { api } from "../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import ControlledInput from "../../../components/ControlledInput";
@@ -25,6 +25,7 @@ import { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteTabs } from "../../../components/SiteTabs";
 import { database } from "../../../data/database";
 import { SITE_ROLES } from "../../../data/SiteRoles";
+import { ControlledSelect } from "../../../components/ControlledSelect";
 
 const BasicUserQuery = { select: { name: true, id: true, username: true, email: true } };
 
@@ -75,39 +76,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function ControlledSelect({
-  options,
-  control,
-  name,
-  id,
-}: {
-  name: string;
-  id: string;
-  control: Control;
-  options: Array<{ key: string; name: string }>;
-}) {
-  return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ value, onChange }) => (
-        <Select
-          value={value}
-          id={id}
-          onChange={(e) => {
-            onChange(e.target.value);
-          }}
-        >
-          {options.map(({ key, name }) => (
-            <option key={key} value={key}>
-              {name}
-            </option>
-          ))}
-        </Select>
-      )}
-    />
-  );
-}
 function InviteRoleForm({ siteName }: { siteName: string }) {
   const { reload } = useRouter();
   const { handleSubmit, errors, control } = useForm({

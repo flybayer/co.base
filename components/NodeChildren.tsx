@@ -2,6 +2,7 @@ import { Divider } from "@chakra-ui/core";
 import { AddIcon } from "@chakra-ui/icons";
 import { ButtonContainer, ListContainer, ListLinkItem } from "./List";
 import { LinkButton } from "./Buttons";
+import { ReactElement } from "react";
 
 export default function NodeChildren({
   siteName,
@@ -13,7 +14,7 @@ export default function NodeChildren({
   childs: Array<{
     key: string;
   }>;
-}) {
+}): ReactElement {
   return (
     <ListContainer>
       {childs.map((child) => (

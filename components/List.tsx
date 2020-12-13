@@ -21,6 +21,13 @@ export const ListLink = styled.a`
     background-color: #eee;
   }
 `;
+export const ListItem = styled.div`
+  border-radius: 4px;
+  border-bottom: none;
+  padding: 10px;
+  margin-bottom: 6px;
+`;
+
 export function ListLinkItem({ label, href }: { label: string; href: string }) {
   return (
     <Link href={href} passHref>
