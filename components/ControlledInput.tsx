@@ -1,12 +1,12 @@
 import { Input, Textarea } from "@chakra-ui/core";
-import { FormEvent } from "react";
+import { FormEvent, ReactElement } from "react";
 import { Controller, Control } from "react-hook-form";
 
 export default function ControlledInput({
   control,
   name,
   ...props
-}: { control: Control; name: string } & React.ComponentProps<typeof Input>) {
+}: { control: Control; name: string } & React.ComponentProps<typeof Input>): ReactElement {
   return (
     <Controller
       control={control}

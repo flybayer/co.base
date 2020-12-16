@@ -1,4 +1,7 @@
 {
-  "name": "@aven/cloud",
-  "version": "0.1.0-alpha.0"
+  "name": "aven-shell",
+  "version": "0.1.0-alpha.0",
+  "dependencies": {
+    "minimist": "^1.2.5"
+  }
 }

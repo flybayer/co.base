@@ -1,6 +1,6 @@
 import { Error400, Error403, Error404, Error500 } from "./Errors";
 
-export async function api(endpoint: string, payload: any) {
+export async function api<Result>(endpoint: string, payload: any): Promise<Result> {
   return fetch(`/api/${endpoint}`, {
     method: "post",
     headers: {
