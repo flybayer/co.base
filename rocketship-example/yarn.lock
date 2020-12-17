@@ -62,6 +62,14 @@
     call-me-maybe "^1.0.1"
     js-yaml "^3.13.1"
 
+"@aven/client@":
+  version "0.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@aven/client/-/client-0.1.0-alpha.2.tgz#b559d8651b1810a878845ce702cbce1c697081ba"
+  integrity sha512-p3a3/RfeRE/ceZCPwl4WqJ+irHBUhKeAAtQu9vRnJtuGsbrcYg7+38H+wUAX7MRvEvFrurKmRH+0T22/otpnCw==
+  dependencies:
+    node-fetch "^2.6.1"
+    pojo-maps "^0.3.0"
+
 "@babel/code-frame@7.10.4", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.5.5":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.10.4.tgz#168da1a36e90da68ae8d49c0f1b48c7c6249213a"
@@ -1587,6 +1595,16 @@ atob@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
+
+aven-shell@:
+  version "0.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/aven-shell/-/aven-shell-0.1.0-alpha.0.tgz#f53898423fb14f4ad6a5747f8245479bafc244d2"
+  integrity sha512-9ZCUTJ87L5LmzDlwfw+m9oehCY9gv3h3PbSokMHYuKF7qr9dCEIHjQb0Fo04wL6BNHd15+UaUds11wqOIV/1GQ==
+  dependencies:
+    fs-extra "^9.0.1"
+    json-schema-to-typescript "^10.0.0"
+    minimist "^1.2.5"
+    node-fetch "^2.6.1"
 
 babel-plugin-dynamic-import-node@^2.3.3:
   version "2.3.3"

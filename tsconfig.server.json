@@ -4,7 +4,6 @@
     "outDir": "dist",
     "noEmit": false,
     "isolatedModules": false,
-
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -14,7 +13,8 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "declaration": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "rocketship-example", "cloud-example", "cloud-ancient-archive"]

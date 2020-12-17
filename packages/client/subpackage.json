@@ -1,0 +1,6 @@
+{
+  "name": "@aven/client",
+  "version": "0.1.0-alpha.3",
+  "libMain": "CloudClient",
+  "dependencies": ["node-fetch", "pojo-maps"]
+}

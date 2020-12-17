@@ -1,9 +1,12 @@
 import Head from "next/head";
 import { GetStaticProps } from "next";
-import AvenCloud, { AvenCloudLoad } from "../AvenCloud";
+import Cloud, { CloudLoad } from "../Cloud-rocketship-Generated";
+
+import { ReactElement } from "react";
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const preload = await AvenCloud.load({
+  console.log("ok here goes");
+  const preload = await Cloud.load({
     "pricing-plans": true,
   });
   return {
@@ -14,8 +17,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
 };
 
-export default function Home({ preload }: { preload: AvenCloudLoad }) {
-  const pricingPlans = AvenCloud.useNode("pricing-plans", preload);
+export default function Home({ preload }: { preload: CloudLoad }): ReactElement {
+  const pricingPlans = Cloud.useNode("pricing-plans", preload);
 
   return (
     <div>

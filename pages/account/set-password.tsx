@@ -4,10 +4,11 @@ import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
-import React from "react";
-import Router from "next/router";
+import React, { ReactElement } from "react";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../api-utils/api";
+import { handleAsync } from "../../data/handleAsync";
+import { useRouter } from "next/router";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -24,6 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function ChangePasswordForm({}: EmptyObject) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorText, setErrorText] = React.useState<null | string>(null);
+  const { push } = useRouter();
   const { register, handleSubmit, errors, control } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -35,21 +37,14 @@ function ChangePasswordForm({}: EmptyObject) {
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          api("account-set-password", {
-            password: data.password,
-          })
-            .then((resp) => {
-              setIsSubmitting(false);
-              if (resp.error) {
-                setErrorText(resp.error.message);
-              } else {
-                Router.push("/account");
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              setIsSubmitting(false);
-            });
+          handleAsync(
+            api("account-set-password", {
+              password: data.password,
+            }),
+            () => {
+              push("/account");
+            },
+          ).finally(() => setIsSubmitting(false));
         })}
       >
         <FormControl>
@@ -64,7 +59,7 @@ function ChangePasswordForm({}: EmptyObject) {
   );
 }
 
-export default function setNamePage({ user }: { user: APIUser }) {
+export default function setNamePage({ user }: { user: APIUser }): ReactElement {
   return (
     <BasicSiteLayout
       user={user}

@@ -22,6 +22,13 @@ export type LoginRegisterPayload = {
   method?: "email" | "phone" | "password";
 };
 
+export type LoginRegisterResponse = {
+  status: number;
+  email?: string;
+  phone?: string;
+  jwt?: string;
+};
+
 function validatePayload(input: any): LoginRegisterPayload {
   if (!input)
     throw new Error400({
@@ -97,7 +104,7 @@ async function loginRegisterEmail(
     }
     const jwt = encode({ sub: existingUser.id });
     setCookie(res, "AvenSession", jwt);
-    return { jwt, email };
+    return { status: 3, jwt, email };
   }
   if (!forceSend && existingUser && existingUser.passwordHash) {
     return { status: 1, email };
@@ -146,7 +153,10 @@ async function loginRegisterPhone(phone: string, res: NextApiResponse) {
   }
 }
 
-async function loginRegister({ email, phone, password, method }: LoginRegisterPayload, res: NextApiResponse) {
+async function loginRegister(
+  { email, phone, password, method }: LoginRegisterPayload,
+  res: NextApiResponse,
+): Promise<LoginRegisterResponse> {
   if (email) {
     return loginRegisterEmail(email, password, method === "email", res);
   } else if (phone) {

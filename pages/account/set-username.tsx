@@ -5,9 +5,10 @@ import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
 import { useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React, { ReactElement } from "react";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../api-utils/api";
+import { handleAsync } from "../../data/handleAsync";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -24,6 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function ChangeUsernameForm({ username }: { username: string | null }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorText, setErrorText] = React.useState<null | string>(null);
+  const { push } = useRouter();
   const { register, handleSubmit, errors, control } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -35,21 +37,16 @@ function ChangeUsernameForm({ username }: { username: string | null }) {
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          api("account-set-username", {
-            username: data.username,
-          })
-            .then((resp) => {
-              setIsSubmitting(false);
-              if (resp.error) {
-                setErrorText(resp.error.message);
-              } else {
-                Router.push("/account");
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-              setIsSubmitting(false);
-            });
+          handleAsync(
+            api("account-set-username", {
+              username: data.username,
+            }),
+            () => {
+              push("/account");
+            },
+          ).finally(() => {
+            setIsSubmitting(false);
+          });
         })}
       >
         <FormControl>

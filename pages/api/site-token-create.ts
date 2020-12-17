@@ -11,11 +11,20 @@ export type SiteTokenCreatePayload = {
   type: string;
 };
 
+export type SiteTokenCreateResponse = {
+  token: string;
+  id: number;
+};
+
 function validatePayload(input: any): SiteTokenCreatePayload {
   return { ...input };
 }
 
-async function tokenCreate(user: APIUser, { siteName, label, type }: SiteTokenCreatePayload, res: NextApiResponse) {
+async function tokenCreate(
+  user: APIUser,
+  { siteName, label, type }: SiteTokenCreatePayload,
+  res: NextApiResponse,
+): Promise<SiteTokenCreateResponse> {
   const token = getRandomLetters(20);
   const t = await database.siteToken.create({
     data: {

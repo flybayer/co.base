@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import { api } from "../../api-utils/api";
 import { Error400 } from "../../api-utils/Errors";
 import { LinkButton } from "../../components/Buttons";
+import { handleAsync } from "../../data/handleAsync";
+import { LoginRegisterPayload, LoginRegisterResponse } from "../api/login-register";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getVerifiedUser(context.req);
@@ -119,12 +121,14 @@ function LoginForm({}) {
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
           setSubmittedEmail(data.email);
-          api("login-register", {
-            email: data.email,
-          })
-            .then((resp) => {
+          handleAsync(
+            api<LoginRegisterResponse>("login-register", {
+              email: data.email,
+            }),
+            (resp: LoginRegisterResponse) => {
               setStatus(resp.status === 1 ? 1 : 2);
-            })
+            },
+          )
             .catch((err: Error400) => {
               setError("email", {
                 message: err.detail.message,
