@@ -29,6 +29,16 @@ model User {
   NodeRole        NodeRole[]
   SiteInvite      SiteRoleInvitation[] @relation("InviteSenderRelation")
   SiteInviteSent  SiteRoleInvitation[] @relation("InviteRecipientRelation")
+  DeviceToken     DeviceToken[]
+}
+
+model DeviceToken {
+  id          Int       @id @default(autoincrement())
+  token       String    @unique
+  requestTime DateTime  @default(now())
+  approveTime DateTime?
+  userId      Int?
+  user        User?     @relation(fields: [userId], references: [id])
 }
 
 model EmailValidation {

@@ -16,5 +16,5 @@
     "declaration": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "rocketship-example", "cloud-example", "cloud-ancient-archive"]
+  "exclude": ["node_modules", "rocketship-example", "cloud-example", "cloud-ancient-archive", "dist"]
 }

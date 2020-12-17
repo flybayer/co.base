@@ -88,7 +88,6 @@ function NewTokenForm({
           options={[
             { key: "read", name: "Read" },
             { key: "write", name: "Write" },
-            { key: "admin", name: "Admin" },
           ]}
           control={control}
           name="type"

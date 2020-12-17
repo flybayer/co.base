@@ -1,19 +1,119 @@
-import fetch from "node-fetch";
+import fetchHTTP from "node-fetch";
+import os from "os";
 import * as JSTT from "json-schema-to-typescript";
-import { writeFile } from "fs-extra";
+import { mkdirp, writeFile, readFile } from "fs-extra";
+import openBrowser from "react-dev-utils/openBrowser";
+import open from "open";
 import minimist from "minimist";
 
-const REMOTE_HOST = process.env.AVEN_REMOTE_HOST || "aven.io";
-const REMOTE_SSL = process.env.AVEN_REMOTE_SSL !== "false";
+class AvenError extends Error {
+  name: string;
+  message: string;
+  data?: any;
+  constructor(detail: { message: string; name: string; data?: any }) {
+    super(detail?.message || "Unknown Error");
+    this.message = detail.message;
+    this.name = detail.name;
+    this.data = detail.data;
+  }
+}
 
-export async function pull(siteName: string, apiKey?: string): Promise<any> {
-  const res = await fetch(`http${REMOTE_SSL ? "s" : ""}://${REMOTE_HOST}/api/site-schema`, {
+async function api(remoteHost: string, remoteSSL: boolean, endpoint: string, payload: any) {
+  return fetchHTTP(`http${remoteSSL ? "s" : ""}://${remoteHost}/api/${endpoint}`, {
     method: "post",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: siteName }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  }).then(async (res) => {
+    const body = await res.json();
+    if (res.status !== 200) {
+      console.error("wayoy", res.status, body);
+      throw new AvenError(body.error);
+    }
+    return body;
   });
-  const resp = await res.json();
-  const { siteSchema } = resp;
+}
+
+type AuthenticatedShellConfig = {
+  remoteHost: string;
+  remoteSSL: boolean;
+  username: string;
+  authToken: string;
+};
+
+type ShellConfig =
+  | {
+      remoteHost: string;
+      remoteSSL: boolean;
+    }
+  | AuthenticatedShellConfig;
+
+const DEFAULT_SHELL_CONFIG: ShellConfig = {
+  remoteHost: "aven.io",
+  remoteSSL: true,
+};
+
+const SHELL_CONFIG_PATH = `${os.homedir()}/.config/aven`;
+
+async function getShellConfigPath(): Promise<string> {
+  await mkdirp(SHELL_CONFIG_PATH);
+  return SHELL_CONFIG_PATH;
+}
+
+async function getShellConfig(): Promise<ShellConfig> {
+  const shellPath = await getShellConfigPath();
+  const configFilePath = `${shellPath}/AvenShellConfig.json`;
+  try {
+    const configData = await readFile(configFilePath, { encoding: "utf8" });
+    const config = JSON.parse(configData);
+    return config;
+  } catch (e) {
+    return DEFAULT_SHELL_CONFIG;
+  }
+}
+
+async function doLogin({
+  remoteHost,
+  remoteSSL,
+}: {
+  remoteHost: string;
+  remoteSSL: boolean;
+}): Promise<AuthenticatedShellConfig> {
+  const { token } = await api(remoteHost, remoteSSL, "device-login", {});
+  const openURL = `http${remoteSSL ? "s" : ""}://${remoteHost}/login/device?t=${token}`;
+  console.log(`To Log in, continue at: ${openURL}`);
+  if (!openBrowser(openURL)) {
+    open(openURL);
+  }
+  const { username } = await new Promise<{ username: string }>((resolve, reject) => {
+    const i = setTimeout(() => {
+      console.log("asdfgggg");
+      resolve({ username: "adsfg" });
+    }, 20);
+  });
+  // await fetch(`http${remoteSSL ? "s" : ""}://${remoteHost}/api/device-login`, {
+
+  // })
+  return {
+    remoteHost,
+    remoteSSL,
+    username,
+    authToken: token,
+  };
+}
+
+async function getAuthenticateShellConfig(): Promise<AuthenticatedShellConfig> {
+  const config = (await getShellConfig()) as AuthenticatedShellConfig;
+  if (!config.username || !config.authToken) {
+    return await doLogin(config);
+  }
+  return config;
+}
+
+export async function pull(siteName: string): Promise<any> {
+  const { remoteHost, remoteSSL } = await getShellConfig();
+  const { siteSchema } = await api(remoteHost, remoteSSL, "site-schema", { name: siteName });
   const allRecords: any = {};
   for (const nodeKey in siteSchema) {
     const node = siteSchema[nodeKey];
@@ -95,9 +195,23 @@ aven pull SITE_NAME
         console.error("eerrorr", e);
       });
     return;
+  } else if (action === "login") {
+    console.log("Logging in");
+    getAuthenticateShellConfig()
+      .then(({ username }) => {
+        console.log(`Logged in as ${username}`);
+      })
+      .catch((e) => {
+        console.error("eerrorr", e);
+      });
+    return;
   }
   console.log("Command not found. Try -h");
   return;
+}
+
+if (require.main === module) {
+  handleCli(process.argv);
 }
 
 type CLIArgs = {

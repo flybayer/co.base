@@ -131,20 +131,8 @@ async function prepareDockerDev() {
   console.log(output.join("\n"));
 }
 
-async function prepareDatabase() {
-  console.log("Migrating database..");
-  await spawn("node_modules/@prisma/cli/build/index.js", ["migrate", "up", "--experimental", "--auto-approve"], {
-    env: {
-      // relying on dotenv to pull this from .env.production.local
-      ...process.env,
-      DATABASE_URL: process.env.DATABASE_URL || DEFAULT_DB_URL,
-    },
-  });
-}
-
 async function runServer() {
   await prepareDockerDev();
-  await prepareDatabase();
   await app.prepare();
   await startServer();
 }

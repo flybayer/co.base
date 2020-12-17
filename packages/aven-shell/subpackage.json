@@ -7,6 +7,14 @@
     "aven-shell": "./shell-entry.js"
   },
   "files": ["shell-entry.js"],
-  "dependencies": ["fs-extra", "json-schema-to-typescript", "minimist", "node-fetch"],
-  "devDependencies": ["@types/minimist", "ts-node", "typescript"]
+  "dependencies": [
+    "fs-extra",
+    "json-schema-to-typescript",
+    "minimist",
+    "node-fetch",
+    "prompts",
+    "react-dev-utils",
+    "open"
+  ],
+  "devDependencies": ["@types/minimist", "@types/prompts", "ts-node", "typescript", "@types/react-dev-utils"]
 }
