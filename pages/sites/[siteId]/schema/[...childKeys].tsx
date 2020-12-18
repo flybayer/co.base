@@ -185,7 +185,7 @@ function NewKeyForm({
         </FormControl>
       </ModalBody>
       <ModalFooter>
-        <Button colorScheme="green" type="submit">
+        <Button colorScheme="avenColor" type="submit">
           Save
         </Button>
         <Button onClick={onClose}>Cancel</Button>
@@ -430,7 +430,7 @@ function SchemaForm({ siteName, address, schema }: { siteName: string; address: 
                 })
                 .catch(console.error);
             }}
-            colorScheme="green"
+            colorScheme="avenColor"
             // disabled={record === schema.record}
           >
             Save Schema

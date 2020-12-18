@@ -7,7 +7,7 @@ export function SiteRoleAcceptButton({ siteName, label }: { siteName: string; la
 
   return (
     <APIButton
-      colorScheme="green"
+      colorScheme="avenColor"
       endpoint="site-role-respond"
       payload={{ siteName, accept: true }}
       onDone={() => {

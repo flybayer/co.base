@@ -3,12 +3,13 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
-import { NodeSchema } from "../../data/NodeSchema";
 import { applyPatch } from "fast-json-patch";
+import { SchemaEditResponse, startSiteEvent } from "../../data/SiteEvent";
+import { SiteSchema } from "../../data/SiteSchema";
 
 export type SiteSchemaEditPayload = {
   siteName: string;
-  schema?: NodeSchema;
+  schema?: SiteSchema;
   schemaPatch?: any;
 };
 
@@ -24,12 +25,13 @@ async function siteSchemaEdit(
   user: APIUser,
   { schema, schemaPatch, siteName }: SiteSchemaEditPayload,
   res: NextApiResponse,
-) {
+): Promise<SchemaEditResponse> {
   if (schema) {
     await database.site.update({
       where: { name: siteName },
       data: { schema },
     });
+    return { schema };
   } else if (schemaPatch) {
     const prevNode = await database.site.findFirst({
       where: { name: siteName },
@@ -43,8 +45,9 @@ async function siteSchemaEdit(
       where: { name: siteName },
       data: { schema: newSchema.newDocument },
     });
+    return { schema: newSchema.newDocument as SiteSchema };
   }
-  return {};
+  throw new Error400({ name: "SchemaValueOrPatchMissing" });
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -52,8 +55,16 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
   if (!verifiedUser) {
     throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
-  await siteSchemaEdit(verifiedUser, validatePayload(req.body), res);
-  return {};
+  const action = validatePayload(req.body);
+  const [resolve, reject] = await startSiteEvent("SchemaEdit", { siteName: action.siteName, user: verifiedUser });
+  try {
+    const result = await siteSchemaEdit(verifiedUser, action, res);
+    resolve(result);
+    return result;
+  } catch (e) {
+    reject(e);
+    throw e;
+  }
 });
 
 export default APIHandler;

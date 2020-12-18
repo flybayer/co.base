@@ -28,7 +28,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       user: verifiedUser,
       siteName,
-      schema: site?.schema,
+      schema: site?.schema || null,
     },
   };
 };

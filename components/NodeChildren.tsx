@@ -26,7 +26,11 @@ export default function NodeChildren({
       ))}
       <Divider />
       <ButtonContainer>
-        <LinkButton href={`/sites/${siteName}/create/${address.join("/")}`} leftIcon={<AddIcon />} colorScheme="green">
+        <LinkButton
+          href={`/sites/${siteName}/create/${address.join("/")}`}
+          leftIcon={<AddIcon />}
+          colorScheme="avenColor"
+        >
           Add Item
         </LinkButton>
       </ButtonContainer>

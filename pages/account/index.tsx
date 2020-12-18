@@ -15,6 +15,8 @@ import { CenterButtonRow, MainSection } from "../../components/CommonViews";
 import { ListContainer, ListItem } from "../../components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../components/SiteRoleButtons";
 import { SiteRole } from "../../data/SiteRoles";
+import Head from "next/head";
+import { DevPreviewSubscribeButton, PaddleSetup } from "../../components/Paddle";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -191,6 +193,7 @@ export default function AccountPage({
       user={user}
       content={
         <>
+          <PaddleSetup />
           <SiteInvitesSection siteInvites={siteInvites} />
           <MainSection title="Your Sites">
             {sites.map((site) => (
@@ -200,7 +203,7 @@ export default function AccountPage({
                     {site.name} ({site.roleType})
                   </SiteName>
                   <span>
-                    <LinkButton href={`/sites/${site.name}/dashboard`} colorScheme="green">
+                    <LinkButton href={`/sites/${site.name}/dashboard`} colorScheme="avenColor">
                       Dashboard
                     </LinkButton>
                     <LinkButton href={`/sites/${site.name}`}>Settings</LinkButton>
@@ -210,7 +213,7 @@ export default function AccountPage({
             ))}
             <CenterButtonRow>
               <Link href={`/account/new-site`}>
-                <Button colorScheme="green">New Site</Button>
+                <Button colorScheme="avenColor">New Site</Button>
               </Link>
             </CenterButtonRow>
           </MainSection>
@@ -233,9 +236,7 @@ export default function AccountPage({
             <LinkButton href={`/account/add-email`}>Add Email</LinkButton>
           </MainSection>
           <MainSection title="Billing">
-            <PostButton action="/api/billing-session" primary>
-              Manage billing
-            </PostButton>
+            <DevPreviewSubscribeButton user={user} />
           </MainSection>
 
           <MainSection title="Account">

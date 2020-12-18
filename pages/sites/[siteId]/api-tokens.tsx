@@ -94,7 +94,7 @@ function NewTokenForm({
           id="type-select"
         />
       </FormControl>
-      <Button colorScheme="green" type="submit">
+      <Button colorScheme="avenColor" type="submit">
         Create
       </Button>
     </form>
@@ -113,7 +113,7 @@ function AddTokenButton({ siteName }: { siteName: string }): ReactElement {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <Button colorScheme="green" onClick={onOpen}>
+      <Button colorScheme="avenColor" onClick={onOpen}>
         New Token
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>

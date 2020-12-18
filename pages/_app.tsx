@@ -5,7 +5,7 @@ import { MDXProvider } from "@mdx-js/react";
 import Title from "../components/Title";
 import { Global } from "@emotion/react";
 import prism from "../styles/prism";
-import { ChakraProvider } from "@chakra-ui/core";
+import { ChakraProvider, extendTheme } from "@chakra-ui/core";
 
 const mdComponents = {
   h1: Title,
@@ -27,7 +27,22 @@ function Page({ children }: React.PropsWithChildren<unknown>) {
     </>
   );
 }
-
+const AvenTheme = extendTheme({
+  colors: {
+    avenColor: {
+      50: "#EBEDFF",
+      100: "#BED0F8",
+      200: "#90A7F4",
+      300: "#637FED",
+      400: "#426EE1",
+      500: "#3160CE",
+      600: "#2B49B0",
+      700: "#2C4582",
+      800: "#2A3C65",
+      900: "#1A2A5D",
+    },
+  },
+});
 export default function getMDXPageComponent<PageProps>({
   Component,
   pageProps,
@@ -38,7 +53,7 @@ export default function getMDXPageComponent<PageProps>({
   return (
     <Page>
       <Global styles={prism} />
-      <ChakraProvider>
+      <ChakraProvider theme={AvenTheme}>
         <MDXProvider components={mdComponents}>
           <Component {...pageProps} />
         </MDXProvider>

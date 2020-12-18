@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import SiteLayout from "../components/SiteLayout";
+import { ArticleLayout } from "../components/SiteLayout";
 import { FrontMatter } from "../data/frontMatter";
 import VideoLayout from "./video";
 import SiteHead from "../components/SiteHead";
@@ -14,7 +14,7 @@ export default function BaseLayout({
   return (
     <>
       <SiteHead frontMatter={frontMatter} />
-      <SiteLayout content={children} />
+      <ArticleLayout content={children} />
     </>
   );
 }

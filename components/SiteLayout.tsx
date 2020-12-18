@@ -11,7 +11,7 @@ const MainArea = styled.main`
   flex-grow: 1;
   background-color: #f6f8fa;
 `;
-const Article = styled.article`
+const MainContainer = styled.div`
   flex-grow: 1;
   max-width: 950px;
   margin: 0 auto;
@@ -21,6 +21,8 @@ const Article = styled.article`
     padding-left: 40px;
     padding-right: 40px;
   }
+`;
+const Article = styled.article`
   ${articleStyles}
 `;
 const BasicContainer = styled.div`
@@ -34,6 +36,10 @@ const BasicContainer = styled.div`
     padding-right: 40px;
   }
 `;
+
+export function ArticleLayout({ content }: { content: ReactNode }): ReactElement {
+  return <SiteLayout content={<Article>{content}</Article>} />;
+}
 
 export default function SiteLayout({
   user,
@@ -59,7 +65,7 @@ export default function SiteLayout({
         {topContent}
         <InnerWidth>
           {headContent}
-          <Article>{content}</Article>
+          <MainContainer>{content}</MainContainer>
           {tailContent}
         </InnerWidth>
         {bottomContent}

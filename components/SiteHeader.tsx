@@ -61,7 +61,7 @@ export default function SiteHeader({ user }: { user?: APIUser }): ReactElement {
           ) : (
             <>
               <HeaderLink href="/login">Log In</HeaderLink>
-              <Button colorScheme="blue">Create a Data Site</Button>
+              <Button colorScheme="avenColor">Create a Data Site</Button>
             </>
           )}
         </span>

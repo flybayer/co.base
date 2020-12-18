@@ -1,0 +1,20 @@
+### Local Run
+
+- Any machine with Docker, Yarn 1.x, and NodeJS LTS
+- check out repo
+- run yarn
+- run docker-compose up
+- copy `.env.development.local` with all your settings, copied from `.env.development.local.template`
+- yarn dev
+
+### Basic Install
+
+1. On Ubuntu, install Docker+Compose
+2. Copy docker-compose.yml and configure for your needs. Run `docker-compose up -d`
+3. Check out repo and write `.env.production.local` with all your settings, copied from `.env.development.local.template`
+4. Set up systemd service
+5. Set up Caddy or Nginx with Redirect
+
+### Hosted Install
+
+You may alternatively use Heroku or Digital Ocean Apps to deploy the app.
