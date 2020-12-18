@@ -11,23 +11,28 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Spinner,
   useDisclosure,
 } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import { useForm } from "react-hook-form";
 import { api } from "../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import ControlledInput from "../../../components/ControlledInput";
-import { ListContainer } from "../../../components/List";
+import { ListContainer, ListItem } from "../../../components/List";
 import { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteTabs } from "../../../components/SiteTabs";
 import { database } from "../../../data/database";
 import { SITE_ROLES } from "../../../data/SiteRoles";
 import { ControlledSelect } from "../../../components/ControlledSelect";
+import { handleAsync } from "../../../data/handleAsync";
+import styled from "@emotion/styled";
 
 const BasicUserQuery = { select: { name: true, id: true, username: true, email: true } };
+
+type RoleType = "owner" | "admin" | "manager" | "writer" | "reader";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -45,10 +50,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     include: {
       owner: BasicUserQuery,
       SiteRoleInvitation: {
-        include: { recipientUser: BasicUserQuery },
+        select: {
+          id: true,
+          name: true,
+          toEmail: true,
+          recipientUser: BasicUserQuery,
+        },
       },
       SiteRole: {
-        include: {
+        select: {
+          id: true,
+          name: true,
           user: BasicUserQuery,
         },
       },
@@ -57,15 +69,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const owner = site?.owner;
   const siteRoles = [
     ...(site?.SiteRole.map((siteRole) => ({
-      role: siteRole.name,
+      roleType: siteRole.name,
       user: siteRole.user,
+      email: null,
+      isInvite: false,
     })) || []),
     ...(site?.SiteRoleInvitation.map((siteRoleInvite) => ({
-      role: siteRoleInvite.name,
+      roleType: siteRoleInvite.name,
+      email: siteRoleInvite.toEmail,
       user: siteRoleInvite.recipientUser,
+      isInvite: true,
     })) || []),
   ];
-  owner && siteRoles.unshift({ user: owner, role: "owner" });
+  owner && siteRoles.unshift({ user: owner, roleType: "owner", email: null, isInvite: false });
 
   return {
     props: {
@@ -88,17 +104,13 @@ function InviteRoleForm({ siteName }: { siteName: string }) {
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        api("site-role-invite", {
-          emailUsername: data.email_username,
-          siteName,
-          role: data.role,
-        })
-          .then(() => {
-            reload();
-          })
-          .catch((e) => {
-            console.error(e);
-          });
+        handleAsync(
+          api("site-role-invite", {
+            emailUsername: data.email_username,
+            siteName,
+            role: data.role,
+          }),
+        );
       })}
     >
       <ModalBody>
@@ -130,16 +142,88 @@ function NewRoleButton({ siteName }: { siteName: string }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <Button onClick={onOpen}>Add Role</Button>
+      <Button onClick={onOpen}>Invite Team Member</Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add User</ModalHeader>
+          <ModalHeader>Invite Team Member</ModalHeader>
           <ModalCloseButton />
           <InviteRoleForm siteName={siteName} />
         </ModalContent>
       </Modal>
     </>
+  );
+}
+
+const ListItemText = styled.div`
+  flex-grow: 1;
+`;
+const RightListItemText = styled.div``;
+
+function TeamMemberRow({
+  role,
+  siteName,
+}: {
+  siteName: string;
+  role: {
+    roleType: RoleType;
+    email?: string;
+    isInvite: boolean;
+    user: { username: string; name: string | null; id: number; email: string };
+  };
+}): ReactElement | null {
+  const [isRevoked, setIsRevoked] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const { user, roleType: initRoleType, email, isInvite } = role;
+  const [roleType, setRoleType] = useState(initRoleType);
+  if (isRevoked) {
+    return null;
+  }
+  if (initRoleType === "owner") {
+    return (
+      <ListItem key={user?.id || email}>
+        <ListItemText>{user?.name || user?.email || email}</ListItemText>
+        <RightListItemText>Owner/Administrator</RightListItemText>
+      </ListItem>
+    );
+  }
+
+  return (
+    <ListItem key={user?.id || email}>
+      <ListItemText>
+        {user?.name || user?.email || email} {isInvite ? "(invited)" : ""}
+      </ListItemText>
+      <div style={{ margin: "0 10px" }}>{isWaiting && <Spinner size="sm" />}</div>
+      <div>
+        <Select
+          value={roleType}
+          onChange={(e) => {
+            const rT = e.target.value as RoleType | "revoke";
+            setIsWaiting(true);
+            handleAsync(
+              api("site-role-edit", {
+                roleType: rT,
+                userId: user.id,
+                siteName,
+              }),
+              () => {
+                if (rT === "revoke") setIsRevoked(true);
+                else setRoleType(rT);
+              },
+            ).finally(() => {
+              setIsWaiting(false);
+            });
+          }}
+        >
+          <option value="admin">Administrator</option>
+          <option value="manager">Manager</option>
+          <option value="writer">Writer</option>
+          <option value="reader">Reader</option>
+          <option disabled>_________</option>
+          <option value="revoke">Revoke Access</option>
+        </Select>
+      </div>
+    </ListItem>
   );
 }
 
@@ -151,7 +235,9 @@ export default function SiteTeamPage({
   user: APIUser;
   siteName: string;
   siteRoles: Array<{
-    role: string;
+    roleType: RoleType;
+    email?: string;
+    isInvite: boolean;
     user: { username: string; name: string | null; id: number; email: string };
   }>;
 }): ReactElement {
@@ -163,24 +249,8 @@ export default function SiteTeamPage({
         <>
           <SiteTabs tab="team" siteName={siteName} />
           <ListContainer>
-            {siteRoles.map(({ user, role }) => (
-              <div key={user.id}>
-                {user.name || user.email} ({role})
-                {role !== "owner" && (
-                  <Select
-                    value="admin"
-                    onChange={(e) => {
-                      const role = e.target.value;
-                    }}
-                  >
-                    <option value="owner">Owner</option>
-                    <option value="admin">Administrator</option>
-                    <option value="billing">Billing</option>
-                    <option value="writer">Writer</option>
-                    <option value="reader">Reader</option>
-                  </Select>
-                )}
-              </div>
+            {siteRoles.map((role) => (
+              <TeamMemberRow role={role} key={role.user?.id || role.email} siteName={siteName} />
             ))}
           </ListContainer>
           <NewRoleButton siteName={siteName} />

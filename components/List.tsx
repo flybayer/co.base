@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import Link from "next/link";
+import { ReactElement } from "react";
 
 export const ListContainer = styled.div`
   background-color: white;
@@ -26,9 +27,11 @@ export const ListItem = styled.div`
   border-bottom: none;
   padding: 10px;
   margin-bottom: 6px;
+  display: flex;
+  align-items: center;
 `;
 
-export function ListLinkItem({ label, href }: { label: string; href: string }) {
+export function ListLinkItem({ label, href }: { label: string; href: string }): ReactElement {
   return (
     <Link href={href} passHref>
       <ListLink>{label}</ListLink>

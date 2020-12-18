@@ -147,7 +147,7 @@ export default function SiteFooter() {
             <FooterLink href="/docs/getting-started">Getting Started</FooterLink>
             <FooterLink href="/docs/open-source">Open Source</FooterLink>
             <FooterLink href="/docs/react-nextjs">React NextJS</FooterLink>
-            <FooterLink href="/docs/rest-websocket-api">REST + WebSocket API</FooterLink>
+            <FooterLink href="/docs/http-websocket-api">HTTP + WebSocket API</FooterLink>
             <FooterLink href="/docs/typescript">TypeScript</FooterLink>
           </FooterSection>
           <FooterSection>

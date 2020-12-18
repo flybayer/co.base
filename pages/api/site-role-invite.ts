@@ -8,8 +8,7 @@ import { sendEmail } from "../../api-utils/email";
 import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { btoa } from "../../api-utils/Base64";
-
-type SiteRole = "admin" | "manager" | "writer" | "reader";
+import { SiteRole } from "../../data/SiteRoles";
 
 export type SiteRoleInvitePayload = {
   emailUsername: string;
@@ -43,7 +42,7 @@ async function siteRoleInvite(
       },
     });
 
-    let destLink = `/account/site-invites/${siteName}`;
+    let destLink = `/account/site-invite/${siteName}`;
 
     if (!existingVerifiedEmail) {
       // new user...

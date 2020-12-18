@@ -73,14 +73,12 @@ model Comment {
   message     String
 }
 
-// Cloud 2
-
 model Site {
-  id      Int    @id @default(autoincrement())
-  name    String @unique
-  ownerId Int
-  owner   User   @relation(fields: [ownerId], references: [id])
-
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  ownerId            Int
+  owner              User                 @relation(fields: [ownerId], references: [id])
+  schema             Json?
   SiteNode           SiteNode[]
   SiteRole           SiteRole[]
   SiteRoleInvitation SiteRoleInvitation[]
@@ -129,7 +127,9 @@ model SiteRole {
   site   Site   @relation(fields: [siteId], references: [id])
   userId Int
   user   User   @relation(fields: [userId], references: [id])
-  name   String // 
+  name   String
+
+  @@unique([siteId, userId], name: "SiteRoleUnique")
 }
 
 model SiteRoleInvitation {

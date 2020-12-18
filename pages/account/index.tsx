@@ -12,6 +12,9 @@ import styled from "@emotion/styled";
 import { api } from "../../api-utils/api";
 import { ReactElement, useState } from "react";
 import { CenterButtonRow, MainSection } from "../../components/CommonViews";
+import { ListContainer, ListItem } from "../../components/List";
+import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../components/SiteRoleButtons";
+import { SiteRole } from "../../data/SiteRoles";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -19,8 +22,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return { redirect: { destination: "/login", permanent: false } };
   }
   const sites = await database.site.findMany({
-    where: { owner: { id: verifiedUser?.id } },
+    where: { owner: { id: verifiedUser.id } },
     select: { name: true, id: true },
+  });
+  const siteInvites = await database.siteRoleInvitation.findMany({
+    where: { recipientUser: { id: verifiedUser.id } },
+    select: { site: { select: { name: true } }, name: true },
+  });
+  const siteRoles = await database.siteRole.findMany({
+    where: { user: { id: verifiedUser.id } },
+    select: { site: { select: { name: true } }, name: true },
   });
   const userWithEmails = await database.user.findUnique({
     where: { id: verifiedUser.id },
@@ -31,7 +42,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   return {
     props: {
-      sites,
+      sites: [
+        ...sites.map((s) => ({ name: s.name, roleType: "owner" })),
+        ...siteRoles.map((siteRole) => ({ name: siteRole.site.name, roleType: siteRole.name })),
+      ],
+      siteInvites,
       user: verifiedUser,
       emails: [
         { primary: true, email: verifiedUser.email },
@@ -138,26 +153,52 @@ function DeleteEmailButton({ email }: { email: string }) {
     </Button>
   );
 }
+function SiteInvitesSection({
+  siteInvites,
+}: {
+  siteInvites: Array<{ name: string; site: { name: string } }>;
+}): ReactElement | null {
+  if (!siteInvites.length) {
+    return null;
+  }
+  return (
+    <MainSection title="Site Invitations">
+      <ListContainer>
+        {siteInvites.map((invite) => (
+          <ListItem key={invite.site.name}>
+            {invite.site.name} <SiteRoleAcceptButton siteName={invite.site.name} />
+            <SiteRoleRejectButton siteName={invite.site.name} />
+          </ListItem>
+        ))}
+      </ListContainer>
+    </MainSection>
+  );
+}
 
 export default function AccountPage({
   user,
   sites,
   emails,
+  siteInvites,
 }: {
   user: APIUser;
-  sites: Array<{ id: number; name: string }>;
+  sites: Array<{ name: string; roleType: SiteRole | "owner" }>;
   emails: Array<{ email: string; primary?: true; unverified?: true }>;
+  siteInvites: Array<{ name: string; site: { name: string } }>;
 }): ReactElement {
   return (
     <BasicSiteLayout
       user={user}
       content={
         <>
-          <MainSection title="Sites">
+          <SiteInvitesSection siteInvites={siteInvites} />
+          <MainSection title="Your Sites">
             {sites.map((site) => (
               <Link href={`/sites/${site.name}`} key={site.name}>
                 <SiteContainer>
-                  <SiteName>{site.name}</SiteName>
+                  <SiteName>
+                    {site.name} ({site.roleType})
+                  </SiteName>
                   <span>
                     <LinkButton href={`/sites/${site.name}/dashboard`} colorScheme="green">
                       Dashboard
@@ -203,6 +244,7 @@ export default function AccountPage({
                 onClick={() => {
                   destroyCookie(null, "AvenSession");
                   Router.push("/login");
+                  debugger;
                 }}
               >
                 Log Out
