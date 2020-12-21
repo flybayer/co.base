@@ -1,8 +1,0 @@
-{
-  "git.ignoreLimitWarning": true,
-  "editor.formatOnSave": true,
-  "files.exclude": {
-    "**/node_modules": true,
-    "**/yarn.lock": true
-  }
-}
