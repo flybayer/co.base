@@ -6,7 +6,7 @@ on:
 
 jobs:
   ts-build:
-    name: TS Build Server
+    name: Build Server
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Latest
@@ -17,19 +17,7 @@ jobs:
         run: yarn prisma generate
       - name: Build TS
         run: yarn build:server
-
-  test:
-    name: Lint
-    runs-on: ubuntu-latest
-    needs: [ts-build]
-    steps:
-      - name: Lint
-        run: yarn lint
-
-  build-next:
-    name: Build Next
-    runs-on: ubuntu-latest
-    needs: [ts-build]
-    steps:
       - name: Build Next
         run: yarn build:next
+      - name: Lint
+        run: yarn lint
