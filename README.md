@@ -1,12 +1,12 @@
-The main Aven repository, containing the code and content of the [Sky site an aven.io](https://aven.io).
+# [Aven Cloud](https://aven.io) • [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Aven Tests](https://github.com/AvenCloud/cloud/workflows/Test%20Suite/badge.svg) ![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=square)
+
+---
+
+The main Aven Cloud repository, containing the code and content of the [site an aven.io](https://aven.io).
 
 ## How to run
 
-To run this website on your computer, [follow this guide](https://aven.io/run-sky).
-
-## Community
-
-Please comment and share articles on [aven.io](https://aven.io) if you enjoy them!
+To run this website on your computer, [follow this guide](https://aven.io/docs/self-hosting-guide).
 
 ### Twitter
 

@@ -178,7 +178,7 @@ export default function SiteFooter() {
         <LegalLink href="/legal/terms-of-service">Terms of Service</LegalLink> •
         <LegalLink href="/legal/privacy">Privacy Policy</LegalLink> •
         <LegalLink href="/legal/privacy#notice-to-california-residents---ccpa">GDPR & CCPA</LegalLink> •
-        <LegalLink href="/legal/code-of-conduct">Aven.io Code of Conduct</LegalLink>
+        <LegalLink href="/code-of-conduct">Aven.io Code of Conduct</LegalLink>
       </LegalSection>
     </>
   );
