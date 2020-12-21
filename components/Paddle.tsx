@@ -10,7 +10,7 @@ export function DevPreviewSubscribeButton({ label, user }: { label?: string; use
       onClick={() => {
         browserScriptLoad("https://cdn.paddle.com/paddle/paddle.js")
           .then(() => {
-            const Paddle = window.Paddle as any;
+            const Paddle = (window as any).Paddle;
             Paddle.Setup({ vendor: 123776 });
             Paddle.Checkout.open({
               product: 637971,

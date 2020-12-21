@@ -113,10 +113,11 @@ async function getAuthenticateShellConfig(): Promise<AuthenticatedShellConfig> {
 
 export async function pull(siteName: string): Promise<any> {
   const { remoteHost, remoteSSL } = await getShellConfig();
-  const { siteSchema } = await api(remoteHost, remoteSSL, "site-schema", { name: siteName });
+  const { nodes, schema } = await api(remoteHost, remoteSSL, "site-schema-get", { siteName });
+  // schema.isPublic tells us if an API key is needed..
   const allRecords: any = {};
-  for (const nodeKey in siteSchema) {
-    const node = siteSchema[nodeKey];
+  for (const nodeKey in nodes) {
+    const node = nodes[nodeKey];
     if (node?.type === "record") {
       allRecords[nodeKey] = node;
     } else {

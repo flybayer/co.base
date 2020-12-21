@@ -18,6 +18,7 @@ async function deviceLogin(_: DeviceLoginPayload, res: NextApiResponse): Promise
   await database.deviceToken.create({
     data: {
       token,
+      name: "comingsoon",
     },
   });
   return { token };

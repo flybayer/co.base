@@ -171,24 +171,8 @@ function getRole(r: string): SiteAccessRole {
   if (r === "admin") return r;
   return "none";
 }
-export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
-  eventName: keyof SiteEvent,
-  {
-    siteName,
-    user,
-    apiToken,
-    address,
-    nodeId,
-  }: {
-    siteName: string;
-    user?: APIUser | null;
-    apiToken?: string;
-    address?: string[];
-    nodeId?: number;
-  },
-): Promise<[(result: SiteEvent[SiteEventKey]) => void, (e: any) => void]> {
-  type SE = SiteEvent[SiteEventKey];
-  const requestTime = new Date();
+
+async function queryPermission(siteName: string, user?: APIUser | null, apiToken?: string) {
   const siteRolePermission = await database.site.findUnique({
     where: { name: siteName },
     select: {
@@ -219,37 +203,54 @@ export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
   if (user?.id && siteRolePermission.owner.id === user?.id) {
     accessRole = "admin";
   }
-  const requiredAccessRole = accessRoleOfSiteEvent(eventName);
   siteRolePermission.SiteRole.forEach((siteRole) => {
-    console.log("==-=", siteRole);
-
     const grantedRole = getRole(siteRole.name);
-    console.log("-=", grantedRole, accessRole, elevateRole(accessRole, grantedRole));
     accessRole = elevateRole(accessRole, grantedRole);
   });
+  return { accessRole };
+}
 
-  const requiredAccessRoleHeight = roleOrder.indexOf(requiredAccessRole);
+export async function tagSiteRead(
+  siteName: string,
+  user: APIUser | null,
+  readTag: string,
+  apiToken?: string,
+): Promise<void> {
+  const { accessRole } = await queryPermission(siteName, user, apiToken);
   const accessRoleHeight = roleOrder.indexOf(accessRole);
-  console.log("TODO: Check Permission,..", {
-    accessRole,
-    requiredAccessRole,
+  if (accessRoleHeight < roleOrder.indexOf("reader")) {
+    throw new Error500({ name: "InsufficientPrivilege" });
+  }
+  // to do, track the read tag somewhere along with the user/apiToken/"reader". use for rate limiting and usage tracking
+}
+
+export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
+  eventName: keyof SiteEvent,
+  {
     siteName,
     user,
     apiToken,
     address,
-    eventName,
-    siteRolePermission,
-    requiredAccessRoleHeight,
-    accessRoleHeight,
-  });
+    nodeId,
+  }: {
+    siteName: string;
+    user?: APIUser | null;
+    apiToken?: string;
+    address?: string[];
+    nodeId?: number;
+  },
+): Promise<[(result: SiteEvent[SiteEventKey]) => void, (e: any) => void]> {
+  type SE = SiteEvent[SiteEventKey];
+  const requestTime = new Date();
+
+  const { accessRole } = await queryPermission(siteName, user, apiToken);
+
+  const requiredAccessRole = accessRoleOfSiteEvent(eventName);
+  const requiredAccessRoleHeight = roleOrder.indexOf(requiredAccessRole);
+  const accessRoleHeight = roleOrder.indexOf(accessRole);
   if (accessRoleHeight < requiredAccessRoleHeight) {
     throw new Error500({ name: "InsufficientPrivilege" });
   }
-  // if schema is public, set accessRole to 'reader'
-
-  // check permission
-
-  // throw if bad permission.
   function resolve(eventResult: SE): void {
     saveSiteEvent({
       eventName,

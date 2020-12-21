@@ -6,10 +6,13 @@ import { NodeSchema } from "../../data/NodeSchema";
 import { setAnyCors } from "../../api-utils/cors";
 import Ajv from "ajv";
 import { siteNodeQuery } from "../../data/SiteNodes";
+import { tagSiteRead } from "../../data/SiteEvent";
+import getVerifiedUser from "../../api-utils/getVerifedUser";
 
 export type NodeGetPayload = {
   address: string[];
   siteName: string;
+  apiToken?: string;
 };
 
 const ajv = new Ajv();
@@ -17,8 +20,9 @@ const validate = ajv.compile({
   type: "object",
   additionalProperties: false,
   properties: {
-    siteName: { type: "string" },
-    address: { type: "array", items: { type: "string" } },
+    siteName: { type: "string", required: true },
+    address: { type: "array", items: { type: "string" }, required: true },
+    apiToken: { type: "string", required: false },
   },
 });
 
@@ -27,11 +31,6 @@ function validatePayload(input: any): NodeGetPayload {
     return input as NodeGetPayload;
   }
   throw new Error(ajv.errorsText());
-
-  // return {
-  //   address: input.address,
-  //   siteName: input.siteName,
-  // };
 }
 
 async function nodeGet({ siteName, address }: NodeGetPayload, res: NextApiResponse) {
@@ -50,13 +49,11 @@ async function nodeGet({ siteName, address }: NodeGetPayload, res: NextApiRespon
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
-  // const verifiedUser = await getVerifiedUser(req);
-  // if (!verifiedUser) {
-  //   throw new Error400({ message: "No Authenticated User" });
-  // }
   setAnyCors(req, res);
-
-  return await nodeGet(validatePayload(req.body), res);
+  const verifiedUser = await getVerifiedUser(req);
+  const action = validatePayload(req.body);
+  await tagSiteRead(action.siteName, verifiedUser, ":site-schema", action.apiToken);
+  return await nodeGet(action, res);
 });
 
 export default APIHandler;

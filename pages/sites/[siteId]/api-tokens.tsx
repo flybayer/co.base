@@ -24,7 +24,7 @@ import { ControlledSelect } from "../../../components/ControlledSelect";
 import { api } from "../../../api-utils/api";
 import { handleAsync } from "../../../data/handleAsync";
 import { useForm } from "react-hook-form";
-import { SiteTokenCreateResponse } from "../../api/site-token-create";
+import { TokenCreateResponse } from "../../../data/SiteEvent";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -69,7 +69,7 @@ function NewTokenForm({
     <form
       onSubmit={handleSubmit((data) => {
         handleAsync(
-          api<SiteTokenCreateResponse>("site-token-create", { siteName, ...data }),
+          api<TokenCreateResponse>("site-token-create", { siteName, ...data }),
           ({ token }) => {
             onNewToken({ token, ...data });
           },

@@ -1,18 +1,48 @@
 import React, { ReactElement } from "react";
-import { SimpleGrid, Box, Heading, Text } from "@chakra-ui/core";
+import { SimpleGrid, Box, Heading, Text, Divider } from "@chakra-ui/core";
 import { LinkButton } from "./Buttons";
 import { APIUser } from "../api-utils/getVerifedUser";
 import { DevPreviewSubscribeButton } from "./Paddle";
+import styled from "@emotion/styled";
+
+const FeatureBoxContainer = styled.div`
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 30px;
+`;
+const FeatureHeading = styled.span`
+  font-weight: bold;
+  font-size: 20px;
+`;
+const FeatureValue = styled.span`
+  font-size: 26px;
+  text-align: center;
+`;
 
 function FeatureBox({ label, value }: { label: string; value: string }): ReactElement {
   return (
-    <div style={{ height: 80 }}>
-      <Heading size="sm">{label}</Heading>
-      <Text>{value}</Text>
-    </div>
+    <FeatureBoxContainer>
+      <FeatureHeading>{label}</FeatureHeading>
+      <FeatureValue>{value}</FeatureValue>
+    </FeatureBoxContainer>
   );
 }
 
+const PrimaryCol = styled.div`
+  // border: 1px solid blue;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: -32px;
+  box-shadow: 0px 0px 6px #888888;
+  background: #f0f6ff;
+`;
+const GridContent = styled.div`
+  ul {
+    margin-left: 30px;
+  }
+  height: 120px;
+`;
 function PricingCol({
   title,
   price,
@@ -20,6 +50,8 @@ function PricingCol({
   content,
   team,
   sites,
+  readRequests,
+  writeRequests,
 }: {
   title: string;
   price?: string;
@@ -27,6 +59,8 @@ function PricingCol({
   content?: ReactElement;
   team?: string;
   sites?: string;
+  readRequests?: string;
+  writeRequests?: string;
 }) {
   return (
     <Box>
@@ -37,9 +71,15 @@ function PricingCol({
         <Text>{price}</Text>
       </div>
       <div style={{ height: 60 }}>{cta}</div>
-      {content}
+      <Divider />
+      <GridContent>{content}</GridContent>
+      <Divider />
+
+      {sites && <FeatureBox label="Data Sites" value={sites} />}
       {team && <FeatureBox label="Team Members" value={team} />}
-      {sites && <FeatureBox label="Sites" value={sites} />}
+      <Divider />
+      {readRequests && <FeatureBox label="Read Requests" value={readRequests} />}
+      {writeRequests && <FeatureBox label="Write Requests" value={writeRequests} />}
     </Box>
   );
 }
@@ -60,31 +100,34 @@ export default function PricingGrid({ user }: { user: APIUser }): ReactElement {
           </>
         }
       />
-      <PricingCol
-        title="Developer Preview"
-        price="$12/mo"
-        sites="2"
-        team="5"
-        cta={<DevPreviewSubscribeButton user={user} />}
-        content={
-          <>
-            <ul>
-              <li>Aven Cloud Hosting</li>
-              <li>Premium Support</li>
-            </ul>
-          </>
-        }
-      />
+      <PrimaryCol>
+        <PricingCol
+          title="Developer Preview"
+          price="$12/mo"
+          sites="3"
+          team="5"
+          readRequests="10,000 / day"
+          writeRequests="1,000 / day"
+          cta={<DevPreviewSubscribeButton user={user} />}
+          content={
+            <>
+              <ul>
+                <li>Aven Cloud Hosting</li>
+                <li>Email Support</li>
+              </ul>
+            </>
+          }
+        />
+      </PrimaryCol>
       <PricingCol
         title="Enterprise"
-        sites="∞"
-        team="∞"
         cta={<LinkButton href="mailto:enterprise@aven.io">Contact Us</LinkButton>}
         content={
           <>
             <ul>
-              <li>Priority Support</li>
               <li>Private Infrastructure</li>
+              <li>No Resource Limits</li>
+              <li>Priority Support</li>
             </ul>
           </>
         }

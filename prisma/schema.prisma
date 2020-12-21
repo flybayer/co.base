@@ -36,6 +36,7 @@ model User {
 model DeviceToken {
   id          Int       @id @default(autoincrement())
   token       String    @unique
+  name        String
   requestTime DateTime  @default(now())
   approveTime DateTime?
   userId      Int?
