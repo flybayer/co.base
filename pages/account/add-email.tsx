@@ -1,11 +1,11 @@
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps } from "next";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React, { ReactElement } from "react";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../api-utils/api";
 

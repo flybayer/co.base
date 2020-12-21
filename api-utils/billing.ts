@@ -2,7 +2,6 @@ import { getLevelOfProductId } from "../data/subscription";
 import stripe from "./stripe";
 import { database } from "../data/database";
 import { APIUser } from "./getVerifedUser";
-import { ReactElement } from "react";
 import { Error500 } from "./Errors";
 
 export interface StripePlan {

@@ -16,12 +16,9 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Select,
   useDisclosure,
 } from "@chakra-ui/core";
-import { AddIcon } from "@chakra-ui/icons";
-import { ButtonContainer, ListContainer, ListItem, ListLinkItem } from "../../../components/List";
-import { LinkButton } from "../../../components/Buttons";
+import { ButtonContainer, ListContainer, ListItem } from "../../../components/List";
 import ControlledInput from "../../../components/ControlledInput";
 import { ControlledSelect } from "../../../components/ControlledSelect";
 import { api } from "../../../api-utils/api";
@@ -41,6 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findUnique({ where: { name: siteName } });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
   const tokens = await database.siteToken.findMany({
     where: { site: { name: siteName } },
     select: { label: true, type: true, id: true },
@@ -141,7 +139,7 @@ function APITokens({ siteName, tokens }: { siteName: string; tokens: Tokens }): 
           <Button
             colorScheme="red"
             onClick={() => {
-              handleAsync(api("site-token-destroy", { id: token.id }));
+              handleAsync(api("site-token-destroy", { tokenId: token.id, siteName }));
             }}
           >
             Delete

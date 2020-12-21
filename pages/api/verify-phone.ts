@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
-import { Error400, Error500 } from "../../api-utils/Errors";
+import { Error400 } from "../../api-utils/Errors";
 import setCookie from "../../api-utils/setCookie";
 import { encode } from "../../api-utils/jwt";
 import { findTempUsername } from "../../api-utils/findTempUsername";

@@ -1,9 +1,6 @@
-import { push } from "all-the-cities";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import { APIButton } from "../../../components/APIButton";
 import { MainSection } from "../../../components/CommonViews";
 import { BasicSiteLayout } from "../../../components/SiteLayout";
 import { SiteRoleAcceptButton } from "../../../components/SiteRoleButtons";

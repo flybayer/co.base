@@ -1,4 +1,3 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import Link from "next/link";
 

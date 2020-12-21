@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
+import getVerifiedUser from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 import { NodeSchema } from "../../data/NodeSchema";
 import { applyPatch } from "fast-json-patch";
 import { siteNodeQuery } from "../../data/SiteNodes";
+import { NodeSchemaEditResponse, startSiteEvent } from "../../data/SiteEvent";
 
 export type NodeSchemaEditPayload = {
   address: string[];
@@ -23,11 +24,12 @@ function validatePayload(input: any): NodeSchemaEditPayload {
   };
 }
 
-async function nodeSchemaEdit(
-  user: APIUser,
-  { schema, schemaPatch, siteName, address }: NodeSchemaEditPayload,
-  res: NextApiResponse,
-) {
+async function nodeSchemaEdit({
+  schema,
+  schemaPatch,
+  siteName,
+  address,
+}: NodeSchemaEditPayload): Promise<NodeSchemaEditResponse> {
   const nodesQuery = siteNodeQuery(siteName, address);
   if (!nodesQuery) throw new Error("unknown address");
   if (schema) {
@@ -35,6 +37,7 @@ async function nodeSchemaEdit(
       where: nodesQuery,
       data: { schema },
     });
+    return { schema };
   } else if (schemaPatch) {
     const prevNode = await database.siteNode.findFirst({
       where: nodesQuery,
@@ -48,18 +51,27 @@ async function nodeSchemaEdit(
       where: nodesQuery,
       data: { schema: newSchema.newDocument },
     });
+    return { schema: newSchema.newDocument };
   }
-
-  return {};
+  throw new Error400({ name: "SchemaNorPatchProvided" });
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const verifiedUser = await getVerifiedUser(req);
-  if (!verifiedUser) {
-    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
+  const action = validatePayload(req.body);
+  const [resolve, reject] = await startSiteEvent("NodeSchemaEdit", {
+    siteName: action.siteName,
+    user: verifiedUser,
+    address: action.address,
+  });
+  try {
+    const result = await nodeSchemaEdit(action);
+    resolve(result);
+    return result;
+  } catch (e) {
+    reject(e);
+    throw e;
   }
-  await nodeSchemaEdit(verifiedUser, validatePayload(req.body), res);
-  return {};
 });
 
 export default APIHandler;

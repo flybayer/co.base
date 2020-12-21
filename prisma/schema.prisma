@@ -30,6 +30,7 @@ model User {
   SiteInvite      SiteRoleInvitation[] @relation("InviteSenderRelation")
   SiteInviteSent  SiteRoleInvitation[] @relation("InviteRecipientRelation")
   DeviceToken     DeviceToken[]
+  SiteEvent       SiteEvent[]
 }
 
 model DeviceToken {
@@ -83,6 +84,7 @@ model Site {
   SiteRole           SiteRole[]
   SiteRoleInvitation SiteRoleInvitation[]
   SiteToken          SiteToken[]
+  SiteEvent          SiteEvent[]
 }
 
 model SiteNode {
@@ -99,7 +101,23 @@ model SiteNode {
 
   NodeRole NodeRole[]
 
+  SiteEvent SiteEvent[]
   @@unique([siteId, key, parentNodeId], name: "SiteNodeId")
+}
+
+model SiteEvent {
+  id           Int       @id @default(autoincrement())
+  requestTime  DateTime  @default(now())
+  completeTime DateTime  @default(now())
+  eventName    String
+  siteId       Int
+  address      String[]
+  site         Site      @relation(fields: [siteId], references: [id])
+  payload      Json?
+  userId       Int?
+  user         User?     @relation(fields: [userId], references: [id])
+  siteNodeId   Int?
+  siteNode     SiteNode? @relation(fields: [siteNodeId], references: [id])
 }
 
 model SiteToken {

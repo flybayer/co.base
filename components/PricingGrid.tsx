@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { SimpleGrid, Box, Heading, Button, Text } from "@chakra-ui/core";
+import { SimpleGrid, Box, Heading, Text } from "@chakra-ui/core";
 import { LinkButton } from "./Buttons";
 import { APIUser } from "../api-utils/getVerifedUser";
 import { DevPreviewSubscribeButton } from "./Paddle";
@@ -55,7 +55,7 @@ export default function PricingGrid({ user }: { user: APIUser }): ReactElement {
           <>
             <ul>
               <li>Self-Hosted</li>
-              <li>&quot;Support&quot; on GitHub Issues</li>
+              <li>Community Support</li>
             </ul>
           </>
         }
@@ -69,6 +69,7 @@ export default function PricingGrid({ user }: { user: APIUser }): ReactElement {
         content={
           <>
             <ul>
+              <li>Aven Cloud Hosting</li>
               <li>Premium Support</li>
             </ul>
           </>

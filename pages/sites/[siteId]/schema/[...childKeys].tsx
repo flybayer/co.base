@@ -17,8 +17,7 @@ import {
   Select,
   useDisclosure,
 } from "@chakra-ui/core";
-import { AddIcon, CloseIcon } from "@chakra-ui/icons";
-import styled from "@emotion/styled";
+import { CloseIcon } from "@chakra-ui/icons";
 import { GetServerSideProps } from "next";
 import { ReactElement, useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -69,6 +68,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findUnique({ where: { name: siteName } });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
+
   const siteQuery = { name: siteName };
   const nodesQuery = siteNodeQuery(siteName, childKeys);
   if (nodesQuery === null) throw new Error("Unexpectd nullfail");

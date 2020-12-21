@@ -1,13 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
 import { Error400, Error404 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
+import getVerifiedUser from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../data/NodeSchema";
 
-import Ajv, { JSONSchemaType, DefinedError } from "ajv";
-import { InputJsonObject, JsonArray, JsonObject } from "@prisma/client";
+import Ajv, { DefinedError } from "ajv";
+import { InputJsonObject } from "@prisma/client";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../data/SiteNodes";
+import { NodeEditResponse, startSiteEvent } from "../../data/SiteEvent";
 
 const ajv = new Ajv();
 
@@ -25,7 +26,10 @@ function validatePayload(input: any): NodeEditPayload {
   };
 }
 
-async function nodeEdit(user: APIUser, { value, siteName, address }: NodeEditPayload, res: NextApiResponse) {
+async function nodeEdit(
+  { value, siteName, address }: NodeEditPayload,
+  res: NextApiResponse,
+): Promise<NodeEditResponse> {
   const nodesQuery = siteNodeQuery(siteName, address);
   if (!nodesQuery) throw new Error("unknown address");
   const node = await database.siteNode.findFirst({
@@ -56,17 +60,25 @@ async function nodeEdit(user: APIUser, { value, siteName, address }: NodeEditPay
     where: nodesQuery,
     data: { value },
   });
-
-  return {};
+  return { value };
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const verifiedUser = await getVerifiedUser(req);
-  if (!verifiedUser) {
-    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
+  const action = validatePayload(req.body);
+  const [resolve, reject] = await startSiteEvent("NodeEdit", {
+    siteName: action.siteName,
+    user: verifiedUser,
+    address: action.address,
+  });
+  try {
+    const result = await nodeEdit(action, res);
+    resolve(result);
+    return result;
+  } catch (e) {
+    reject(e);
+    throw e;
   }
-  await nodeEdit(verifiedUser, validatePayload(req.body), res);
-  return {};
 });
 
 export default APIHandler;

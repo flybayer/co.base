@@ -7,6 +7,7 @@ module.exports = {
       jsx: true, // Allows for the parsing of JSX
     },
   },
+  plugins: ["unused-imports"],
   settings: {
     react: {
       version: "detect", // Tells eslint-plugin-react to automatically detect the version of React to use
@@ -22,5 +23,13 @@ module.exports = {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     // e.g. "@typescript-eslint/explicit-function-return-type": "off",
     "react/react-in-jsx-scope": "off",
+
+    // according to https://www.npmjs.com/package/eslint-plugin-unused-imports
+    "@typescript-eslint/no-unused-vars": "off",
+    "unused-imports/no-unused-imports-ts": "error",
+    "unused-imports/no-unused-vars-ts": [
+      "warn",
+      { vars: "all", varsIgnorePattern: "^_", args: "after-used", argsIgnorePattern: "^_" },
+    ],
   },
 };

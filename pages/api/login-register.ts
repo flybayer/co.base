@@ -3,7 +3,7 @@ import { database } from "../../data/database";
 import { sendEmail } from "../../api-utils/email";
 import { sendSMS } from "../../api-utils/sms";
 import { getRandomLetters } from "../../api-utils/getRandomLetters";
-import { Error400, Error500 } from "../../api-utils/Errors";
+import { Error400 } from "../../api-utils/Errors";
 import setCookie from "../../api-utils/setCookie";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { getRandomNumbers } from "../../api-utils/getRandomNumbers";

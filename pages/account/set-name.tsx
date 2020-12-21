@@ -1,7 +1,6 @@
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import redirect from "../../api-utils/redirect";
+import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
+import { BasicSiteLayout } from "../../components/SiteLayout";
 import { useForm } from "react-hook-form";
 import React, { ReactElement } from "react";
 import Router from "next/router";

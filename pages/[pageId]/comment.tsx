@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { database } from "../../data/database";
-import PostButton, { LinkButton } from "../../components/Buttons";
+import { LinkButton } from "../../components/Buttons";
 import { Error400 } from "../../api-utils/Errors";
 import { ReactElement } from "react";
 

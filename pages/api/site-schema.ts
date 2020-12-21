@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
-import { Error400, Error404 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 

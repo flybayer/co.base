@@ -66,6 +66,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
   });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
   const owner = site?.owner;
   const siteRoles = [
     ...(site?.SiteRole.map((siteRole) => ({
@@ -195,33 +196,35 @@ function TeamMemberRow({
       </ListItemText>
       <div style={{ margin: "0 10px" }}>{isWaiting && <Spinner size="sm" />}</div>
       <div>
-        <Select
-          value={roleType}
-          onChange={(e) => {
-            const rT = e.target.value as RoleType | "revoke";
-            setIsWaiting(true);
-            handleAsync(
-              api("site-role-edit", {
-                roleType: rT,
-                userId: user.id,
-                siteName,
-              }),
-              () => {
-                if (rT === "revoke") setIsRevoked(true);
-                else setRoleType(rT);
-              },
-            ).finally(() => {
-              setIsWaiting(false);
-            });
-          }}
-        >
-          <option value="admin">Administrator</option>
-          <option value="manager">Manager</option>
-          <option value="writer">Writer</option>
-          <option value="reader">Reader</option>
-          <option disabled>_________</option>
-          <option value="revoke">Revoke Access</option>
-        </Select>
+        {user?.id && (
+          <Select
+            value={roleType}
+            onChange={(e) => {
+              const rT = e.target.value as RoleType | "revoke";
+              setIsWaiting(true);
+              handleAsync(
+                api("site-role-edit", {
+                  roleType: rT,
+                  userId: user.id,
+                  siteName,
+                }),
+                () => {
+                  if (rT === "revoke") setIsRevoked(true);
+                  else setRoleType(rT);
+                },
+              ).finally(() => {
+                setIsWaiting(false);
+              });
+            }}
+          >
+            <option value="admin">Administrator</option>
+            <option value="manager">Manager</option>
+            <option value="writer">Writer</option>
+            <option value="reader">Reader</option>
+            <option disabled>_________</option>
+            <option value="revoke">Revoke Access</option>
+          </Select>
+        )}
       </div>
     </ListItem>
   );

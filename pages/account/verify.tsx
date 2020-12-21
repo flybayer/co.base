@@ -1,4 +1,3 @@
-import { error } from "ajv/dist/vocabularies/applicator/dependencies";
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
 import { Error400 } from "../../api-utils/Errors";

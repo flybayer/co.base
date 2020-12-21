@@ -1,7 +1,7 @@
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps } from "next";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
+import { BasicSiteLayout } from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../components/ControlledInput";
 import React, { ReactElement } from "react";

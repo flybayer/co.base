@@ -12,7 +12,7 @@ import { api } from "../../api-utils/api";
 import { Error400 } from "../../api-utils/Errors";
 import { LinkButton } from "../../components/Buttons";
 import { handleAsync } from "../../data/handleAsync";
-import { LoginRegisterPayload, LoginRegisterResponse } from "../api/login-register";
+import { LoginRegisterResponse } from "../api/login-register";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getVerifiedUser(context.req);

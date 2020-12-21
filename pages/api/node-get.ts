@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
-import { Error400, Error404 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
+import { Error404 } from "../../api-utils/Errors";
 import { createAPI } from "../../api-utils/createAPI";
 import { NodeSchema } from "../../data/NodeSchema";
 import { setAnyCors } from "../../api-utils/cors";

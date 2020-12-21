@@ -9,6 +9,7 @@ import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { btoa } from "../../api-utils/Base64";
 import { SiteRole } from "../../data/SiteRoles";
+import { RoleInviteResponse, startSiteEvent } from "../../data/SiteEvent";
 
 export type SiteRoleInvitePayload = {
   emailUsername: string;
@@ -24,7 +25,7 @@ async function siteRoleInvite(
   user: APIUser,
   { siteName, emailUsername, role }: SiteRoleInvitePayload,
   res: NextApiResponse,
-) {
+): Promise<RoleInviteResponse> {
   if (looksLikeAnEmail(emailUsername)) {
     const email = emailUsername;
     const existingVerifiedEmail = await database.verifiedEmail.findUnique({
@@ -40,20 +41,24 @@ async function siteRoleInvite(
         recipientUser: existingVerifiedEmail ? { connect: { id: existingVerifiedEmail.user.id } } : undefined,
         name: role,
       },
+      select: { id: true },
     });
 
     let destLink = `/account/site-invite/${siteName}`;
 
+    let createdEmailValidationId;
     if (!existingVerifiedEmail) {
       // new user...
       const validationToken = getRandomLetters(32);
       // create an anonymous email validation, that is not yet associated to a user account because it remains unverified. at verification time we will associate it to a user account or create one.
-      await database.emailValidation.create({
+      const emailValidation = await database.emailValidation.create({
         data: {
           email: email,
           secret: validationToken,
         },
+        select: { id: true },
       });
+      createdEmailValidationId = emailValidation.id;
       destLink = `/login/verify?token=${validationToken}&redirect=${encodeURIComponent(destLink)}&email=${btoa(email)}`;
     }
 
@@ -66,29 +71,64 @@ async function siteRoleInvite(
     ${getSiteLink(destLink)}
     `,
     );
-    console.log({ invite });
+    return {
+      role,
+      toEmail: email,
+      toUserId: null,
+      inviteId: invite.id,
+      createdEmailValidationId: createdEmailValidationId || null,
+    };
   } else {
     const recipientUser = await database.user.findUnique({
       where: { username: emailUsername },
+      select: { id: true, email: true },
     });
+
     if (!recipientUser) {
       throw new Error400({
         message: "Recipient not found",
         name: "RecipientNotFound",
       });
     }
+    const invite = await database.siteRoleInvitation.create({
+      data: {
+        site: { connect: { name: siteName } },
+        fromUser: { connect: { id: user.id } },
+        toEmail: null,
+        recipientUser: { connect: { id: recipientUser.id } },
+        name: role,
+      },
+      select: { id: true },
+    });
+    const destLink = `/account/site-invite/${siteName}`;
+    if (recipientUser.email) {
+      await sendEmail(
+        recipientUser.email,
+        `Invite to ${siteName}`,
+        `
+    hello and welcome, this is your invite email.
+
+    ${getSiteLink(destLink)}
+    `,
+      );
+    }
+    return { role, toEmail: null, toUserId: recipientUser.id, inviteId: invite.id, createdEmailValidationId: null };
   }
-  console.log({ siteName, emailUsername, role });
-  return {};
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const verifiedUser = await getVerifiedUser(req);
-  if (!verifiedUser) {
-    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
+  const action = validatePayload(req.body);
+  if (!verifiedUser) throw new Error400({ name: "UserNotAuthenticated" });
+  const [resolve, reject] = await startSiteEvent("RoleInvite", { siteName: action.siteName, user: verifiedUser });
+  try {
+    const result = await siteRoleInvite(verifiedUser, action, res);
+    resolve(result);
+    return result;
+  } catch (e) {
+    reject(e);
+    throw e;
   }
-  await siteRoleInvite(verifiedUser, validatePayload(req.body), res);
-  return {};
 });
 
 export default APIHandler;

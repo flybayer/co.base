@@ -1,22 +1,10 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuGroup,
-  MenuItem,
-  MenuList,
-  Select,
-  Spinner,
-} from "@chakra-ui/core";
+import { Button, FormControl, FormLabel, Select, Spinner } from "@chakra-ui/core";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../api-utils/api";
 import { handleAsync } from "../data/handleAsync";
-import { NodeSchema, NodeType, NODE_TYPES, SchemaType, VALUE_TYPES } from "../data/NodeSchema";
+import { NodeSchema, NodeType, NODE_TYPES, VALUE_TYPES } from "../data/NodeSchema";
 import ControlledInput from "./ControlledInput";
 
 export function CreateAnyNodeForm({ address, siteName }: { address: string[]; siteName: string }): ReactElement {

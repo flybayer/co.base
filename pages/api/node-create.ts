@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
+import getVerifiedUser from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 import { getValueSchema, getDefaultValue, NodeSchema, NodeType, SchemaType } from "../../data/NodeSchema";
 import { siteNodeQuery } from "../../data/SiteNodes";
+import { NodeCreateResponse, startSiteEvent } from "../../data/SiteEvent";
 
 export type NodeCreatePayload = {
   name: string;
@@ -39,10 +40,9 @@ function validatePayload(input: any): NodeCreatePayload {
 }
 
 async function nodeCreate(
-  user: APIUser,
   { name, siteName, address, type, schemaType }: NodeCreatePayload,
   res: NextApiResponse,
-) {
+): Promise<NodeCreateResponse> {
   const nodesQuery = siteNodeQuery(siteName, address);
   const parentNode =
     nodesQuery &&
@@ -85,16 +85,27 @@ async function nodeCreate(
       id: true,
     },
   });
-  return {};
+  return {
+    nodeId: resp.id,
+    address,
+    key: name,
+    value,
+  };
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const verifiedUser = await getVerifiedUser(req);
-  if (!verifiedUser) {
-    throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
+  const action = validatePayload(req.body);
+  const actionName = action.address.length ? "NodeCreate" : "SiteNodeCreate";
+  const [resolve, reject] = await startSiteEvent(actionName, { siteName: action.siteName, user: verifiedUser });
+  try {
+    const result = await nodeCreate(action, res);
+    resolve(result);
+    return result;
+  } catch (e) {
+    reject(e);
+    throw e;
   }
-  await nodeCreate(verifiedUser, validatePayload(req.body), res);
-  return {};
 });
 
 export default APIHandler;

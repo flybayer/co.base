@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { createServer } from "http";
 import { Store, Subscription } from "./store";
 import * as dotenv from "dotenv";

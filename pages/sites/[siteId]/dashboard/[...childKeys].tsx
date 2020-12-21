@@ -1,28 +1,18 @@
-import { Button, Divider, FormControl, FormLabel, Input, Switch } from "@chakra-ui/core";
+import { Button, FormControl, FormLabel, Input, Switch } from "@chakra-ui/core";
 import { CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
-import { ReactElement, useEffect, useRef, useState } from "react";
+import { GetServerSideProps } from "next";
+import { ReactElement, useRef, useState } from "react";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import { LinkButton } from "../../../../components/Buttons";
 import { MainSection } from "../../../../components/CommonViews";
 import { ListContainer } from "../../../../components/List";
 import NodeChildren from "../../../../components/NodeChildren";
 
-import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
+import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
-import {
-  DEFAULT_SCHEMA,
-  DEFAULT_VALUE_SCHEMA,
-  getDefaultValue,
-  NodeSchema,
-  RecordSchema,
-  RecordSetSchema,
-  ValueSchema,
-} from "../../../../data/NodeSchema";
+import { getDefaultValue, NodeSchema, RecordSchema, RecordSetSchema, ValueSchema } from "../../../../data/NodeSchema";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -38,6 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findUnique({ where: { name: siteName } });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
+
   const siteQuery = { name: siteName };
   //   const node = await database.siteNode()
 

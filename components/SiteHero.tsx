@@ -1,5 +1,4 @@
-import styled from "@emotion/styled";
-import { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 
 const HeroTerms = [
   ["Beautiful", "Lightweight", "Structured"],

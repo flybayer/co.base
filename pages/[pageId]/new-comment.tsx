@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps } from "next";
 import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";

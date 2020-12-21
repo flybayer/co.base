@@ -1,15 +1,8 @@
-import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { useRouter } from "next/router";
-import { ReactElement, useState } from "react";
-import { useForm } from "react-hook-form";
-import { api } from "../../../../api-utils/api";
-import { Error500 } from "../../../../api-utils/Errors";
+import { GetServerSideProps } from "next";
+import { ReactElement } from "react";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import ControlledInput from "../../../../components/ControlledInput";
 import { CreateNodeForm } from "../../../../components/CreateForm";
-
-import SiteLayout, { BasicSiteLayout } from "../../../../components/SiteLayout";
+import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { SiteTabs } from "../../../../components/SiteTabs";
 import { database } from "../../../../data/database";
 import { NodeSchema } from "../../../../data/NodeSchema";
@@ -29,9 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const nodeQuery = siteNodeQuery(siteName, childKeys);
   const node = nodeQuery && (await database.siteNode.findFirst({ where: nodeQuery, select: { schema: true } }));
-  if (!node) {
-    throw new Error500({ name: "NodeNotFound" });
-  }
+  if (!node) return { redirect: { destination: "/account", permanent: false } };
   return {
     props: {
       user: verifiedUser,

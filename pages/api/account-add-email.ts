@@ -3,7 +3,6 @@ import { database } from "../../data/database";
 import { Error400 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
-import bcrypt from "bcrypt";
 import { getRandomLetters } from "../../api-utils/getRandomLetters";
 import { sendEmail } from "../../api-utils/email";
 import { btoa } from "../../api-utils/Base64";

@@ -1,9 +1,7 @@
-import { GetServerSidePropsContext } from "next";
 import { parseCookies } from "nookies";
 import { database } from "../data/database";
 import { resetSubscription } from "./billing";
 import { decode } from "./jwt";
-import { Error500 } from "./Errors";
 
 export type APIUser = {
   id: number;

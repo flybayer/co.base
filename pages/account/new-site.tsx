@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
+import { BasicSiteLayout } from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import React, { PropsWithChildren, ReactNode, useState } from "react";
 import Router from "next/router";

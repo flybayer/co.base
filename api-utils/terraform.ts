@@ -1,5 +1,4 @@
 import spawnAsync from "@expo/spawn-async";
-import { mkdirp } from "fs-extra";
 
 let hasInitialized = false;
 

@@ -1,13 +1,11 @@
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { api } from "../../../../api-utils/api";
 import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
 import { database } from "../../../../data/database";
-import { Button, Divider, Select, Spinner } from "@chakra-ui/core";
-import { ReactElement, ReactNode, useState } from "react";
+import { Button, Select, Spinner } from "@chakra-ui/core";
+import { ReactElement, useState } from "react";
 import { SiteTabs } from "../../../../components/SiteTabs";
-import { LinkButton } from "../../../../components/Buttons";
-import NodeChildren from "../../../../components/NodeChildren";
 import { BasicSiteLayout } from "../../../../components/SiteLayout";
 import { NodeSchema, NodeType, nodeTypeName, RecordSchema } from "../../../../data/NodeSchema";
 import { CenterButtonRow, MainContainer, MainSection } from "../../../../components/CommonViews";
@@ -29,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findUnique({ where: { name: siteName } });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
   const siteQuery = { name: siteName };
   //   const node = await database.siteNode()
 

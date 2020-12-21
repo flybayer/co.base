@@ -1,4 +1,3 @@
-import spawnAsync from "@expo/spawn-async";
 import { writeFile, readFile, copy } from "fs-extra";
 
 export default async function configurePackage(packageName: string): Promise<void> {

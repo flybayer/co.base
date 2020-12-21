@@ -19,6 +19,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findUnique({ where: { name: siteName } });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
   const nodes = await database.siteNode.findMany({
     where: { site: { name: siteName }, parentNode: null },
     select: { key: true, id: true },

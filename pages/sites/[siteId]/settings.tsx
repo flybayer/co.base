@@ -24,6 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findUnique({ where: { name: siteName }, select: { schema: true } });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
   return {
     props: {
       user: verifiedUser,
@@ -99,7 +100,7 @@ export default function SiteTeamPage({
               <APIButton
                 colorScheme="red"
                 endpoint="site-destroy"
-                payload={{ name: siteName }}
+                payload={{ siteName }}
                 onDone={() => {
                   push("/account");
                 }}

@@ -1,10 +1,9 @@
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import SiteLayout, { BasicSiteLayout } from "../../components/SiteLayout";
-import redirect from "../../api-utils/redirect";
+import { GetServerSideProps } from "next";
+import { BasicSiteLayout } from "../../components/SiteLayout";
 import { destroyCookie } from "nookies";
 import Router, { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import PostButton, { LinkButton } from "../../components/Buttons";
+import { LinkButton } from "../../components/Buttons";
 import { Button, Spinner } from "@chakra-ui/core";
 import Link from "next/link";
 import { database } from "../../data/database";
@@ -15,8 +14,7 @@ import { CenterButtonRow, MainSection } from "../../components/CommonViews";
 import { ListContainer, ListItem } from "../../components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../components/SiteRoleButtons";
 import { SiteRole } from "../../data/SiteRoles";
-import Head from "next/head";
-import { DevPreviewSubscribeButton, PaddleSetup } from "../../components/Paddle";
+import { DevPreviewSubscribeButton } from "../../components/Paddle";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -193,7 +191,6 @@ export default function AccountPage({
       user={user}
       content={
         <>
-          <PaddleSetup />
           <SiteInvitesSection siteInvites={siteInvites} />
           <MainSection title="Your Sites">
             {sites.map((site) => (

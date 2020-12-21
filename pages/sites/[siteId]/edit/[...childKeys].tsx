@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/core";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import { useForm } from "react-hook-form";
@@ -24,6 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const site = await database.site.findUnique({ where: { name: siteName } });
+  if (!site) return { redirect: { destination: "/account", permanent: false } };
   const siteQuery = { name: siteName };
 
   const nodesQuery = siteNodeQuery(siteName, childKeys);
