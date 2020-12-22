@@ -1,6 +1,5 @@
 import { parseCookies } from "nookies";
 import { database } from "../data/database";
-import { resetSubscription } from "./billing";
 import { decode } from "./jwt";
 
 export type APIUser = {
@@ -9,10 +8,7 @@ export type APIUser = {
   phone: string | null;
   name: string | null;
   username: string;
-  giftedAccess: number;
-  subscribedAccess: number;
   hasPassword: boolean;
-  stripeCustomerId: string | null;
 };
 
 export default async function getVerifiedUser(req: any): Promise<APIUser | null> {
@@ -36,11 +32,7 @@ export default async function getVerifiedUser(req: any): Promise<APIUser | null>
       name: true,
       phone: true,
       username: true,
-      giftedAccess: true,
-      subscribedAccess: true,
-      stripeCustomerId: true,
       passwordHash: true,
-      subscriptionEndTime: true,
     },
   });
   if (!verifiedUser) {
@@ -48,22 +40,15 @@ export default async function getVerifiedUser(req: any): Promise<APIUser | null>
   }
 
   const hasPassword = !!verifiedUser.passwordHash;
-  const { id, email, phone, name, username, giftedAccess, subscribedAccess, stripeCustomerId } = verifiedUser;
+  const { id, email, phone, name, username } = verifiedUser;
   const apiUser = {
     id,
     email,
     phone,
     name,
     username,
-    giftedAccess,
-    subscribedAccess,
     hasPassword,
-    stripeCustomerId,
   };
-
-  if (verifiedUser.subscriptionEndTime && new Date() > verifiedUser.subscriptionEndTime) {
-    await resetSubscription(apiUser);
-  }
 
   return apiUser;
 }
