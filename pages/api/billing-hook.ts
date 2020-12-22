@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createAPI } from "../../api-utils/createAPI";
-import Serialize from "php-serialize";
+import { serialize } from "php-serialize";
 import crypto from "crypto";
 
 const paddlePublicKey = `-----BEGIN PUBLIC KEY-----
@@ -27,8 +27,9 @@ function ksort(obj: any) {
   return sortedObj;
 }
 // from https://developer.paddle.com/webhook-reference/verifying-webhooks
-function validateWebhook(payload: any): boolean {
-  const mySig = Buffer.from(payload.p_signature, "base64");
+function validateWebhook(inputPayload: any): boolean {
+  const mySig = Buffer.from(inputPayload.p_signature, "base64");
+  let payload = { ...inputPayload };
   delete payload.p_signature;
   payload = ksort(payload);
   for (const property in payload) {
@@ -40,7 +41,7 @@ function validateWebhook(payload: any): boolean {
       }
     }
   }
-  const serialized = Serialize.serialize(payload);
+  const serialized = serialize(payload);
   const verifier = crypto.createVerify("sha1");
   verifier.update(serialized);
   verifier.end();
