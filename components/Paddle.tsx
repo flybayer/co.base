@@ -17,6 +17,7 @@ export function DevPreviewSubscribeButton({ label, user }: { label?: string; use
               email: user.email,
               quantity: 1,
               allowQuantity: false,
+              passthrough: JSON.stringify({ userId: user.id }),
             });
           })
           .catch((e) => {

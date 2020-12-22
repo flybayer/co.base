@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { createAPI } from "../../api-utils/createAPI";
 import { serialize } from "php-serialize";
 import crypto from "crypto";
+import { sendEmail } from "../../api-utils/email";
+import { database } from "../../data/database";
 
 const paddlePublicKey = `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAvKl5MsOihG1ytxWIBCDv
@@ -49,8 +51,278 @@ function validateWebhook(inputPayload: any): boolean {
   return verification;
 }
 
+type PaddleStatus = "active" | "trialing" | "past_due" | "deleted";
+
+type PSubsPaymentSucceded = {
+  alert_name: "subscription_payment_succeeded";
+  alert_id: string;
+  currency: string;
+  checkout_id: string;
+  country: string;
+  coupon?: string;
+  customer_name: string;
+  email: string;
+  event_time: string; //'yyyy-mm-dd hh:mm:ss'
+  payment_method: string;
+  plan_name: string;
+  quantity: string;
+  receipt_url: string;
+  unit_price: string; //12.00
+  user_id: string;
+  subscription_id: string;
+  subscription_payment_id: string;
+  subscription_plan_id: string;
+  passthrough: string;
+  sale_gross: string;
+  status: PaddleStatus;
+};
+
+type PSubsPaymentFailed = {
+  alert_name: "subscription_payment_failed";
+  alert_id: string;
+  user_id: string;
+  checkout_id: string;
+  email: string;
+  passthrough: string;
+  status: PaddleStatus;
+  event_time: string; //'yyyy-mm-dd hh:mm:ss'
+  currency: string;
+  amount: string;
+  update_url: string;
+  cancel_url: string;
+};
+
+type PSubsCreated = {
+  alert_name: "subscription_created";
+  alert_id: string;
+  user_id: string;
+  checkout_id: string;
+  email: string;
+  passthrough: string;
+  status: PaddleStatus;
+  subscription_id: string;
+  subscription_plan_id: string;
+  update_url: string;
+  cancel_url: string;
+};
+
+type PSubsUpdated = {
+  alert_name: "subscription_updated";
+  alert_id: string;
+  user_id: string;
+  checkout_id: string;
+  email: string;
+  passthrough: string;
+  status: PaddleStatus;
+  new_quantity: string; // \d+
+  next_bill_date: string; // YYYY-MM-DD
+};
+
+type PSubsCancelled = {
+  alert_name: "subscription_cancelled";
+  alert_id: string;
+  user_id: string;
+  checkout_id: string;
+  email: string;
+  passthrough: string;
+  cancellation_effective_date: string;
+  subscription_id: string;
+  subscription_plan_id: string;
+  status: PaddleStatus;
+};
+
+type PaddlePayload = PSubsPaymentSucceded | PSubsPaymentFailed | PSubsCreated | PSubsCancelled | PSubsUpdated;
+
+type PaymentState = {
+  succeeded: boolean;
+  receipt_url: string;
+  event_time: string;
+};
+
+type SubscriptionState = {
+  status: PaddleStatus;
+  subscription_id?: string;
+  subscription_plan_id?: string;
+  checkout_id?: string;
+  cancellation_effective_date?: string;
+};
+
+type BillingState = {
+  billing_email?: string;
+  customer_id?: string;
+  status?: PaddleStatus;
+  receipts?: Array<{
+    date: string;
+    url: string;
+    amount: string;
+    currency: string;
+  }>;
+  plan_name?: string;
+  subscriptions?: Record<string, SubscriptionState>;
+  payments?: Record<string, PaymentState>;
+  cancel_url?: string;
+  update_url?: string;
+  last_payment_date?: string;
+  next_bill_date?: string;
+  next_payment_amount?: string;
+  currency?: string;
+  cancellation_effective_date?: string;
+};
+
+async function billingTransact(event: PaddlePayload, billingTransact: (b: BillingState) => BillingState) {
+  let userId = undefined;
+  try {
+    const passMeta = JSON.parse(event.passthrough);
+    if (passMeta.userId) {
+      userId = passMeta.userId;
+    }
+  } catch (e) {}
+  await database.billingEvent.create({
+    data: {
+      payload: event,
+      type: event.alert_name,
+      time: new Date(),
+      user: userId && { connect: { id: userId } },
+    },
+  });
+  const userQuery = userId ? { id: userId } : { email: event.email };
+  const billingUser = await database.user.findUnique({
+    where: userQuery,
+    select: {
+      id: true,
+      billing: true,
+    },
+  });
+  const prevBilling = billingUser?.billing ? (billingUser.billing as BillingState) : {};
+  const newBilling = billingTransact(prevBilling);
+  await database.user.update({
+    where: userQuery,
+    data: { billing: newBilling },
+  });
+}
+
+async function handleSubscriptionCancelled(event: PSubsCancelled) {
+  await billingTransact(event, (state) => {
+    const { cancellation_effective_date, status, subscription_id, subscription_plan_id, checkout_id } = event;
+    return {
+      ...state,
+      cancellation_effective_date,
+      status: status,
+      subscriptions: {
+        ...state.subscriptions,
+        [subscription_id]: {
+          ...((state.subscriptions && state.subscriptions[subscription_id]) || {}),
+          status,
+          subscription_id,
+          subscription_plan_id,
+          checkout_id,
+          cancellation_effective_date,
+        },
+      },
+    };
+  });
+}
+async function handleSubscriptionCreated(event: PSubsCreated) {
+  await billingTransact(event, (state) => {
+    const { user_id, email, cancel_url, update_url } = event;
+    return {
+      ...state,
+      customer_id: user_id,
+      email,
+      cancel_url,
+      update_url,
+      status: event.status ? event.status : state.status,
+    };
+  });
+}
+async function handleSubscriptionUpdated(event: PSubsUpdated) {
+  await billingTransact(event, (state) => {
+    return { ...state };
+  });
+}
+async function handleSubscriptionPaymentSucceded(event: PSubsPaymentSucceded) {
+  await billingTransact(
+    event,
+    (state: BillingState): BillingState => {
+      const {
+        user_id,
+        email,
+        receipt_url,
+        event_time,
+        sale_gross,
+        currency,
+        plan_name,
+        checkout_id,
+        subscription_id,
+        subscription_plan_id,
+        status,
+      } = event;
+      return {
+        ...state,
+        customer_id: user_id,
+        billing_email: email,
+        plan_name,
+        receipts: [
+          ...(state.receipts || []),
+          {
+            amount: sale_gross,
+            currency,
+            url: receipt_url,
+            date: event_time,
+          },
+        ],
+        subscriptions: {
+          ...state.subscriptions,
+          [subscription_id]: {
+            ...((state.subscriptions && state.subscriptions[subscription_id]) || {}),
+            status,
+            subscription_id,
+            subscription_plan_id,
+            checkout_id,
+          },
+        },
+        status: status ? status : state.status,
+      };
+    },
+  );
+}
+async function handleSubscriptionPaymentFailed(event: PSubsPaymentFailed) {
+  await billingTransact(event, (state) => {
+    const { user_id, email, event_time, currency, checkout_id, status } = event;
+    return { ...state };
+  });
+}
+
+async function handlePayload(payload: PaddlePayload): Promise<void> {
+  if (payload.alert_name === "subscription_cancelled") {
+    await handleSubscriptionCancelled(payload);
+  } else if (payload.alert_name === "subscription_created") {
+    await handleSubscriptionCreated(payload);
+  } else if (payload.alert_name === "subscription_payment_succeeded") {
+    await handleSubscriptionPaymentSucceded(payload);
+  } else if (payload.alert_name === "subscription_payment_failed") {
+    await handleSubscriptionPaymentFailed(payload);
+  } else if (payload.alert_name === "subscription_updated") {
+    await handleSubscriptionUpdated(payload);
+  } else {
+  }
+}
+
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const isVerified = validateWebhook(req.body);
+  const payload: PaddlePayload = req.body;
+  handlePayload(payload)
+    .then(() => {
+      console.log(`Handled Paddle event ${payload.alert_name}: ${payload.alert_id}`);
+    })
+    .catch((e) => {
+      sendEmail(
+        "admin@aven.io",
+        "Billing Hook Failure",
+        `The following event could not be applied: ${JSON.stringify(payload)} ${JSON.stringify(e)}`,
+      );
+    });
+
   console.log({
     asdf: JSON.stringify(req.body),
     isVerified,

@@ -113,25 +113,27 @@ const SiteContainer = styled.div`
   }
 `;
 
-function MakePrimaryEmailButton({ email }: { email: string }) {
-  const [isSpin, setIsSpin] = useState(false);
-  const { reload } = useRouter();
-  return (
-    <Button
-      onClick={() => {
-        setIsSpin(true);
-        api("account-primary-email", { email })
-          .then(reload)
-          .catch(console.error)
-          .finally(() => {
-            setIsSpin(false);
-          });
-      }}
-    >
-      Set Primary Email {isSpin && <Spinner size="sm" />}
-    </Button>
-  );
-}
+// This feature is UN-IMPLEMENTED because paddle does not allow the primary email to change. maybe this can be revisited later
+
+// function MakePrimaryEmailButton({ email }: { email: string }) {
+//   const [isSpin, setIsSpin] = useState(false);
+//   const { reload } = useRouter();
+//   return (
+//     <Button
+//       onClick={() => {
+//         setIsSpin(true);
+//         api("account-primary-email", { email })
+//           .then(reload)
+//           .catch(console.error)
+//           .finally(() => {
+//             setIsSpin(false);
+//           });
+//       }}
+//     >
+//       Set Primary Email {isSpin && <Spinner size="sm" />}
+//     </Button>
+//   );
+// }
 
 function DeleteEmailButton({ email }: { email: string }) {
   const [isSpin, setIsSpin] = useState(false);
@@ -226,7 +228,7 @@ export default function AccountPage({
               <div key={email}>
                 {email} {unverified && "(unverified)"}
                 {primary && "(primary)"}
-                {!unverified && !primary && <MakePrimaryEmailButton email={email} />}
+                {/* {!unverified && !primary && <MakePrimaryEmailButton email={email} />} */}
                 {!primary && <DeleteEmailButton email={email} />}
               </div>
             ))}

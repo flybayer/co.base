@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
+import { Error400, Error500 } from "../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 
@@ -13,13 +12,15 @@ function validatePayload(input: any): PrimaryEmailPayload {
 }
 
 async function accountSetPrimaryEmail(user: APIUser, { email }: PrimaryEmailPayload, res: NextApiResponse) {
-  const verifiedList = await database.verifiedEmail.findMany({
-    where: { email, user: { id: user.id } },
-  });
-  const verified = verifiedList[0];
-  if (verified && verified.email === email && verified.userId === user.id) {
-    await database.user.update({ where: { id: user.id }, data: { email } });
-  }
+  // This feature is UN-IMPLEMENTED because paddle does not allow the primary email to change. maybe this can be revisited later
+  throw new Error500({ name: "Unimplemented" });
+  // const verifiedList = await database.verifiedEmail.findMany({
+  //   where: { email, user: { id: user.id } },
+  // });
+  // const verified = verifiedList[0];
+  // if (verified && verified.email === email && verified.userId === user.id) {
+  //   await database.user.update({ where: { id: user.id }, data: { email } });
+  // }
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {

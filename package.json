@@ -32,7 +32,7 @@
     "@emotion/react": "^11.0.0-rc.0",
     "@emotion/styled": "^11.0.0-rc.0",
     "@expo/spawn-async": "^1.5.0",
-    "@prisma/client": "^2.13.0",
+    "@prisma/client": "^2.13.1",
     "@sendgrid/mail": "^7.3.0",
     "@smburrows/terraform-npm": "^0.13.5",
     "@stripe/stripe-js": "^1.11.0",
@@ -82,7 +82,7 @@
     "ws": "^7.4.0"
   },
   "devDependencies": {
-    "@prisma/cli": "^2.13.0",
+    "@prisma/cli": "^2.13.1",
     "@types/ajv": "^1.0.0",
     "@types/all-the-cities": "^3.1.0",
     "@types/bcrypt": "^3.0.0",
