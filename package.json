@@ -63,6 +63,7 @@
     "nookies": "^2.5.0",
     "open": "^7.3.0",
     "pg": "^8.5.1",
+    "php-serialize": "^4.0.2",
     "pojo-maps": "^0.3.0",
     "prompts": "^2.4.0",
     "react": "17.0.1",
