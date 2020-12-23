@@ -1,5 +1,4 @@
 import { GetServerSideProps } from "next";
-import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import SiteLayout from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
@@ -8,12 +7,11 @@ import React, { ReactElement } from "react";
 import { useRouter } from "next/router";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../api-utils/api";
+import { authRedirect } from "../../api-utils/authRedirect";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
-  if (!verifiedUser) {
-    redirect(context.res, "/login");
-  }
+  if (!verifiedUser) return authRedirect(context);
   return {
     props: {
       user: verifiedUser,

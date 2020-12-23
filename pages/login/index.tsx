@@ -27,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       currentUser: user,
+      redirect: context.query.redirect || null,
     },
   };
 };
@@ -67,7 +68,7 @@ function PasswordForm({
   );
 }
 
-function LoginForm({}) {
+function LoginForm({ redirect }: { redirect?: string }) {
   const [submittedEmail, setSubmittedEmail] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [status, setStatus] = React.useState(0);
@@ -101,6 +102,7 @@ function LoginForm({}) {
           await api("login-register", {
             email: submittedEmail,
             method: "email",
+            redirect,
           });
           setStatus(2);
         }}
@@ -160,7 +162,13 @@ function LoginForm({}) {
   );
 }
 
-export default function LoginPage({ currentUser }: { currentUser?: APIUser }): ReactElement {
+export default function LoginPage({
+  currentUser,
+  redirect,
+}: {
+  currentUser?: APIUser;
+  redirect?: string;
+}): ReactElement {
   return (
     <>
       <Head>
@@ -176,7 +184,7 @@ export default function LoginPage({ currentUser }: { currentUser?: APIUser }): R
           ) : (
             <>
               <h1>Login or Register</h1>
-              <LoginForm />
+              <LoginForm redirect={redirect} />
             </>
           )
         }

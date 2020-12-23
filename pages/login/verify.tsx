@@ -6,9 +6,8 @@ import { verifyEmail } from "../api/email-auth";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const token = context.query.token;
-  const emailEncoded = context.query.email;
+  const emailEncoded = atob(String(context.query.email));
   const email = atob(String(emailEncoded));
-  console.log("zoomies", { email, token });
   const redirect = context.query.redirect ? String(context.query.redirect) : "/account";
   try {
     const { jwt, user, isNewUser } = await verifyEmail(String(token), email);

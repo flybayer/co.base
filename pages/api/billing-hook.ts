@@ -322,11 +322,6 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
         `The following event could not be applied: ${JSON.stringify(payload)} ${JSON.stringify(e)}`,
       );
     });
-
-  console.log({
-    asdf: JSON.stringify(req.body),
-    isVerified,
-  });
   return {
     message: "Thank you, Paddle.",
   };

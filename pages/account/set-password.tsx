@@ -1,5 +1,4 @@
 import { GetServerSideProps } from "next";
-import redirect from "../../api-utils/redirect";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { BasicSiteLayout } from "../../components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
@@ -13,7 +12,7 @@ import { useRouter } from "next/router";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
   if (!verifiedUser) {
-    redirect(context.res, "/login");
+    return { redirect: { destination: "/login", permanent: false } };
   }
   return {
     props: {

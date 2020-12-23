@@ -19,6 +19,7 @@ export type LoginRegisterPayload = {
   email?: Email;
   phone?: string;
   password?: string;
+  redirect?: string;
   method?: "email" | "phone" | "password";
 };
 
@@ -35,7 +36,7 @@ function validatePayload(input: any): LoginRegisterPayload {
       message: "Request body not provided.",
       name: "NoBody",
     });
-  const { email, phone } = input;
+  const { email, phone, redirect } = input;
   if (typeof email === "string") {
     // meh should validate email+
   } else if (typeof phone === "string") {
@@ -51,7 +52,7 @@ function validatePayload(input: any): LoginRegisterPayload {
     });
   }
 
-  return { email, phone, method: input.method, password: input.password };
+  return { email, phone, redirect, method: input.method, password: input.password };
 }
 
 const userSelectQuery = { passwordHash: true, email: true, id: true };
@@ -61,6 +62,7 @@ async function loginRegisterEmail(
   password: undefined | string,
   forceSend: boolean,
   res: NextApiResponse,
+  redirect?: string,
 ) {
   let existingUser = null;
   let emailToVerify = null;
@@ -118,12 +120,13 @@ async function loginRegisterEmail(
         secret: validationToken,
       },
     });
+    const redirectURL = `/login/verify?token=${validationToken}&email=${btoa(emailToVerify)}`;
     await sendEmail(
       emailToVerify,
       existingUser ? "Welcome back to Aven" : "Welcome to Aven",
       `Click here to log in:
     
-    ${getSiteLink(`/login/verify?token=${validationToken}&email=${btoa(emailToVerify)}`)}
+    ${getSiteLink(redirect ? `${redirectURL}&redirect=${encodeURIComponent(redirect)}` : redirectURL)}
     `,
     );
     return { status: 2, email };
@@ -154,11 +157,11 @@ async function loginRegisterPhone(phone: string, res: NextApiResponse) {
 }
 
 async function loginRegister(
-  { email, phone, password, method }: LoginRegisterPayload,
+  { email, phone, password, method, redirect }: LoginRegisterPayload,
   res: NextApiResponse,
 ): Promise<LoginRegisterResponse> {
   if (email) {
-    return loginRegisterEmail(email, password, method === "email", res);
+    return loginRegisterEmail(email, password, method === "email", res, redirect);
   } else if (phone) {
     return loginRegisterPhone(phone, res);
   } else throw new Error("Insufficient login details");
