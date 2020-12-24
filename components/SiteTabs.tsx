@@ -2,6 +2,7 @@ import { Tab, TabList, Tabs } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import Head from "next/head";
 import Link from "next/link";
+import { PropsWithChildren, ReactElement } from "react";
 import { explodeAddress } from "../api-utils/explodeAddress";
 
 const TabBarContainer = styled.div`
@@ -35,6 +36,14 @@ function HeaderLink({ href, label }: { href: string; label: string }) {
   );
 }
 
+function TabLink({ children, href }: PropsWithChildren<{ href: string }>): ReactElement {
+  return (
+    <Link href={href} passHref>
+      <Tab as="a">{children}</Tab>
+    </Link>
+  );
+}
+
 export function SiteTabs({
   siteName,
   tab,
@@ -43,25 +52,15 @@ export function SiteTabs({
   siteName: string;
   tab: "site" | "team" | "api-tokens" | "events" | "settings" | "data" | "options" | "schema";
   address?: string[];
-}) {
+}): ReactElement {
   let tabs = (
     <Tabs index={["site", "team", "api-tokens", "events", "settings"].findIndex((t) => t === tab)}>
       <TabList>
-        <Link href={`/sites/${siteName}`}>
-          <Tab>Site</Tab>
-        </Link>
-        <Link href={`/sites/${siteName}/team`}>
-          <Tab>Team</Tab>
-        </Link>
-        <Link href={`/sites/${siteName}/api-tokens`}>
-          <Tab>API Tokens</Tab>
-        </Link>
-        <Link href={`/sites/${siteName}/events`}>
-          <Tab>Events</Tab>
-        </Link>
-        <Link href={`/sites/${siteName}/settings`}>
-          <Tab>Settings</Tab>
-        </Link>
+        <TabLink href={`/sites/${siteName}`}>Site</TabLink>
+        <TabLink href={`/sites/${siteName}/team`}>Team</TabLink>
+        <TabLink href={`/sites/${siteName}/api-tokens`}>API Tokens</TabLink>
+        <TabLink href={`/sites/${siteName}/events`}>Events</TabLink>
+        <TabLink href={`/sites/${siteName}/settings`}>Settings</TabLink>
       </TabList>
     </Tabs>
   );
@@ -69,15 +68,9 @@ export function SiteTabs({
     tabs = (
       <Tabs index={["data", "schema", "options"].findIndex((t) => t === tab)}>
         <TabList>
-          <Link href={`/sites/${siteName}/dashboard/${address.join("/")}`}>
-            <Tab>Data</Tab>
-          </Link>
-          <Link href={`/sites/${siteName}/schema/${address.join("/")}`}>
-            <Tab>Schema</Tab>
-          </Link>
-          <Link href={`/sites/${siteName}/options/${address.join("/")}`}>
-            <Tab>Options</Tab>
-          </Link>
+          <TabLink href={`/sites/${siteName}/dashboard/${address.join("/")}`}>Data</TabLink>
+          <TabLink href={`/sites/${siteName}/schema/${address.join("/")}`}>Schema</TabLink>
+          <TabLink href={`/sites/${siteName}/options/${address.join("/")}`}>Options</TabLink>
         </TabList>
       </Tabs>
     );

@@ -120,13 +120,17 @@ async function loginRegisterEmail(
         secret: validationToken,
       },
     });
-    const redirectURL = `/login/verify?token=${validationToken}&email=${btoa(emailToVerify)}`;
+    console.log("ummmm", emailToVerify, btoa(emailToVerify), redirect);
+    const redirectPath = `/login/verify?token=${validationToken}&email=${btoa(emailToVerify)}`;
+    const loginButtonURL = getSiteLink(
+      redirect ? `${redirectPath}&redirect=${encodeURIComponent(redirect)}` : redirectPath,
+    );
     await sendEmail(
       emailToVerify,
       existingUser ? "Welcome back to Aven" : "Welcome to Aven",
       `Click here to log in:
     
-    ${getSiteLink(redirect ? `${redirectURL}&redirect=${encodeURIComponent(redirect)}` : redirectURL)}
+    ${loginButtonURL}
     `,
     );
     return { status: 2, email };

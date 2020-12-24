@@ -99,10 +99,14 @@ function NewTokenForm({
   );
 }
 function NewTokenDisplay({ label, token, type }: { label: string; token: string; type: string }): ReactElement {
+  const { reload } = useRouter();
   return (
     <div>
       &quot;{label}&quot; - {type} API Token
       <p>{token}</p>
+      <Button colorScheme="blue" onClick={reload}>
+        Done
+      </Button>
     </div>
   );
 }
@@ -119,8 +123,14 @@ function AddTokenButton({ siteName }: { siteName: string }): ReactElement {
         <ModalContent>
           <ModalBody>
             <ModalHeader>New API Token</ModalHeader>
-            <ModalCloseButton />
-            {newToken ? <NewTokenDisplay {...newToken} /> : <NewTokenForm siteName={siteName} onNewToken={setToken} />}
+            {newToken ? (
+              <NewTokenDisplay {...newToken} />
+            ) : (
+              <>
+                <ModalCloseButton />
+                <NewTokenForm siteName={siteName} onNewToken={setToken} />
+              </>
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>

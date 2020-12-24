@@ -207,6 +207,14 @@ async function queryPermission(siteName: string, user?: APIUser | null, apiToken
     const grantedRole = getRole(siteRole.name);
     accessRole = elevateRole(accessRole, grantedRole);
   });
+  siteRolePermission.SiteToken.forEach((siteToken) => {
+    if (siteToken.type === "read") {
+      accessRole = elevateRole(accessRole, getRole("reader"));
+    }
+    if (siteToken.type === "write") {
+      accessRole = elevateRole(accessRole, getRole("writer"));
+    }
+  });
   return { accessRole };
 }
 
@@ -221,7 +229,7 @@ export async function tagSiteRead(
   if (accessRoleHeight < roleOrder.indexOf("reader")) {
     throw new Error500({ name: "InsufficientPrivilege" });
   }
-  // to do, track the read tag somewhere along with the user/apiToken/"reader". use for rate limiting and usage tracking
+  // to do: track the read tag somewhere along with the user/apiToken/"reader". use for rate limiting and usage tracking. cache the auth check somehow maybe
 }
 
 export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(

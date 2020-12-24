@@ -87,6 +87,7 @@ function LoginForm({ redirect }: { redirect?: string }) {
           api("login-register", {
             email: submittedEmail,
             password,
+            redirect,
           })
             .then((resp) => {
               push("/account");
@@ -126,6 +127,7 @@ function LoginForm({ redirect }: { redirect?: string }) {
           handleAsync(
             api<LoginRegisterResponse>("login-register", {
               email: data.email,
+              redirect,
             }),
             (resp: LoginRegisterResponse) => {
               setStatus(resp.status === 1 ? 1 : 2);
