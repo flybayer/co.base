@@ -1,10 +1,13 @@
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getToken } from "../../../api-utils/APIToken";
 import { createAPI } from "../../../api-utils/createAPI";
 import { Error400, Error404 } from "../../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import { database } from "../../../data/database";
 import { tagSiteRead } from "../../../data/SiteEvent";
 import { siteNodeQuery } from "../../../data/SiteNodes";
+import { protectedNodeDelete } from "../node-destroy";
+import { protectedNodePut } from "../node-edit";
 
 type QueryContext = {
   siteName: string;
@@ -52,6 +55,14 @@ async function nodeQuery({ siteName, user, token }: QueryContext, address: strin
   return { value: node?.value, token, user };
 }
 
+async function putNode({ siteName, user, token }: QueryContext, address: string[], value: any) {
+  return { siteName, user, token, address, value };
+}
+
+async function deleteNode({ siteName, user, token }: QueryContext, address: string[]) {
+  return { siteName, user, token, address };
+}
+
 async function childrenQuery({ siteName, user, token }: QueryContext, address: string[]) {
   await tagSiteRead(siteName, user, address.join("/") + "/_children", token);
   if (!address.length) {
@@ -85,16 +96,21 @@ async function childrenQuery({ siteName, user, token }: QueryContext, address: s
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const sitePath = req.query.sitePath;
   const user = await getVerifiedUser(req);
-  const token = req.headers["x-cloud-token"] ? String(req.headers["x-cloud-token"]) : undefined;
-  console.log(req.headers);
-  console.log(token);
-
   const [siteName, ...address] = typeof sitePath === "string" ? [sitePath] : sitePath;
+  const token = getToken(req);
   const queryContext = {
     user,
     token,
     siteName,
   };
+  if (req.method === "PUT") {
+    // return await putNode(queryContext, address, req.body);
+    return await protectedNodePut({ siteName, address, value: req.body }, user);
+  }
+  if (req.method === "DELETE") {
+    // return await deleteNode(queryContext, address);
+    return await protectedNodeDelete({ siteName, address }, user, token);
+  }
   if (req.method !== "GET") {
     throw new Error400({ name: "MethodNotImplemented" });
   }

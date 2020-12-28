@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../data/database";
 import { Error400, Error404 } from "../../api-utils/Errors";
-import getVerifiedUser from "../../api-utils/getVerifedUser";
+import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { createAPI } from "../../api-utils/createAPI";
 import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../data/NodeSchema";
 
@@ -26,10 +26,7 @@ function validatePayload(input: any): NodeEditPayload {
   };
 }
 
-async function nodeEdit(
-  { value, siteName, address }: NodeEditPayload,
-  res: NextApiResponse,
-): Promise<NodeEditResponse> {
+export async function nodePut({ value, siteName, address }: NodeEditPayload): Promise<NodeEditResponse> {
   const nodesQuery = siteNodeQuery(siteName, address);
   if (!nodesQuery) throw new Error("unknown address");
   const node = await database.siteNode.findFirst({
@@ -43,7 +40,13 @@ async function nodeEdit(
     if (parentSchemas[0]?.childRecord) recordSchema = parentSchemas[0]?.childRecord;
   } else {
     const schema = (node?.schema as NodeSchema) || DEFAULT_SCHEMA;
-    if (schema.type !== "record") throw new Error("may not modify a node set. use children instead");
+    if (schema.type !== "record")
+      throw new Error400({
+        name: "RecordSetNoValue",
+        message: `The record set "${address.join(
+          "/",
+        )}" does not have a value. Create and list use children records instead.`,
+      });
     if (schema.record) recordSchema = schema.record;
   }
   if (!recordSchema) throw new Error("internal error. schema not found.");
@@ -63,22 +66,25 @@ async function nodeEdit(
   return { value };
 }
 
-const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
-  const verifiedUser = await getVerifiedUser(req);
-  const action = validatePayload(req.body);
+export async function protectedNodePut(action: NodeEditPayload, user: APIUser | null): Promise<NodeEditResponse> {
   const [resolve, reject] = await startSiteEvent("NodeEdit", {
     siteName: action.siteName,
-    user: verifiedUser,
+    user,
     address: action.address,
   });
   try {
-    const result = await nodeEdit(action, res);
+    const result = await nodePut(action);
     resolve(result);
     return result;
   } catch (e) {
     reject(e);
     throw e;
   }
+}
+const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
+  const verifiedUser = await getVerifiedUser(req);
+  const action = validatePayload(req.body);
+  return await protectedNodePut(action, verifiedUser);
 });
 
 export default APIHandler;

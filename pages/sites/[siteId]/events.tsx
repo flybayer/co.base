@@ -96,7 +96,7 @@ export default function SiteTeamPage({
           {events.map((event) => (
             <>
               <Text>
-                {event.user.email} - {event.eventName} {event.completeTime}
+                {event.user?.email} - {event.eventName} {event.completeTime}
               </Text>
             </>
           ))}
