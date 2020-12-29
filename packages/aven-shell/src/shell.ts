@@ -81,7 +81,8 @@ async function doLogin({
   remoteSSL: boolean;
 }): Promise<AuthenticatedShellConfig> {
   const { token } = await api(remoteHost, remoteSSL, "device-login", {});
-  const openURL = `http${remoteSSL ? "s" : ""}://${remoteHost}/login/device?t=${token}`;
+  const hostName = os.hostname();
+  const openURL = `http${remoteSSL ? "s" : ""}://${remoteHost}/login/device?t=${token}&name=${hostName}`;
   console.log(`To Log in, continue at: ${openURL}`);
   if (!openBrowser(openURL)) {
     open(openURL);
