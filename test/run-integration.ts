@@ -15,10 +15,10 @@ async function delay(duration: number) {
     }, duration);
   });
 }
-async function migrateDB(showIO?: boolean) {
+async function migrateDB() {
   await spawnAsync("yarn", ["prisma", "migrate", "deploy", "--preview-feature"], {
     env: { ...process.env, DATABASE_URL: testEnv.DATABASE_URL },
-    stdio: showIO ? "inherit" : [],
+    stdio: "inherit",
   });
 }
 
@@ -29,12 +29,13 @@ export default async function runIntegration(): Promise<void> {
   await spawnAsync("docker-compose", ["-f", join(__dirname, "test-docker-compose.yml"), "up", "-d"], {
     stdio: "inherit",
   });
+  await delay(500); // fast computers take about this long to start up postgres. the migrate fails without this delay.
   try {
     await migrateDB();
   } catch (e) {
     console.log("First migration attempt failed- database may still be starting. Will retry in 3s...");
     await delay(3000);
-    await migrateDB(true);
+    await migrateDB();
   }
 
   let server: ChildProcess | null = null;
@@ -96,7 +97,10 @@ export default async function runIntegration(): Promise<void> {
   console.log("Closing server.");
   server && (server as ChildProcess).kill(); // wtf typescript
 
-  await spawnAsync("docker-compose", ["-f", join(__dirname, "test-docker-compose.yml"), "down", "-v"]);
+  console.log("Closing docker containers..");
+  await spawnAsync("docker-compose", ["-f", join(__dirname, "test-docker-compose.yml"), "down", "-v"], {
+    stdio: "inherit",
+  });
 }
 
 if (module === require.main) {
@@ -105,7 +109,7 @@ if (module === require.main) {
       console.log("Integration suite done.");
     })
     .catch((err) => {
-      console.error("Integration suite done.");
+      console.error("Integration suite error.");
       console.error(err);
     });
 }
