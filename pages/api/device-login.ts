@@ -14,7 +14,7 @@ function validatePayload(input: any): DeviceLoginPayload {
 }
 
 async function deviceLogin(_: DeviceLoginPayload, res: NextApiResponse): Promise<DeviceLoginResponse> {
-  const token = getRandomLetters(20);
+  const token = getRandomLetters(47);
   await database.deviceToken.create({
     data: {
       token,

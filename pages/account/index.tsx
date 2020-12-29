@@ -40,8 +40,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       EmailValidation: { select: { email: true } },
     },
   });
+
   return {
     props: {
+      testString: JSON.stringify(context.req.headers),
       sites: [
         ...sites.map((s) => ({ name: s.name, roleType: "owner" })),
         ...siteRoles.map((siteRole) => ({ name: siteRole.site.name, roleType: siteRole.name })),
@@ -181,8 +183,10 @@ export default function AccountPage({
   user,
   sites,
   emails,
+  testString,
   siteInvites,
 }: {
+  testString?: string;
   user: APIUser;
   sites: Array<{ name: string; roleType: SiteRole | "owner" }>;
   emails: Array<{ email: string; primary?: true; unverified?: true }>;
@@ -194,7 +198,7 @@ export default function AccountPage({
       content={
         <>
           <SiteInvitesSection siteInvites={siteInvites} />
-          <MainSection title="Your Sites">
+          <MainSection title={testString || "Your Sites"}>
             {sites.map((site) => (
               <Link href={`/sites/${site.name}`} key={site.name}>
                 <SiteContainer>

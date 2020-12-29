@@ -56,7 +56,7 @@ export default function SiteHeader({ user }: { user?: APIUser }): ReactElement {
         >
           {user ? (
             <>
-              <HeaderLink href="/account">Account</HeaderLink>
+              <HeaderLink href="/account">@{user.username}</HeaderLink>
             </>
           ) : (
             <>

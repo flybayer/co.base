@@ -30,12 +30,12 @@ export async function nodeDelete({ siteName, address }: NodeDestroyPayload): Pro
 export async function protectedNodeDelete(
   action: NodeDestroyPayload,
   user: APIUser | null,
-  token: string | undefined,
+  apiToken: string | undefined,
 ): Promise<NodeDestroyResponse> {
   const actionName = action.address.length === 1 ? "SiteNodeDestroy" : "NodeDestroy";
-  const [resolve, reject] = await startSiteEvent(actionName, { siteName: action.siteName, user });
+  const [resolve, reject] = await startSiteEvent(actionName, { siteName: action.siteName, user, apiToken });
   try {
-    const result = await protectedNodeDelete(action, user, token);
+    const result = await nodeDelete(action);
     resolve(result);
     return result;
   } catch (e) {

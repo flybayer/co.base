@@ -3,7 +3,7 @@ import { database } from "../../data/database";
 import { sendEmail } from "../../api-utils/email";
 import { sendSMS } from "../../api-utils/sms";
 import { getRandomLetters } from "../../api-utils/getRandomLetters";
-import { Error400 } from "../../api-utils/Errors";
+import { Error400, Error500 } from "../../api-utils/Errors";
 import setCookie from "../../api-utils/setCookie";
 import getSiteLink from "../../api-utils/getSiteLink";
 import { getRandomNumbers } from "../../api-utils/getRandomNumbers";
@@ -104,7 +104,21 @@ async function loginRegisterEmail(
     if (!doesMatch) {
       throw new Error("Invalid password");
     }
-    const jwt = encode({ sub: existingUser.id });
+    const revalidateToken = getRandomLetters(47);
+    const originIp = "fixme-device-originip";
+    await database.deviceToken.create({
+      data: {
+        token: revalidateToken,
+        user: { connect: { id: existingUser.id } },
+        approveTime: new Date(),
+        requestTime: new Date(),
+        originIp,
+        name: "fixme: login token name",
+      },
+    });
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + 60 * 60 * 24; // 1 day.. for now
+    const jwt = encode({ sub: existingUser.id, exp, iat, revalidateToken, revalidateIP: originIp });
     setCookie(res, "AvenSession", jwt);
     return { status: 3, jwt, email };
   }
@@ -112,7 +126,7 @@ async function loginRegisterEmail(
     return { status: 1, email };
   }
   if (emailToVerify) {
-    const validationToken = getRandomLetters(32);
+    const validationToken = getRandomLetters(47);
     // create an anonymous email validation, that is not yet associated to a user account because it remains unverified. at verification time we will associate it to a user account or create one.
     await database.emailValidation.create({
       data: {
@@ -120,7 +134,6 @@ async function loginRegisterEmail(
         secret: validationToken,
       },
     });
-    console.log("ummmm", emailToVerify, btoa(emailToVerify), redirect);
     const redirectPath = `/login/verify?token=${validationToken}&email=${btoa(emailToVerify)}`;
     const loginButtonURL = getSiteLink(
       redirect ? `${redirectPath}&redirect=${encodeURIComponent(redirect)}` : redirectPath,
@@ -167,7 +180,8 @@ async function loginRegister(
   if (email) {
     return loginRegisterEmail(email, password, method === "email", res, redirect);
   } else if (phone) {
-    return loginRegisterPhone(phone, res);
+    throw new Error500({ name: "Unimplemented", message: "The phone workflow has been temporarily disabled" });
+    // return loginRegisterPhone(phone, res);
   } else throw new Error("Insufficient login details");
 }
 

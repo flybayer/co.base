@@ -8,12 +8,14 @@ import WebSocket from "ws";
 import express from "express";
 import spawn from "@expo/spawn-async";
 import cookieParser from "cookie-parser";
+import { testOutput } from "../api-utils/TestOutput";
 
 dotenv.config();
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 
-const port = dev ? 3001 : 3000;
+const defaultPort = dev ? 3001 : 3000;
+const port = process.env.PORT ? Number(process.env.PORT) : defaultPort;
 
 const DEFAULT_DB_URL = "postgresql://user:pw@localhost:5992/db";
 
@@ -44,6 +46,7 @@ async function startServer() {
     httpServer.on("error", reject);
   });
 
+  testOutput({ type: "ServerReady" });
   console.log(`> Ready on http://localhost:${port}`);
 
   let clientIdCount = 0;

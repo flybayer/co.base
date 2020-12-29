@@ -104,8 +104,8 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
     siteName,
   };
   if (req.method === "PUT") {
-    // return await putNode(queryContext, address, req.body);
-    return await protectedNodePut({ siteName, address, value: req.body }, user);
+    const payload = req.body;
+    return await protectedNodePut({ siteName, address, ...payload }, user);
   }
   if (req.method === "DELETE") {
     // return await deleteNode(queryContext, address);

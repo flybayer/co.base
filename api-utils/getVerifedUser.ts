@@ -14,18 +14,27 @@ export type APIUser = {
 export default async function getVerifiedUser(req: any): Promise<APIUser | null> {
   const cookies = parseCookies({ req });
   const { AvenSession } = cookies;
-  if (!AvenSession) {
+  const encodedJwt = AvenSession || req.headers["x-aven-jwt"];
+  if (!encodedJwt) {
     return null;
   }
-  let jwt = decode(AvenSession);
-  if (!jwt) {
-    jwt = req.body?.jwt;
+  const [verifiedJwt, expiredJwt] = decode(encodedJwt);
+  let verifiedUserId: number | null = null;
+
+  if (!verifiedJwt && !expiredJwt) {
+    return null;
+  } else if (verifiedJwt) {
+    verifiedUserId = verifiedJwt.sub;
+  } else if (expiredJwt) {
+    const { revalidateIP, revalidateToken } = expiredJwt;
+
+    console.log("JWT revalidate workflow!", expiredJwt);
   }
-  if (!jwt) {
+  if (!verifiedUserId) {
     return null;
   }
   const verifiedUser = await database.user.findUnique({
-    where: { id: jwt.sub },
+    where: { id: verifiedUserId },
     select: {
       id: true,
       email: true,

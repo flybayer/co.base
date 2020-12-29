@@ -14,7 +14,7 @@
     "production:start": "yarn production:migrate && yarn start",
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "start": "NODE_ENV=production node dist/server/server.js",
-    "test-integration": "echo comingsoon",
+    "test-integration": "ts-node --project tsconfig.server.json test/run-integration.ts",
     "test": "yarn test-integration",
     "configure-package": "ts-node --project tsconfig.server.json scripts/configure-package.ts",
     "shell": "yarn configure-package aven-shell && yarn --cwd packages/aven-shell run",
@@ -88,6 +88,7 @@
     "@types/bcrypt": "^3.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/fs-extra": "^9.0.4",
+    "@types/jest": "^26.0.19",
     "@types/mdx-js__react": "^1.5.3",
     "@types/minimist": "^1.2.1",
     "@types/node": "^14.14.6",
@@ -104,9 +105,11 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-unused-imports": "^1.0.1",
     "husky": "^4.3.0",
+    "jest": "^26.6.3",
     "lint-staged": "^10.5.3",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.1",
+    "ts-jest": "^26.4.4",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5"
   },
@@ -119,5 +122,23 @@
     "*.{js,ts,tsx}": [
       "eslint --fix"
     ]
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/test/unit",
+      "<rootDir>/test/integration"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}",
+      "!**/node_modules/**"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "test/tsconfig.test.json"
+      }
+    }
   }
 }

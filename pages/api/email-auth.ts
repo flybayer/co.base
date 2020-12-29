@@ -7,6 +7,7 @@ import setCookie from "../../api-utils/setCookie";
 import { encode } from "../../api-utils/jwt";
 import { createAPI } from "../../api-utils/createAPI";
 import { atob } from "../../api-utils/Base64";
+import { getRandomLetters } from "../../api-utils/getRandomLetters";
 
 export async function verifyEmail(
   secret: string,
@@ -74,7 +75,6 @@ export async function verifyEmail(
     }
 
     if (!user) {
-      console.log("creatinguser", { email });
       user = await database.user.create({
         data: {
           username: await findTempUsername(),
@@ -90,8 +90,22 @@ export async function verifyEmail(
       data: { email, user: { connect: { id: user.id } } },
     });
   }
+  const revalidateToken = getRandomLetters(47);
+  const originIp = "fixme-device-originip";
+  await database.deviceToken.create({
+    data: {
+      token: revalidateToken,
+      user: { connect: { id: user.id } },
+      approveTime: new Date(),
+      requestTime: new Date(),
+      originIp,
+      name: "fixme: email auth token name",
+    },
+  });
+  const iat = Math.floor(Date.now() / 1000);
+  const exp = iat + 60 * 60 * 24; // 1 day.. for now
+  const jwt = encode({ sub: user.id, exp, iat, revalidateToken, revalidateIP: originIp });
 
-  const jwt = encode({ sub: user.id });
   return { verifiedEmail: email, jwt, user, isNewUser };
 }
 

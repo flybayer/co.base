@@ -44,6 +44,7 @@ model DeviceToken {
   name        String
   requestTime DateTime  @default(now())
   approveTime DateTime?
+  originIp    String?
   userId      Int?
   user        User?     @relation(fields: [userId], references: [id])
 }
