@@ -15,9 +15,11 @@ jobs:
         run: yarn
       - name: Prisma Client Generate
         run: yarn prisma generate
+      - name: Lint
+        run: yarn lint
       - name: Build TS
         run: yarn build:server
       - name: Build Next
         run: yarn build:next
-      - name: Lint
-        run: yarn lint
+      - name: Run Integration Tests
+        run: yarn test-integration

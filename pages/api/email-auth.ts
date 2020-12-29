@@ -99,6 +99,7 @@ export async function verifyEmail(
       approveTime: new Date(),
       requestTime: new Date(),
       originIp,
+      type: "web:email",
       name: "fixme: email auth token name",
     },
   });

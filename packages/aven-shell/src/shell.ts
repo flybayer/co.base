@@ -86,12 +86,20 @@ async function doLogin({
   if (!openBrowser(openURL)) {
     open(openURL);
   }
-  const { username } = await new Promise<{ username: string }>((resolve, reject) => {
-    const i = setTimeout(() => {
-      console.log("asdfgggg");
-      resolve({ username: "adsfg" });
-    }, 20);
+
+  const { username } = await new Promise((resolve, reject) => {
+    let queryTimeout = null;
+    queryTimeout = setTimeout(() => {
+      api(remoteHost, remoteSSL, "device-login-verify", { token })
+        .then((resp) => {
+          console.log("VERIFIED", resp);
+        })
+        .catch((e) => {
+          console.error("ee", e);
+        });
+    }, 8_000);
   });
+
   // await fetch(`http${remoteSSL ? "s" : ""}://${remoteHost}/api/device-login`, {
 
   // })

@@ -34,7 +34,6 @@ test("api 2", async () => {
 afterEach(async () => {
   await database.site.deleteMany({});
   await database.user.deleteMany({});
-  console.log("deleted all from test db");
 });
 
 afterAll(() => {

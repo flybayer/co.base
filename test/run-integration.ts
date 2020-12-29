@@ -84,12 +84,9 @@ export default async function runIntegration(): Promise<void> {
     }, 10 * 1000);
   });
 
-  console.log("wtf1");
-  await Promise.all([
+  await Promise.race([
     spawnAsync("yarn", ["jest", "integration"], { stdio: "inherit", env: testEnv }),
-    new Promise((resolve, reject) => {
-      console.log("wtf2");
-
+    new Promise((_, reject) => {
       setTimeout(() => {
         reject(new Error("Test Timeout."));
       }, 60_000);

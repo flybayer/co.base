@@ -19,6 +19,7 @@ async function deviceLogin(_: DeviceLoginPayload, res: NextApiResponse): Promise
     data: {
       token,
       name: "comingsoon",
+      type: "device",
     },
   });
   return { token };

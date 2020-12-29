@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "../../../api-utils/APIToken";
 import { createAPI } from "../../../api-utils/createAPI";
-import { Error400, Error404 } from "../../../api-utils/Errors";
+import { Error400, Error403, Error404 } from "../../../api-utils/Errors";
 import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
 import { database } from "../../../data/database";
 import { tagSiteRead } from "../../../data/SiteEvent";
@@ -16,6 +16,11 @@ type QueryContext = {
 };
 
 async function siteRootQuery({ siteName }: QueryContext) {
+  const site = await database.site.findUnique({ where: { name: siteName }, select: { schema: true } });
+  if (!site) {
+    throw new Error403({ name: "NotAuthorized" });
+  }
+
   return { siteName };
 }
 

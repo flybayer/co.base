@@ -20,7 +20,6 @@ const port = process.env.PORT ? Number(process.env.PORT) : defaultPort;
 const DEFAULT_DB_URL = "postgresql://user:pw@localhost:5992/db";
 
 async function startServer() {
-  console.log("Setting up web server..");
   const server = express();
   const handle = app.getRequestHandler();
   server.use(
@@ -46,8 +45,8 @@ async function startServer() {
     httpServer.on("error", reject);
   });
 
-  testOutput({ type: "ServerReady" });
-  console.log(`> Ready on http://localhost:${port}`);
+  testOutput({ type: "ServerReady", port });
+  dev && console.log(`> Ready on http://localhost:${port}`);
 
   let clientIdCount = 0;
 

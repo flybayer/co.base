@@ -63,6 +63,7 @@ async function loginRegisterEmail(
   forceSend: boolean,
   res: NextApiResponse,
   redirect?: string,
+  originIp?: string,
 ) {
   let existingUser = null;
   let emailToVerify = null;
@@ -105,7 +106,6 @@ async function loginRegisterEmail(
       throw new Error("Invalid password");
     }
     const revalidateToken = getRandomLetters(47);
-    const originIp = "fixme-device-originip";
     await database.deviceToken.create({
       data: {
         token: revalidateToken,
@@ -113,7 +113,8 @@ async function loginRegisterEmail(
         approveTime: new Date(),
         requestTime: new Date(),
         originIp,
-        name: "fixme: login token name",
+        name: "Web Session",
+        type: "web:password",
       },
     });
     const iat = Math.floor(Date.now() / 1000);
@@ -176,9 +177,10 @@ async function loginRegisterPhone(phone: string, res: NextApiResponse) {
 async function loginRegister(
   { email, phone, password, method, redirect }: LoginRegisterPayload,
   res: NextApiResponse,
+  originIp?: string,
 ): Promise<LoginRegisterResponse> {
   if (email) {
-    return loginRegisterEmail(email, password, method === "email", res, redirect);
+    return loginRegisterEmail(email, password, method === "email", res, redirect, originIp);
   } else if (phone) {
     throw new Error500({ name: "Unimplemented", message: "The phone workflow has been temporarily disabled" });
     // return loginRegisterPhone(phone, res);
@@ -187,7 +189,8 @@ async function loginRegister(
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const action = validatePayload(req.body);
-  return await loginRegister(action, res);
+  const originIp = req.headers["x-forwarded-for"] && String(req.headers["x-forwarded-for"]);
+  return await loginRegister(action, res, originIp);
 });
 
 export default APIHandler;
