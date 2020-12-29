@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user,
-      defaultName: context.query.name,
+      defaultName: context.query.name || null,
       token,
     },
   };

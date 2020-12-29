@@ -19,6 +19,7 @@ async function deviceApprove({ token, name }: DeviceApprovePayload, user: APIUse
   await database.deviceToken.update({
     where: { token },
     data: {
+      user: { connect: { id: user.id } },
       approveTime: new Date(),
       name,
     },

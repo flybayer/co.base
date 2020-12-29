@@ -10,6 +10,7 @@ export type DeviceLoginVerifyPayload = {
 export type DeviceLoginVerifyResponse = {
   isApproved: boolean;
   name?: string;
+  username?: string;
 };
 
 function validatePayload(input: any): DeviceLoginVerifyPayload {
@@ -19,10 +20,18 @@ function validatePayload(input: any): DeviceLoginVerifyPayload {
 async function deviceLoginVerify({ token }: DeviceLoginVerifyPayload): Promise<DeviceLoginVerifyResponse> {
   const deviceToken = await database.deviceToken.findUnique({
     where: { token },
+    select: {
+      approveTime: true,
+      name: true,
+      user: {
+        select: { username: true },
+      },
+    },
   });
-  console.log({ deviceToken });
-  if (deviceToken) {
-    return { isApproved: !!deviceToken.approveTime, name: deviceToken.name };
+  if (deviceToken && deviceToken.approveTime) {
+    return { isApproved: true, name: deviceToken.name, username: deviceToken.user?.username };
+  } else if (deviceToken) {
+    return { isApproved: false, name: deviceToken.name, username: undefined };
   }
   throw new Error400({ name: "InvalidToken" });
 }

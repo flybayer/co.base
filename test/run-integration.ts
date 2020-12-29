@@ -85,14 +85,19 @@ export default async function runIntegration(): Promise<void> {
     }, 10 * 1000);
   });
 
+  let slowTestTimeout: NodeJS.Timeout | null = null;
+
   await Promise.race([
     spawnAsync("yarn", ["jest", "integration"], { stdio: "inherit", env: testEnv }),
     new Promise((_, reject) => {
-      setTimeout(() => {
+      slowTestTimeout = setTimeout(() => {
+        console.log("reached test timeout");
         reject(new Error("Test Timeout."));
-      }, 60_000);
+      }, 15_000);
     }),
   ]);
+
+  slowTestTimeout && clearTimeout(slowTestTimeout);
 
   console.log("Closing server.");
   server && (server as ChildProcess).kill(); // wtf typescript
@@ -107,6 +112,9 @@ if (module === require.main) {
   runIntegration()
     .then(() => {
       console.log("Integration suite done.");
+
+      console.log("Active Requests: ", (process as any)._getActiveRequests());
+      console.log("Active Handles: ", (process as any)._getActiveHandles());
     })
     .catch((err) => {
       console.error("Integration suite error.");

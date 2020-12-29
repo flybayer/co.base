@@ -35,19 +35,13 @@ async function api(remoteHost: string, remoteSSL: boolean, endpoint: string, pay
   });
 }
 
-type AuthenticatedShellConfig = {
+type ShellConfig = {
   remoteHost: string;
   remoteSSL: boolean;
-  username: string;
-  authToken: string;
+  username?: string;
+  authToken?: string;
+  deviceName?: string;
 };
-
-type ShellConfig =
-  | {
-      remoteHost: string;
-      remoteSSL: boolean;
-    }
-  | AuthenticatedShellConfig;
 
 const DEFAULT_SHELL_CONFIG: ShellConfig = {
   remoteHost: "aven.io",
@@ -73,13 +67,25 @@ async function getShellConfig(): Promise<ShellConfig> {
   }
 }
 
-async function doLogin({
-  remoteHost,
-  remoteSSL,
-}: {
-  remoteHost: string;
-  remoteSSL: boolean;
-}): Promise<AuthenticatedShellConfig> {
+async function writeShellConfig(config: ShellConfig): Promise<void> {
+  const shellPath = await getShellConfigPath();
+  const configFilePath = `${shellPath}/AvenShellConfig.json`;
+  await writeFile(configFilePath, JSON.stringify(config, null, 2));
+}
+
+async function logout(): Promise<void> {
+  const { remoteHost, remoteSSL, authToken } = await getShellConfig();
+  await api(remoteHost, remoteSSL, "device-destroy", { token: authToken });
+  await writeShellConfig({ remoteHost, remoteSSL });
+}
+
+async function doLogin(config: ShellConfig): Promise<ShellConfig> {
+  const { remoteHost, remoteSSL } = config;
+  if (config.username) {
+    throw new Error(
+      `Already logged in as "${config.username}". Please run the logout command if you want to log in again.`,
+    );
+  }
   const { token } = await api(remoteHost, remoteSSL, "device-login", {});
   const hostName = os.hostname();
   const openURL = `http${remoteSSL ? "s" : ""}://${remoteHost}/login/device?t=${token}&name=${hostName}`;
@@ -88,32 +94,52 @@ async function doLogin({
     open(openURL);
   }
 
-  const { username } = await new Promise((resolve, reject) => {
-    let queryTimeout = null;
-    queryTimeout = setTimeout(() => {
-      api(remoteHost, remoteSSL, "device-login-verify", { token })
-        .then((resp) => {
-          console.log("VERIFIED", resp);
-        })
-        .catch((e) => {
-          console.error("ee", e);
-        });
-    }, 8_000);
+  const { username, deviceName } = await new Promise((resolve, reject) => {
+    let queryTimeout: null | NodeJS.Timeout = null;
+    let loginTimeout: null | NodeJS.Timeout = null;
+    function scheduleQuery() {
+      queryTimeout && clearTimeout(queryTimeout);
+      queryTimeout = setTimeout(() => {
+        queryTimeout && clearTimeout(queryTimeout);
+        api(remoteHost, remoteSSL, "device-login-verify", { token })
+          .then((resp) => {
+            const { isApproved, name, username } = resp;
+            if (isApproved) {
+              loginTimeout && clearTimeout(loginTimeout);
+              resolve({ username, deviceName: name });
+            } else {
+              scheduleQuery();
+            }
+          })
+          .catch((e) => {
+            scheduleQuery();
+          });
+      }, 5_000);
+    }
+    scheduleQuery();
+    loginTimeout = setTimeout(() => {
+      console.log("timed out!!");
+      queryTimeout && clearTimeout(queryTimeout);
+      reject(new Error("login timeout"));
+    }, 60 * 60 * 1000);
   });
 
-  // await fetch(`http${remoteSSL ? "s" : ""}://${remoteHost}/api/device-login`, {
-
-  // })
-  return {
+  const newConfig = {
     remoteHost,
     remoteSSL,
     username,
+    deviceName,
     authToken: token,
   };
+  await writeShellConfig(newConfig);
+
+  console.log(`Logged in as "${username}". Device registered as "${deviceName}" `);
+
+  return newConfig;
 }
 
-async function getAuthenticateShellConfig(): Promise<AuthenticatedShellConfig> {
-  const config = (await getShellConfig()) as AuthenticatedShellConfig;
+async function getAuthenticateShellConfig(): Promise<ShellConfig> {
+  const config = await getShellConfig();
   if (!config.username || !config.authToken) {
     return await doLogin(config);
   }
@@ -121,7 +147,7 @@ async function getAuthenticateShellConfig(): Promise<AuthenticatedShellConfig> {
 }
 
 export async function pull(siteName: string): Promise<any> {
-  const { remoteHost, remoteSSL } = await getShellConfig();
+  const { remoteHost, remoteSSL, authToken, deviceName, username } = await getAuthenticateShellConfig();
   const { nodes, schema } = await api(remoteHost, remoteSSL, "site-schema-get", { siteName });
   // schema.isPublic tells us if an API key is needed..
   const allRecords: any = {};
@@ -201,19 +227,15 @@ aven pull SITE_NAME
       .then(({ definedTypes, genFileLocation, exportedInterfaces, genFile }) => {
         console.log(`Pulled ${Object.entries(definedTypes).length} properties to ${genFileLocation}`);
       })
-      .catch((e) => {
-        console.error("eerrorr", e);
-      });
+      .catch(cliHandleFatal);
     return;
   } else if (action === "login") {
-    console.log("Logging in");
-    getAuthenticateShellConfig()
-      .then(({ username }) => {
-        console.log(`Logged in as ${username}`);
-      })
-      .catch((e) => {
-        console.error("eerrorr", e);
-      });
+    getShellConfig()
+      .then((config) => doLogin(config))
+      .catch(cliHandleFatal);
+    return;
+  } else if (action === "logout") {
+    logout().catch(cliHandleFatal);
     return;
   }
   console.log("Command not found. Try -h");
@@ -222,6 +244,11 @@ aven pull SITE_NAME
 
 if (require.main === module) {
   handleCli(process.argv);
+}
+
+function cliHandleFatal(e: Error) {
+  console.error(e.message);
+  process.exit(1);
 }
 
 type CLIArgs = {
