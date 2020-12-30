@@ -41,7 +41,9 @@ async function startServer() {
     server: httpServer,
   });
   await new Promise((resolve, reject) => {
-    httpServer.listen(port, resolve);
+    httpServer.listen(port, () => {
+      resolve();
+    });
     httpServer.on("error", reject);
   });
 

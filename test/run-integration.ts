@@ -9,7 +9,7 @@ const testEnvVars = parse(envFile);
 const testEnv = { ...process.env, ...testEnvVars };
 
 async function delay(duration: number) {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
     }, duration);
