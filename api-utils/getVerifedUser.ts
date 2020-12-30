@@ -33,6 +33,7 @@ export default async function getVerifiedUser(req: any): Promise<APIUser | null>
   if (!verifiedUserId) {
     return null;
   }
+  // todo: to improve perf, do not perform a db query here. Query for data elsewhere, or store email/username in the JWT, updating it after changes.
   const verifiedUser = await database.user.findUnique({
     where: { id: verifiedUserId },
     select: {

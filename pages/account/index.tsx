@@ -4,7 +4,7 @@ import { destroyCookie } from "nookies";
 import Router, { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
 import { LinkButton } from "../../components/Buttons";
-import { Button, Spinner } from "@chakra-ui/core";
+import { Button, Spinner, Text } from "@chakra-ui/core";
 import Link from "next/link";
 import { database } from "../../data/database";
 import styled from "@emotion/styled";
@@ -15,6 +15,30 @@ import { ListContainer, ListItem } from "../../components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../components/SiteRoleButtons";
 import { SiteRole } from "../../data/SiteRoles";
 import { DevPreviewSubscribeButton } from "../../components/Paddle";
+import { BillingState } from "../api/billing-hook";
+
+// req.headers =
+// "host":"aven.io",
+// "accept-encoding":"gzip",
+// "x-forwarded-for":"2603:8001:6b00:3b0:e022:8da9:4cc7:f9c2,172.69.33.52",
+// "x-forwarded-proto":"https",
+// "cache-control":"max-age=0",
+// "upgrade-insecure-requests":"1",
+// "user-agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
+// ,"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+// "sec-fetch-site":"same-origin",
+// "sec-fetch-mode":"navigate",
+// "sec-fetch-user":"?1",
+// "sec-fetch-dest":"document",
+// "accept-language":"en-US,en;q=0.9"
+// "cookie":"__cfduid=d94ea1341160d8133ab6a64b15fc7a08b1609268034; AvenSession=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImV4cCI6MTYwOTM1NDQ1MywiaWF0IjoxNjA5MjY4MDUzLCJyZXZhbGlkYXRlVG9rZW4iOiI5Nngzam9tbXdra2VkNm8yMGx0MW1rMHR5Y25vdDI5aXY5NGQ1N2w2eXE1MzNzbSIsInJldmFsaWRhdGVJUCI6ImZpeG1lLWRldmljZS1vcmlnaW5pcCJ9.XWbot4ki01qJYcy4w7Gp6PEZgOcTyA4Wj0S-L8Dyu-c",
+// "cdn-loop":"cloudflare",
+// "x-request-id":"491af320-ae1c-431b-9c79-0420d5208ec6",
+// "do-connecting-ip":"2603:8001:6b00:3b0:e022:8da9:4cc7:f9c2",
+// "x-b3-traceid":"eb6ba6443cef626680ca48e82c749dc4",
+// "x-b3-spanid":"80ca48e82c749dc4",
+// "x-b3-sampled":"0",
+// "content-length":"0",
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);
@@ -33,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: { user: { id: verifiedUser.id } },
     select: { site: { select: { name: true } }, name: true },
   });
-  const userWithEmails = await database.user.findUnique({
+  const fullUser = await database.user.findUnique({
     where: { id: verifiedUser.id },
     include: {
       VerifiedEmail: { select: { email: true } },
@@ -43,19 +67,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      testString: JSON.stringify(context.req.headers),
       sites: [
         ...sites.map((s) => ({ name: s.name, roleType: "owner" })),
         ...siteRoles.map((siteRole) => ({ name: siteRole.site.name, roleType: siteRole.name })),
       ],
       siteInvites,
       user: verifiedUser,
+      billingState: fullUser?.billing,
       emails: [
         { primary: true, email: verifiedUser.email },
-        ...(userWithEmails?.VerifiedEmail.filter((e) => e.email !== verifiedUser.email).map((verifiedEmail) => {
+        ...(fullUser?.VerifiedEmail.filter((e) => e.email !== verifiedUser.email).map((verifiedEmail) => {
           return { email: verifiedEmail.email };
         }) || []),
-        ...(userWithEmails?.EmailValidation.map((unverifiedEmail) => {
+        ...(fullUser?.EmailValidation.map((unverifiedEmail) => {
           return { email: unverifiedEmail.email, unverified: true };
         }) || []),
       ],
@@ -183,14 +207,14 @@ export default function AccountPage({
   user,
   sites,
   emails,
-  testString,
   siteInvites,
+  billingState,
 }: {
-  testString?: string;
   user: APIUser;
   sites: Array<{ name: string; roleType: SiteRole | "owner" }>;
   emails: Array<{ email: string; primary?: true; unverified?: true }>;
   siteInvites: Array<{ name: string; site: { name: string } }>;
+  billingState: BillingState;
 }): ReactElement {
   return (
     <BasicSiteLayout
@@ -198,7 +222,7 @@ export default function AccountPage({
       content={
         <>
           <SiteInvitesSection siteInvites={siteInvites} />
-          <MainSection title={testString || "Your Sites"}>
+          <MainSection title="Your Sites">
             {sites.map((site) => (
               <Link href={`/sites/${site.name}`} key={site.name}>
                 <SiteContainer>
@@ -240,6 +264,7 @@ export default function AccountPage({
           </MainSection>
           <MainSection title="Billing">
             <DevPreviewSubscribeButton user={user} />
+            <Text>{JSON.stringify(billingState)}</Text>
           </MainSection>
 
           <MainSection title="Account">

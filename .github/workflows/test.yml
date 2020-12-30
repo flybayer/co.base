@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout Latest
         uses: AvenCloud/actions/checkout@v1
+      - name: Node Version
+        run: node --version
       - name: Yarn
         run: yarn
       - name: Prisma Client Generate

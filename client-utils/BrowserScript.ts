@@ -3,7 +3,7 @@ export async function browserScriptLoad(scriptUrl: string): Promise<any> {
   script.src = scriptUrl;
   document.body.appendChild(script);
 
-  return await new Promise((resolve, reject) => {
+  return await new Promise<void>((resolve, reject) => {
     script.onload = function () {
       resolve();
     };

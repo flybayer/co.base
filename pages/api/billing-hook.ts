@@ -147,7 +147,7 @@ type SubscriptionState = {
   cancellation_effective_date?: string;
 };
 
-type BillingState = {
+export type BillingState = {
   billing_email?: string;
   customer_id?: string;
   status?: PaddleStatus;

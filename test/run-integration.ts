@@ -43,7 +43,7 @@ export default async function runIntegration(): Promise<void> {
   const serverEvents = [];
   const serverEventListeners = new Set<(h: any) => void>();
 
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     function handleEvent(evt: any) {
       if (evt.type === "ServerReady") {
         resolve();
@@ -89,11 +89,11 @@ export default async function runIntegration(): Promise<void> {
 
   await Promise.race([
     spawnAsync("yarn", ["jest", "integration"], { stdio: "inherit", env: testEnv }),
-    new Promise((_, reject) => {
+    new Promise<void>((_, reject) => {
       slowTestTimeout = setTimeout(() => {
         console.log("reached test timeout");
         reject(new Error("Test Timeout."));
-      }, 15_000);
+      }, 120_000);
     }),
   ]);
 
@@ -113,11 +113,14 @@ if (module === require.main) {
     .then(() => {
       console.log("Integration suite done.");
 
-      console.log("Active Requests: ", (process as any)._getActiveRequests());
-      console.log("Active Handles: ", (process as any)._getActiveHandles());
+      // console.log("Active Requests: ", (process as any)._getActiveRequests());
+      // console.log("Active Handles: ", (process as any)._getActiveHandles());
+      process.exit(0);
     })
+
     .catch((err) => {
       console.error("Integration suite error.");
       console.error(err);
+      process.exit(1);
     });
 }
