@@ -40,7 +40,7 @@ async function startServer() {
   const wss = new WebSocket.Server({
     server: httpServer,
   });
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     httpServer.listen(port, () => {
       resolve();
     });
