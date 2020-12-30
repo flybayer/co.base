@@ -7,6 +7,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserPrivilege {
+  NONE
+  MEMBER
+  VIP
+}
+
 model User {
   id              Int                  @id @default(autoincrement())
   username        String               @unique
@@ -17,6 +23,7 @@ model User {
   publicBio       String?
   billing         Json?
   Comment         Comment[]
+  privilege       UserPrivilege        @default(NONE)
   Sites           Site[]
   EmailValidation EmailValidation[]
   VerifiedEmail   VerifiedEmail[]

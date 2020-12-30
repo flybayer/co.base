@@ -4,6 +4,7 @@ import { serialize } from "php-serialize";
 import crypto from "crypto";
 import { sendEmail } from "../../lib/server/email";
 import { database } from "../../lib/data/database";
+import { UserPrivilege } from "@prisma/client";
 
 const paddlePublicKey = `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAvKl5MsOihG1ytxWIBCDv
@@ -51,7 +52,8 @@ function validateWebhook(inputPayload: any): boolean {
   return verification;
 }
 
-type PaddleStatus = "active" | "trialing" | "past_due" | "deleted";
+// https://developer.paddle.com/reference/platform-parameters/event-statuses
+type PaddleStatus = "active" | "trialing" | "past_due" | "paused" | "deleted";
 
 type PSubsPaymentSucceded = {
   alert_name: "subscription_payment_succeeded";
@@ -163,6 +165,7 @@ type SubscriptionState = {
 };
 
 export type BillingState = {
+  is_vip?: boolean;
   billing_email?: string;
   customer_id?: string;
   receipts?: Array<{
@@ -175,7 +178,23 @@ export type BillingState = {
   marketing_consent?: string; // "0" for refuse, "1" for marketing consent
 };
 
-async function billingTransact(event: PaddlePayload, billingTransact: (b: BillingState) => BillingState) {
+function getUserPrivilege(billingState: BillingState): UserPrivilege {
+  if (billingState.is_vip) {
+    return UserPrivilege.VIP;
+  }
+  if (!billingState.subscriptions) {
+    return UserPrivilege.NONE;
+  }
+  const activeMembershipCount = Object.values(billingState.subscriptions).filter(
+    (sub: SubscriptionState) => sub.status === "active",
+  ).length;
+  if (activeMembershipCount > 1) {
+    return UserPrivilege.MEMBER;
+  }
+  return UserPrivilege.NONE;
+}
+
+async function billingTransact(event: PaddlePayload, transact: (b: BillingState) => BillingState) {
   let userId = undefined;
   try {
     const passMeta = JSON.parse(event.passthrough);
@@ -200,10 +219,10 @@ async function billingTransact(event: PaddlePayload, billingTransact: (b: Billin
     },
   });
   const prevBilling = billingUser?.billing ? (billingUser.billing as BillingState) : {};
-  const newBilling = billingTransact(prevBilling);
+  const newBilling = transact(prevBilling);
   await database.user.update({
     where: userQuery,
-    data: { billing: newBilling },
+    data: { billing: newBilling, privilege: getUserPrivilege(newBilling) },
   });
 }
 

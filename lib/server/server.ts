@@ -129,7 +129,7 @@ async function startServer() {
 async function prepareDockerDev() {
   if (!dev) return;
   console.log("Docker startup..");
-  await spawnAsync("docker-compose", ["-f", "../config/docker-compose.yml", "up", "-d"], {
+  await spawnAsync("docker-compose", ["-f", "../../config/docker-compose.yml", "up", "-d"], {
     cwd: __dirname,
     stdio: "inherit",
   });
