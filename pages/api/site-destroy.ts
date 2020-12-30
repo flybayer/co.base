@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
+import { database } from "../../lib/data/database";
+import { Error400, Error403 } from "../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
 
 export type SiteDestroyPayload = {
   siteName: string;
@@ -19,7 +19,7 @@ async function siteDestroy(user: APIUser, { siteName }: SiteDestroyPayload, res:
   });
   const siteOwnerId = site?.owner.id;
   if (!siteOwnerId || siteOwnerId !== user.id) {
-    throw new Error400({ name: "InsufficientPrivilege" });
+    throw new Error403({ name: "InsufficientPrivilege" });
   }
   await database.siteNode.deleteMany({
     where: { site: { name: siteName } },

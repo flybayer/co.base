@@ -21,8 +21,8 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { GetServerSideProps } from "next";
 import { ReactElement, useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { api } from "../../../../api-utils/api";
-import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
+import { api } from "../../../../lib/server/api";
+import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
 import {
   ArrayContainer,
   BooleanContainer,
@@ -32,11 +32,11 @@ import {
   ObjectContainer,
   SchemaContainer,
   StringContainer,
-} from "../../../../components/CommonViews";
-import ControlledInput from "../../../../components/ControlledInput";
-import { BasicSiteLayout } from "../../../../components/SiteLayout";
-import { SiteTabs } from "../../../../components/SiteTabs";
-import { database } from "../../../../data/database";
+} from "../../../../lib/components/CommonViews";
+import ControlledInput from "../../../../lib/components/ControlledInput";
+import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
+import { SiteTabs } from "../../../../lib/components/SiteTabs";
+import { database } from "../../../../lib/data/database";
 import {
   ArraySchema,
   BooleanSchema,
@@ -52,8 +52,8 @@ import {
   StringSchema,
   ValueSchema,
   VALUE_TYPES,
-} from "../../../../data/NodeSchema";
-import { siteNodeQuery } from "../../../../data/SiteNodes";
+} from "../../../../lib/data/NodeSchema";
+import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

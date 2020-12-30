@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400, Error404 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
-import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../data/NodeSchema";
+import { database } from "../../lib/data/database";
+import { Error400, Error404 } from "../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
+import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../lib/data/NodeSchema";
 
 import Ajv, { DefinedError } from "ajv";
 import { InputJsonObject } from "@prisma/client";
-import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../data/SiteNodes";
-import { NodeEditResponse, startSiteEvent } from "../../data/SiteEvent";
+import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../lib/data/SiteNodes";
+import { NodeEditResponse, startSiteEvent } from "../../lib/data/SiteEvent";
 
 const ajv = new Ajv();
 

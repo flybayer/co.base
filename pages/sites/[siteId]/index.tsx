@@ -1,11 +1,11 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
-import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import NodeChildren from "../../../components/NodeChildren";
-import { BasicSiteLayout } from "../../../components/SiteLayout";
-import { SiteTabs } from "../../../components/SiteTabs";
-import { database } from "../../../data/database";
+import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
+import NodeChildren from "../../../lib/components/NodeChildren";
+import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
+import { SiteTabs } from "../../../lib/components/SiteTabs";
+import { database } from "../../../lib/data/database";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

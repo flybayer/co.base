@@ -1,10 +1,10 @@
-import "../styles/globals.css";
+import "../lib/components/styles/globals.css";
 import Head from "next/head";
 import React, { ReactElement } from "react";
 import { MDXProvider } from "@mdx-js/react";
-import Title from "../components/Title";
+import Title from "../lib/components/Title";
 import { Global } from "@emotion/react";
-import prism from "../styles/prism";
+import prism from "../lib/components/styles/prism";
 import { ChakraProvider, extendTheme } from "@chakra-ui/core";
 
 const mdComponents = {

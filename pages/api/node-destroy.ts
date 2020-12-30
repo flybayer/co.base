@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
-import { siteNodeQuery } from "../../data/SiteNodes";
-import { NodeDestroyResponse, startSiteEvent } from "../../data/SiteEvent";
-import { getToken } from "../../api-utils/APIToken";
+import { database } from "../../lib/data/database";
+import { Error400 } from "../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
+import { siteNodeQuery } from "../../lib/data/SiteNodes";
+import { NodeDestroyResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { getToken } from "../../lib/server/APIToken";
 
 export type NodeDestroyPayload = {
   siteName: string;

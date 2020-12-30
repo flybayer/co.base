@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
-import { atob } from "../../api-utils/Base64";
-import setCookie from "../../api-utils/setCookie";
+import { atob } from "../../lib/server/Base64";
+import setCookie from "../../lib/server/setCookie";
 import { verifyEmail } from "../api/email-auth";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

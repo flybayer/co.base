@@ -1,9 +1,9 @@
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
-import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import { CreateNodeForm } from "../../../../components/CreateForm";
-import { BasicSiteLayout } from "../../../../components/SiteLayout";
-import { SiteTabs } from "../../../../components/SiteTabs";
+import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
+import { CreateNodeForm } from "../../../../lib/components/CreateForm";
+import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
+import { SiteTabs } from "../../../../lib/components/SiteTabs";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

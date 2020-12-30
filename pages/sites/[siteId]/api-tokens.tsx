@@ -1,10 +1,10 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
-import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import { BasicSiteLayout } from "../../../components/SiteLayout";
-import { SiteTabs } from "../../../components/SiteTabs";
-import { database } from "../../../data/database";
+import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
+import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
+import { SiteTabs } from "../../../lib/components/SiteTabs";
+import { database } from "../../../lib/data/database";
 import {
   Button,
   Divider,
@@ -18,13 +18,13 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/core";
-import { ButtonContainer, ListContainer, ListItem } from "../../../components/List";
-import ControlledInput from "../../../components/ControlledInput";
-import { ControlledSelect } from "../../../components/ControlledSelect";
-import { api } from "../../../api-utils/api";
-import { handleAsync } from "../../../data/handleAsync";
+import { ButtonContainer, ListContainer, ListItem } from "../../../lib/components/List";
+import ControlledInput from "../../../lib/components/ControlledInput";
+import { ControlledSelect } from "../../../lib/components/ControlledSelect";
+import { api } from "../../../lib/server/api";
+import { handleAsync } from "../../../lib/data/handleAsync";
 import { useForm } from "react-hook-form";
-import { TokenCreateResponse } from "../../../data/SiteEvent";
+import { TokenCreateResponse } from "../../../lib/data/SiteEvent";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

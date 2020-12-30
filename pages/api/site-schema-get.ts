@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
-import { Error400 } from "../../api-utils/Errors";
-import { tagSiteRead } from "../../data/SiteEvent";
+import { database } from "../../lib/data/database";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
+import { Error400 } from "../../lib/server/Errors";
+import { tagSiteRead } from "../../lib/data/SiteEvent";
 
 export type SiteSchemaGetPayload = {
   siteName: string;

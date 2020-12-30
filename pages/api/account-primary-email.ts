@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Error400, Error500 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
+import { Error400, Error500 } from "../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
 
 export type PrimaryEmailPayload = {
   email: string;

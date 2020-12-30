@@ -1,20 +1,20 @@
 import { GetServerSideProps } from "next";
-import { BasicSiteLayout } from "../../components/SiteLayout";
+import { BasicSiteLayout } from "../../lib/components/SiteLayout";
 import { destroyCookie } from "nookies";
 import Router, { useRouter } from "next/router";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { LinkButton } from "../../components/Buttons";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { LinkButton } from "../../lib/components/Buttons";
 import { Button, Spinner, Text } from "@chakra-ui/core";
 import Link from "next/link";
-import { database } from "../../data/database";
+import { database } from "../../lib/data/database";
 import styled from "@emotion/styled";
-import { api } from "../../api-utils/api";
+import { api } from "../../lib/server/api";
 import { ReactElement, useState } from "react";
-import { CenterButtonRow, MainSection } from "../../components/CommonViews";
-import { ListContainer, ListItem } from "../../components/List";
-import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../components/SiteRoleButtons";
-import { SiteRole } from "../../data/SiteRoles";
-import { DevPreviewSubscribeButton } from "../../components/Paddle";
+import { CenterButtonRow, MainSection } from "../../lib/components/CommonViews";
+import { ListContainer, ListItem } from "../../lib/components/List";
+import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../lib/components/SiteRoleButtons";
+import { SiteRole } from "../../lib/data/SiteRoles";
+import { DevPreviewSubscribeButton } from "../../lib/components/Paddle";
 import { BillingState } from "../api/billing-hook";
 
 // req.headers =

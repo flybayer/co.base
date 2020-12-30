@@ -1,18 +1,18 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { api } from "../../../../api-utils/api";
-import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import { database } from "../../../../data/database";
+import { api } from "../../../../lib/server/api";
+import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
+import { database } from "../../../../lib/data/database";
 import { Button, Select, Spinner } from "@chakra-ui/core";
 import { ReactElement, useState } from "react";
-import { SiteTabs } from "../../../../components/SiteTabs";
-import { BasicSiteLayout } from "../../../../components/SiteLayout";
-import { NodeSchema, NodeType, nodeTypeName, RecordSchema } from "../../../../data/NodeSchema";
-import { CenterButtonRow, MainContainer, MainSection } from "../../../../components/CommonViews";
+import { SiteTabs } from "../../../../lib/components/SiteTabs";
+import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
+import { NodeSchema, NodeType, nodeTypeName, RecordSchema } from "../../../../lib/data/NodeSchema";
+import { CenterButtonRow, MainContainer, MainSection } from "../../../../lib/components/CommonViews";
 import styled from "@emotion/styled";
 import { observe, generate } from "fast-json-patch";
-import { handleAsync } from "../../../../data/handleAsync";
-import { siteNodeQuery } from "../../../../data/SiteNodes";
+import { handleAsync } from "../../../../lib/data/handleAsync";
+import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

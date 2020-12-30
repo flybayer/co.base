@@ -1,17 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { sendEmail } from "../../api-utils/email";
-import { sendSMS } from "../../api-utils/sms";
-import { getRandomLetters } from "../../api-utils/getRandomLetters";
-import { Error400, Error500 } from "../../api-utils/Errors";
-import setCookie from "../../api-utils/setCookie";
-import getSiteLink from "../../api-utils/getSiteLink";
-import { getRandomNumbers } from "../../api-utils/getRandomNumbers";
-import { createAPI } from "../../api-utils/createAPI";
+import { database } from "../../lib/data/database";
+import { sendEmail } from "../../lib/server/email";
+import { sendSMS } from "../../lib/server/sms";
+import { getRandomLetters } from "../../lib/server/getRandomLetters";
+import { Error400, Error500 } from "../../lib/server/Errors";
+import setCookie from "../../lib/server/setCookie";
+import getSiteLink from "../../lib/server/getSiteLink";
+import { getRandomNumbers } from "../../lib/server/getRandomNumbers";
+import { createAPI } from "../../lib/server/createAPI";
 import bcrypt from "bcrypt";
-import { encode } from "../../api-utils/jwt";
-import { looksLikeAnEmail } from "../../api-utils/looksLikeAnEmail";
-import { btoa } from "../../api-utils/Base64";
+import { encode } from "../../lib/server/jwt";
+import { looksLikeAnEmail } from "../../lib/server/looksLikeAnEmail";
+import { btoa } from "../../lib/server/Base64";
 
 type Email = string;
 

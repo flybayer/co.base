@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { createAPI } from "../../api-utils/createAPI";
-import { database } from "../../data/database";
+import { createAPI } from "../../lib/server/createAPI";
+import { database } from "../../lib/data/database";
 
 export type DeviceDestroyPayload = {
   token: string;

@@ -2,15 +2,15 @@ import { Button, Text } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
-import { api } from "../../../api-utils/api";
-import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import { APIButton } from "../../../components/APIButton";
-import { CenterButtonRow, MainSection } from "../../../components/CommonViews";
-import { BasicSiteLayout } from "../../../components/SiteLayout";
-import { SiteTabs } from "../../../components/SiteTabs";
-import { database } from "../../../data/database";
-import { handleAsync } from "../../../data/handleAsync";
-import { SiteSchema } from "../../../data/SiteSchema";
+import { api } from "../../../lib/server/api";
+import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
+import { APIButton } from "../../../lib/components/APIButton";
+import { CenterButtonRow, MainSection } from "../../../lib/components/CommonViews";
+import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
+import { SiteTabs } from "../../../lib/components/SiteTabs";
+import { database } from "../../../lib/data/database";
+import { handleAsync } from "../../../lib/data/handleAsync";
+import { SiteSchema } from "../../../lib/data/SiteSchema";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

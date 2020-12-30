@@ -2,10 +2,10 @@ import { Text } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
-import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import { BasicSiteLayout } from "../../../components/SiteLayout";
-import { SiteTabs } from "../../../components/SiteTabs";
-import { database } from "../../../data/database";
+import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
+import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
+import { SiteTabs } from "../../../lib/components/SiteTabs";
+import { database } from "../../../lib/data/database";
 
 const PAGE_SIZE = 30;
 

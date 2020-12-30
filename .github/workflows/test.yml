@@ -19,10 +19,12 @@ jobs:
         run: yarn prisma generate
       - name: Lint
         run: yarn lint
+      - name: Unit tests
+        run: yarn test:unit
       - name: Build TS
         run: yarn build:server
       - name: Build Next
         run: yarn build:next
       - name: Run Integration Tests
-        run: yarn test-integration
+        run: yarn test:integration
         timeout-minutes: 10

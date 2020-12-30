@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { database } from "../../data/database";
+import { database } from "../../lib/data/database";
 
 test("server should respond with 200", async () => {
   const res = await fetch("http://localhost:7900/");

@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
-import { getRandomLetters } from "../../api-utils/getRandomLetters";
-import { SiteTokenType } from "../../data/SiteToken";
-import { startSiteEvent, TokenCreateResponse } from "../../data/SiteEvent";
+import { database } from "../../lib/data/database";
+import { Error400 } from "../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
+import { getRandomLetters } from "../../lib/server/getRandomLetters";
+import { SiteTokenType } from "../../lib/data/SiteToken";
+import { startSiteEvent, TokenCreateResponse } from "../../lib/data/SiteEvent";
 
 export type SiteTokenCreatePayload = {
   siteName: string;

@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { createAPI } from "../../api-utils/createAPI";
+import { createAPI } from "../../lib/server/createAPI";
 import { serialize } from "php-serialize";
 import crypto from "crypto";
-import { sendEmail } from "../../api-utils/email";
-import { database } from "../../data/database";
+import { sendEmail } from "../../lib/server/email";
+import { database } from "../../lib/data/database";
 
 const paddlePublicKey = `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAvKl5MsOihG1ytxWIBCDv
@@ -74,6 +74,8 @@ type PSubsPaymentSucceded = {
   subscription_plan_id: string;
   passthrough: string;
   sale_gross: string;
+  next_bill_date: string;
+  next_payment_amount: string;
   status: PaddleStatus;
 };
 
@@ -104,18 +106,26 @@ type PSubsCreated = {
   subscription_plan_id: string;
   update_url: string;
   cancel_url: string;
+  marketing_consent: string;
 };
 
 type PSubsUpdated = {
   alert_name: "subscription_updated";
   alert_id: string;
   user_id: string;
+  subscription_id: string;
   checkout_id: string;
   email: string;
   passthrough: string;
   status: PaddleStatus;
   new_quantity: string; // \d+
   next_bill_date: string; // YYYY-MM-DD
+  currency: string;
+  new_price: string;
+  paused_at: string;
+  paused_from: string;
+  paused_reason: string;
+  marketing_consent: string;
 };
 
 type PSubsCancelled = {
@@ -129,15 +139,10 @@ type PSubsCancelled = {
   subscription_id: string;
   subscription_plan_id: string;
   status: PaddleStatus;
+  marketing_consent: string;
 };
 
 type PaddlePayload = PSubsPaymentSucceded | PSubsPaymentFailed | PSubsCreated | PSubsCancelled | PSubsUpdated;
-
-type PaymentState = {
-  succeeded: boolean;
-  receipt_url: string;
-  event_time: string;
-};
 
 type SubscriptionState = {
   status: PaddleStatus;
@@ -145,28 +150,29 @@ type SubscriptionState = {
   subscription_plan_id?: string;
   checkout_id?: string;
   cancellation_effective_date?: string;
+  paused_at?: string;
+  paused_from?: string;
+  paused_reason?: string;
+  currency?: string;
+  price?: string;
+  plan_name?: string;
+  cancel_url?: string;
+  update_url?: string;
+  next_bill_date?: string;
+  next_payment_amount?: string;
 };
 
 export type BillingState = {
   billing_email?: string;
   customer_id?: string;
-  status?: PaddleStatus;
   receipts?: Array<{
     date: string;
     url: string;
     amount: string;
     currency: string;
   }>;
-  plan_name?: string;
   subscriptions?: Record<string, SubscriptionState>;
-  payments?: Record<string, PaymentState>;
-  cancel_url?: string;
-  update_url?: string;
-  last_payment_date?: string;
-  next_bill_date?: string;
-  next_payment_amount?: string;
-  currency?: string;
-  cancellation_effective_date?: string;
+  marketing_consent?: string; // "0" for refuse, "1" for marketing consent
 };
 
 async function billingTransact(event: PaddlePayload, billingTransact: (b: BillingState) => BillingState) {
@@ -203,9 +209,17 @@ async function billingTransact(event: PaddlePayload, billingTransact: (b: Billin
 
 async function handleSubscriptionCancelled(event: PSubsCancelled) {
   await billingTransact(event, (state) => {
-    const { cancellation_effective_date, status, subscription_id, subscription_plan_id, checkout_id } = event;
+    const {
+      cancellation_effective_date,
+      status,
+      subscription_id,
+      subscription_plan_id,
+      checkout_id,
+      marketing_consent,
+    } = event;
     return {
       ...state,
+      marketing_consent,
       cancellation_effective_date,
       status: status,
       subscriptions: {
@@ -224,20 +238,46 @@ async function handleSubscriptionCancelled(event: PSubsCancelled) {
 }
 async function handleSubscriptionCreated(event: PSubsCreated) {
   await billingTransact(event, (state) => {
-    const { user_id, email, cancel_url, update_url } = event;
+    const { user_id, email, cancel_url, update_url, subscription_id, subscription_plan_id, marketing_consent } = event;
+    const prevSub = (state.subscriptions || {})[subscription_id] || {};
     return {
       ...state,
+      marketing_consent,
       customer_id: user_id,
       email,
       cancel_url,
       update_url,
-      status: event.status ? event.status : state.status,
+      subscriptions: {
+        ...state.subscriptions,
+        [subscription_id]: {
+          ...prevSub,
+          subscription_plan_id,
+          update_url,
+          cancel_url,
+          status: event.status ? event.status : prevSub.status,
+        },
+      },
     };
   });
 }
 async function handleSubscriptionUpdated(event: PSubsUpdated) {
   await billingTransact(event, (state) => {
-    return { ...state };
+    const { subscription_id, next_bill_date, new_price, marketing_consent } = event;
+    const prevSub = (state.subscriptions || {})[subscription_id] || {};
+
+    return {
+      ...state,
+      marketing_consent,
+      subscriptions: {
+        ...state.subscriptions,
+        [subscription_id]: {
+          ...prevSub,
+          next_bill_date,
+          price: new_price,
+          status: event.status ? event.status : prevSub.status,
+        },
+      },
+    };
   });
 }
 async function handleSubscriptionPaymentSucceded(event: PSubsPaymentSucceded) {
@@ -256,12 +296,14 @@ async function handleSubscriptionPaymentSucceded(event: PSubsPaymentSucceded) {
         subscription_id,
         subscription_plan_id,
         status,
+        unit_price,
+        next_bill_date,
+        next_payment_amount,
       } = event;
       return {
         ...state,
         customer_id: user_id,
         billing_email: email,
-        plan_name,
         receipts: [
           ...(state.receipts || []),
           {
@@ -276,12 +318,16 @@ async function handleSubscriptionPaymentSucceded(event: PSubsPaymentSucceded) {
           [subscription_id]: {
             ...((state.subscriptions && state.subscriptions[subscription_id]) || {}),
             status,
+            plan_name,
             subscription_id,
             subscription_plan_id,
             checkout_id,
+            currency,
+            price: unit_price,
+            next_bill_date,
+            next_payment_amount,
           },
         },
-        status: status ? status : state.status,
       };
     },
   );

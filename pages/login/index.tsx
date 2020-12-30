@@ -1,17 +1,17 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import SiteLayout from "../../components/SiteLayout";
+import SiteLayout from "../../lib/components/SiteLayout";
 import { GetServerSideProps } from "next";
 import React, { ReactElement } from "react";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import ControlledInput from "../../components/ControlledInput";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import ControlledInput from "../../lib/components/ControlledInput";
 import { Button, Divider, FormControl, FormHelperText, FormLabel, Spinner } from "@chakra-ui/core";
 import { useRouter } from "next/router";
-import { api } from "../../api-utils/api";
-import { Error400 } from "../../api-utils/Errors";
-import { LinkButton } from "../../components/Buttons";
-import { handleAsync } from "../../data/handleAsync";
+import { api } from "../../lib/server/api";
+import { Error400 } from "../../lib/server/Errors";
+import { LinkButton } from "../../lib/components/Buttons";
+import { handleAsync } from "../../lib/data/handleAsync";
 import { LoginRegisterResponse } from "../api/login-register";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

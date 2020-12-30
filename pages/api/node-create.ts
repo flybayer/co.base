@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
-import { getValueSchema, getDefaultValue, NodeSchema, NodeType, SchemaType } from "../../data/NodeSchema";
-import { siteNodeQuery } from "../../data/SiteNodes";
-import { NodeCreateResponse, startSiteEvent } from "../../data/SiteEvent";
+import { database } from "../../lib/data/database";
+import { Error400 } from "../../lib/server/Errors";
+import getVerifiedUser from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
+import { getValueSchema, getDefaultValue, NodeSchema, NodeType, SchemaType } from "../../lib/data/NodeSchema";
+import { siteNodeQuery } from "../../lib/data/SiteNodes";
+import { NodeCreateResponse, startSiteEvent } from "../../lib/data/SiteEvent";
 
 export type NodeCreatePayload = {
   name: string;

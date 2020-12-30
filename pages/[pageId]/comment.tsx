@@ -1,10 +1,10 @@
-import SiteLayout from "../../components/SiteLayout";
+import SiteLayout from "../../lib/components/SiteLayout";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { database } from "../../data/database";
-import { LinkButton } from "../../components/Buttons";
-import { Error400 } from "../../api-utils/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { database } from "../../lib/data/database";
+import { LinkButton } from "../../lib/components/Buttons";
+import { Error400 } from "../../lib/server/Errors";
 import { ReactElement } from "react";
 
 type Comment = {

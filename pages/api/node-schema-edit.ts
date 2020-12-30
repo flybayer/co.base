@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
-import { NodeSchema } from "../../data/NodeSchema";
+import { database } from "../../lib/data/database";
+import { Error400 } from "../../lib/server/Errors";
+import getVerifiedUser from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
+import { NodeSchema } from "../../lib/data/NodeSchema";
 import { applyPatch } from "fast-json-patch";
-import { siteNodeQuery } from "../../data/SiteNodes";
-import { NodeSchemaEditResponse, startSiteEvent } from "../../data/SiteEvent";
+import { siteNodeQuery } from "../../lib/data/SiteNodes";
+import { NodeSchemaEditResponse, startSiteEvent } from "../../lib/data/SiteEvent";
 
 export type NodeSchemaEditPayload = {
   address: string[];

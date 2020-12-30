@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400, Error500 } from "../../api-utils/Errors";
-import { findTempUsername } from "../../api-utils/findTempUsername";
+import { database } from "../../lib/data/database";
+import { Error400, Error500 } from "../../lib/server/Errors";
+import { findTempUsername } from "../../lib/server/findTempUsername";
 import { parseCookies } from "nookies";
-import setCookie from "../../api-utils/setCookie";
-import { encode } from "../../api-utils/jwt";
-import { createAPI } from "../../api-utils/createAPI";
-import { atob } from "../../api-utils/Base64";
-import { getRandomLetters } from "../../api-utils/getRandomLetters";
+import setCookie from "../../lib/server/setCookie";
+import { encode } from "../../lib/server/jwt";
+import { createAPI } from "../../lib/server/createAPI";
+import { atob } from "../../lib/server/Base64";
+import { getRandomLetters } from "../../lib/server/getRandomLetters";
 
 export async function verifyEmail(
   secret: string,

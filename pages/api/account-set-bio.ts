@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { database } from "../../data/database";
-import { createAPI } from "../../api-utils/createAPI";
+import { Error400 } from "../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { database } from "../../lib/data/database";
+import { createAPI } from "../../lib/server/createAPI";
 
 export type SetBioPayload = {
   bio: string;

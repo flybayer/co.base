@@ -2,9 +2,9 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
 import { ReactElement } from "react";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { APIButton } from "../../components/APIButton";
-import { BasicSiteLayout } from "../../components/SiteLayout";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { APIButton } from "../../lib/components/APIButton";
+import { BasicSiteLayout } from "../../lib/components/SiteLayout";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

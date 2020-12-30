@@ -1,15 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error400 } from "../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import { createAPI } from "../../api-utils/createAPI";
-import { looksLikeAnEmail } from "../../api-utils/looksLikeAnEmail";
-import { sendEmail } from "../../api-utils/email";
-import { getRandomLetters } from "../../api-utils/getRandomLetters";
-import getSiteLink from "../../api-utils/getSiteLink";
-import { btoa } from "../../api-utils/Base64";
-import { SiteRole } from "../../data/SiteRoles";
-import { RoleInviteResponse, startSiteEvent } from "../../data/SiteEvent";
+import { database } from "../../lib/data/database";
+import { Error400 } from "../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import { createAPI } from "../../lib/server/createAPI";
+import { looksLikeAnEmail } from "../../lib/server/looksLikeAnEmail";
+import { sendEmail } from "../../lib/server/email";
+import { getRandomLetters } from "../../lib/server/getRandomLetters";
+import getSiteLink from "../../lib/server/getSiteLink";
+import { btoa } from "../../lib/server/Base64";
+import { SiteRole } from "../../lib/data/SiteRoles";
+import { RoleInviteResponse, startSiteEvent } from "../../lib/data/SiteEvent";
 
 export type SiteRoleInvitePayload = {
   emailUsername: string;

@@ -1,13 +1,13 @@
 import { GetServerSideProps } from "next";
-import getVerifiedUser, { APIUser } from "../../api-utils/getVerifedUser";
-import SiteLayout from "../../components/SiteLayout";
+import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
+import SiteLayout from "../../lib/components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
-import ControlledInput from "../../components/ControlledInput";
+import ControlledInput from "../../lib/components/ControlledInput";
 import React, { ReactElement } from "react";
 import { useRouter } from "next/router";
 import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
-import { api } from "../../api-utils/api";
-import { authRedirect } from "../../api-utils/authRedirect";
+import { api } from "../../lib/server/api";
+import { authRedirect } from "../../lib/server/authRedirect";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

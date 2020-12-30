@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { createAPI } from "../../api-utils/createAPI";
-import { getRandomLetters } from "../../api-utils/getRandomLetters";
+import { database } from "../../lib/data/database";
+import { createAPI } from "../../lib/server/createAPI";
+import { getRandomLetters } from "../../lib/server/getRandomLetters";
 
 export type DeviceLoginPayload = unknown;
 

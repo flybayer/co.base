@@ -1,10 +1,10 @@
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
-import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import { MainSection } from "../../../components/CommonViews";
-import { BasicSiteLayout } from "../../../components/SiteLayout";
-import { SiteRoleAcceptButton } from "../../../components/SiteRoleButtons";
-import { database } from "../../../data/database";
+import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
+import { MainSection } from "../../../lib/components/CommonViews";
+import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
+import { SiteRoleAcceptButton } from "../../../lib/components/SiteRoleButtons";
+import { database } from "../../../lib/data/database";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getToken } from "../../../api-utils/APIToken";
-import { createAPI } from "../../../api-utils/createAPI";
-import { Error400, Error403, Error404 } from "../../../api-utils/Errors";
-import getVerifiedUser, { APIUser } from "../../../api-utils/getVerifedUser";
-import { database } from "../../../data/database";
-import { tagSiteRead } from "../../../data/SiteEvent";
-import { siteNodeQuery } from "../../../data/SiteNodes";
+import { getToken } from "../../../lib/server/APIToken";
+import { createAPI } from "../../../lib/server/createAPI";
+import { Error400, Error403, Error404 } from "../../../lib/server/Errors";
+import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
+import { database } from "../../../lib/data/database";
+import { tagSiteRead } from "../../../lib/data/SiteEvent";
+import { siteNodeQuery } from "../../../lib/data/SiteNodes";
 import { protectedNodeDelete } from "../node-destroy";
 import { protectedNodePut } from "../node-edit";
 

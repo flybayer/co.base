@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
-import { Error400 } from "../../api-utils/Errors";
+import { Error400 } from "../../lib/server/Errors";
 import { verifyEmail } from "../api/email-auth";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

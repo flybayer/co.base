@@ -1,13 +1,9 @@
 const withMdxEnhanced = require("next-mdx-enhanced");
 
-const remarkPlugins = [
-  require("remark-autolink-headings"),
-  require("remark-slug"),
-  require("remark-code-titles"),
-];
+const remarkPlugins = [require("remark-autolink-headings"), require("remark-slug"), require("remark-code-titles")];
 
 module.exports = withMdxEnhanced({
-  layoutPath: "layouts",
+  layoutPath: "lib/layouts",
   defaultLayout: true,
   fileExtensions: ["mdx"],
   remarkPlugins,

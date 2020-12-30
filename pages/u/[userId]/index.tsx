@@ -1,7 +1,7 @@
 // import { database } from "../../../data/database";
 
 import { GetServerSideProps } from "next";
-import { database } from "../../../data/database";
+import { database } from "../../../lib/data/database";
 import { User } from "@prisma/client";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

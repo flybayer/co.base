@@ -3,17 +3,23 @@ import { CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
 import { ReactElement, useRef, useState } from "react";
-import { api } from "../../../../api-utils/api";
-import getVerifiedUser, { APIUser } from "../../../../api-utils/getVerifedUser";
-import { MainSection } from "../../../../components/CommonViews";
-import { ListContainer } from "../../../../components/List";
-import NodeChildren from "../../../../components/NodeChildren";
+import { api } from "../../../../lib/server/api";
+import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
+import { MainSection } from "../../../../lib/components/CommonViews";
+import { ListContainer } from "../../../../lib/components/List";
+import NodeChildren from "../../../../lib/components/NodeChildren";
 
-import { BasicSiteLayout } from "../../../../components/SiteLayout";
-import { SiteTabs } from "../../../../components/SiteTabs";
-import { database } from "../../../../data/database";
-import { getDefaultValue, NodeSchema, RecordSchema, RecordSetSchema, ValueSchema } from "../../../../data/NodeSchema";
-import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../data/SiteNodes";
+import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
+import { SiteTabs } from "../../../../lib/components/SiteTabs";
+import { database } from "../../../../lib/data/database";
+import {
+  getDefaultValue,
+  NodeSchema,
+  RecordSchema,
+  RecordSetSchema,
+  ValueSchema,
+} from "../../../../lib/data/NodeSchema";
+import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../lib/data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req);

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { createAPI } from "../../api-utils/createAPI";
-import { Error400 } from "../../api-utils/Errors";
-import { database } from "../../data/database";
+import { createAPI } from "../../lib/server/createAPI";
+import { Error400 } from "../../lib/server/Errors";
+import { database } from "../../lib/data/database";
 
 export type DeviceLoginVerifyPayload = {
   token: string;

@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../data/database";
-import { Error404 } from "../../api-utils/Errors";
-import { createAPI } from "../../api-utils/createAPI";
-import { NodeSchema } from "../../data/NodeSchema";
-import { setAnyCors } from "../../api-utils/cors";
+import { database } from "../../lib/data/database";
+import { Error404 } from "../../lib/server/Errors";
+import { createAPI } from "../../lib/server/createAPI";
+import { NodeSchema } from "../../lib/data/NodeSchema";
+import { setAnyCors } from "../../lib/server/cors";
 import Ajv from "ajv";
-import { siteNodeQuery } from "../../data/SiteNodes";
-import { tagSiteRead } from "../../data/SiteEvent";
-import getVerifiedUser from "../../api-utils/getVerifedUser";
+import { siteNodeQuery } from "../../lib/data/SiteNodes";
+import { tagSiteRead } from "../../lib/data/SiteEvent";
+import getVerifiedUser from "../../lib/server/getVerifedUser";
 
 export type NodeGetPayload = {
   address: string[];
