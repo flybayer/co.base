@@ -6,9 +6,9 @@ import next from "next";
 import { parse } from "url";
 import WebSocket from "ws";
 import express from "express";
-import spawn from "@expo/spawn-async";
 import cookieParser from "cookie-parser";
 import { testOutput } from "../api-utils/TestOutput";
+import spawnAsync from "@expo/spawn-async";
 
 dotenv.config();
 const dev = process.env.NODE_ENV !== "production";
@@ -129,14 +129,24 @@ async function startServer() {
 async function prepareDockerDev() {
   if (!dev) return;
   console.log("Docker startup..");
-  const { output } = await spawn("docker-compose", ["up", "-d"], {
+  await spawnAsync("docker-compose", ["-f", "../config/docker-compose.yml", "up", "-d"], {
     cwd: __dirname,
+    stdio: "inherit",
   });
-  console.log(output.join("\n"));
+}
+
+async function prepareDatabase() {
+  if (!dev) return;
+  console.log("Migrating db..");
+  await spawnAsync("yarn", ["prisma", "migrate", "dev", "--preview-feature", "--skip-generate"], {
+    cwd: __dirname,
+    stdio: "inherit",
+  });
 }
 
 async function runServer() {
   await prepareDockerDev();
+  await prepareDatabase();
   await app.prepare();
   await startServer();
 }
