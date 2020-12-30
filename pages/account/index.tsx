@@ -231,12 +231,6 @@ export default function AccountPage({
                   <SiteName>
                     {site.name} ({site.roleType})
                   </SiteName>
-                  <span>
-                    <LinkButton href={`/sites/${site.name}/dashboard`} colorScheme="avenColor">
-                      Dashboard
-                    </LinkButton>
-                    <LinkButton href={`/sites/${site.name}`}>Settings</LinkButton>
-                  </span>
                 </SiteContainer>
               </Link>
             ))}

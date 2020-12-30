@@ -4,7 +4,6 @@ import { Error400, Error404 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../lib/data/NodeSchema";
-
 import Ajv, { DefinedError } from "ajv";
 import { InputJsonObject } from "@prisma/client";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../lib/data/SiteNodes";
@@ -66,11 +65,16 @@ export async function nodePut({ value, siteName, address }: NodeEditPayload): Pr
   return { value };
 }
 
-export async function protectedNodePut(action: NodeEditPayload, user: APIUser | null): Promise<NodeEditResponse> {
+export async function protectedNodePut(
+  action: NodeEditPayload,
+  user: APIUser | null,
+  apiToken: string | undefined,
+): Promise<NodeEditResponse> {
   const [resolve, reject] = await startSiteEvent("NodeEdit", {
     siteName: action.siteName,
     user,
     address: action.address,
+    apiToken,
   });
   try {
     const result = await nodePut(action);

@@ -7,7 +7,8 @@ import { database } from "../../../lib/data/database";
 import { tagSiteRead } from "../../../lib/data/SiteEvent";
 import { siteNodeQuery } from "../../../lib/data/SiteNodes";
 import { protectedNodeDelete } from "../node-destroy";
-import { protectedNodePut } from "../node-edit";
+import { protectedNodePut } from "../node-put";
+import { protectedNodePost } from "../node-post";
 
 type QueryContext = {
   siteName: string;
@@ -60,14 +61,6 @@ async function nodeQuery({ siteName, user, token }: QueryContext, address: strin
   return { value: node?.value, token, user };
 }
 
-async function putNode({ siteName, user, token }: QueryContext, address: string[], value: any) {
-  return { siteName, user, token, address, value };
-}
-
-async function deleteNode({ siteName, user, token }: QueryContext, address: string[]) {
-  return { siteName, user, token, address };
-}
-
 async function childrenQuery({ siteName, user, token }: QueryContext, address: string[]) {
   await tagSiteRead(siteName, user, address.join("/") + "/_children", token);
   if (!address.length) {
@@ -108,17 +101,37 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
     token,
     siteName,
   };
+
   if (req.method === "PUT") {
     const payload = req.body;
-    return await protectedNodePut({ siteName, address, ...payload }, user);
+    return await protectedNodePut({ siteName, address, ...payload }, user, token);
   }
+
   if (req.method === "DELETE") {
-    // return await deleteNode(queryContext, address);
     return await protectedNodeDelete({ siteName, address }, user, token);
   }
+
+  if (req.method === "POST") {
+    const action = req.body;
+    return await protectedNodePost(
+      {
+        siteName,
+        address,
+        name: action.name,
+        type: action.type, // NodeType
+        schemaType: action.schemaType, // SchemaType
+      },
+      user,
+      token,
+    );
+  }
+
   if (req.method !== "GET") {
     throw new Error400({ name: "MethodNotImplemented" });
   }
+  await tagSiteRead(siteName, user, address.join("/"), token);
+  console.log(siteName, user, address, token, "hmm");
+
   if (!address.length) {
     return await siteRootQuery(queryContext);
   }

@@ -25,7 +25,7 @@ export function CreateAnyNodeForm({ address, siteName }: { address: string[]; si
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
           handleAsync(
-            api("node-create", {
+            api("node-post", {
               address,
               siteName,
               type,
@@ -96,7 +96,7 @@ export function CreateRecordSetNodeForm({ address, siteName }: { address: string
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          api("node-create", {
+          api("node-post", {
             address,
             siteName,
             ...data,

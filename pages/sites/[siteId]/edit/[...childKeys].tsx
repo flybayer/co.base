@@ -66,7 +66,7 @@ function EditForm({ value, siteName, address }: { value: any; siteName: string; 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        api("node-edit", {
+        api("node-put", {
           value: JSON.parse(data.jsonValue),
           siteName,
           address,

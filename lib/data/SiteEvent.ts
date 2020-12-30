@@ -39,7 +39,7 @@ export type NodeSchemaEditResponse = {
   schema: any;
 };
 
-export type NodeCreateResponse = {
+export type NodePostResponse = {
   nodeId: number;
   address: string[];
   key: string;
@@ -58,9 +58,9 @@ export type SiteEvent = {
   RoleEdit: RoleEditResponse;
   NodeEdit: NodeEditResponse;
   NodeSchemaEdit: NodeSchemaEditResponse;
-  NodeCreate: NodeCreateResponse;
+  NodePost: NodePostResponse;
   NodeDestroy: NodeDestroyResponse;
-  SiteNodeCreate: NodeCreateResponse;
+  SiteNodePost: NodePostResponse;
   SiteNodeDestroy: NodeDestroyResponse;
 };
 
@@ -143,16 +143,16 @@ function elevateRole(roleA: SiteAccessRole, roleB: SiteAccessRole): SiteAccessRo
 }
 
 function accessRoleOfSiteEvent(eventType: SiteEventName): SiteAccessRole {
-  // reader
+  // reader. reading is not site events, handled in tagSiteRead
 
   // writer
   if (eventType === "NodeEdit") return "writer";
-  if (eventType === "NodeCreate") return "writer";
+  if (eventType === "NodePost") return "writer";
   if (eventType === "NodeDestroy") return "writer";
 
   // manager
   if (eventType === "NodeSchemaEdit") return "manager";
-  if (eventType === "SiteNodeCreate") return "manager";
+  if (eventType === "SiteNodePost") return "manager";
   if (eventType === "SiteNodeDestroy") return "manager";
 
   // admin
@@ -173,23 +173,25 @@ function getRole(r: string): SiteAccessRole {
 }
 
 async function queryPermission(siteName: string, user?: APIUser | null, apiToken?: string) {
+  console.log("ppp", { siteName, user, apiToken });
   const siteRolePermission = await database.site.findUnique({
     where: { name: siteName },
     select: {
       owner: { select: { id: true } },
       schema: true,
-      SiteRole: user
-        ? {
-            where: { user: { id: user.id } },
-            select: { name: true },
-          }
-        : undefined,
+      SiteRole:
+        user == null
+          ? false
+          : {
+              where: { user: { id: user.id } },
+              select: { name: true },
+            },
       SiteToken: apiToken
         ? {
             where: { token: apiToken },
             select: { type: true },
           }
-        : undefined,
+        : false,
     },
   });
   if (!siteRolePermission) {
@@ -203,18 +205,20 @@ async function queryPermission(siteName: string, user?: APIUser | null, apiToken
   if (user?.id && siteRolePermission.owner.id === user?.id) {
     accessRole = "admin";
   }
-  siteRolePermission.SiteRole.forEach((siteRole) => {
-    const grantedRole = getRole(siteRole.name);
-    accessRole = elevateRole(accessRole, grantedRole);
-  });
-  siteRolePermission.SiteToken.forEach((siteToken) => {
-    if (siteToken.type === "read") {
-      accessRole = elevateRole(accessRole, getRole("reader"));
-    }
-    if (siteToken.type === "write") {
-      accessRole = elevateRole(accessRole, getRole("writer"));
-    }
-  });
+  if (siteRolePermission.SiteRole)
+    siteRolePermission.SiteRole.forEach((siteRole) => {
+      const grantedRole = getRole(siteRole.name);
+      accessRole = elevateRole(accessRole, grantedRole);
+    });
+  if (siteRolePermission.SiteToken)
+    siteRolePermission.SiteToken.forEach((siteToken) => {
+      if (siteToken.type === "read") {
+        accessRole = elevateRole(accessRole, getRole("reader"));
+      }
+      if (siteToken.type === "write") {
+        accessRole = elevateRole(accessRole, getRole("writer"));
+      }
+    });
   return { accessRole };
 }
 
@@ -227,7 +231,7 @@ export async function tagSiteRead(
   const { accessRole } = await queryPermission(siteName, user, apiToken);
   const accessRoleHeight = roleOrder.indexOf(accessRole);
   if (accessRoleHeight < roleOrder.indexOf("reader")) {
-    throw new Error403({ name: "InsufficientPrivilege" });
+    throw new Error403({ name: "InsufficientPrivilege", data: { accessRole, requiredAccessRole: "reader" } });
   }
   // to do: track the read tag somewhere along with the user/apiToken/"reader". use for rate limiting and usage tracking. cache the auth check somehow maybe
 }
@@ -257,7 +261,7 @@ export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
   const requiredAccessRoleHeight = roleOrder.indexOf(requiredAccessRole);
   const accessRoleHeight = roleOrder.indexOf(accessRole);
   if (accessRoleHeight < requiredAccessRoleHeight) {
-    throw new Error403({ name: "InsufficientPrivilege" });
+    throw new Error403({ name: "InsufficientPrivilege", data: { accessRole, requiredAccessRole } });
   }
   function resolve(eventResult: SE): void {
     saveSiteEvent({

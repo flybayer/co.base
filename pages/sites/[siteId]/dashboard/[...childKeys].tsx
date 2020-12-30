@@ -363,7 +363,7 @@ function RecordContent({
         <div>
           <Button
             onClick={() => {
-              api("node-edit", { siteName, address, value: nodeValue })
+              api("node-put", { siteName, address, value: nodeValue })
                 .then(() => {
                   setSavedNodeValue(nodeValue);
                 })

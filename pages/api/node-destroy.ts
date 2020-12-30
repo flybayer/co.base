@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../lib/data/database";
-import { Error400 } from "../../lib/server/Errors";
+import { Error400, Error500 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
@@ -19,7 +19,7 @@ function validatePayload(input: any): NodeDestroyPayload {
 export async function nodeDelete({ siteName, address }: NodeDestroyPayload): Promise<NodeDestroyResponse> {
   const nodesQuery = siteNodeQuery(siteName, address);
   if (!nodesQuery) {
-    throw new Error("could not even construct a wuwqery");
+    throw new Error500({ name: "QueryConstructionFailed", data: { siteName, address } });
   }
   await database.siteNode.deleteMany({
     where: nodesQuery,
