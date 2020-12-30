@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
-import SiteLayout from "../../lib/components/SiteLayout";
+import { BasicSiteLayout } from "../../lib/components/SiteLayout";
 import { EmptyObject, useForm } from "react-hook-form";
 import ControlledInput from "../../lib/components/ControlledInput";
 import React, { ReactElement } from "react";
@@ -62,8 +62,9 @@ function AddEmailForm({}: EmptyObject) {
 
 export default function AddEmailPage({ user }: { user: APIUser }): ReactElement {
   return (
-    <SiteLayout
+    <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <h3>Add an Email to your Account</h3>

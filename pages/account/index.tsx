@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { BasicSiteLayout } from "../../lib/components/SiteLayout";
 import { destroyCookie } from "nookies";
-import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { LinkButton } from "../../lib/components/Buttons";
 import { Button, Spinner, Text } from "@chakra-ui/core";
@@ -216,9 +216,11 @@ export default function AccountPage({
   siteInvites: Array<{ name: string; site: { name: string } }>;
   billingState: BillingState;
 }): ReactElement {
+  const { push } = useRouter();
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <SiteInvitesSection siteInvites={siteInvites} />
@@ -272,8 +274,7 @@ export default function AccountPage({
               <Button
                 onClick={() => {
                   destroyCookie(null, "AvenSession");
-                  Router.push("/login");
-                  debugger;
+                  push("/login");
                 }}
               >
                 Log Out

@@ -1,0 +1,59 @@
+---
+title: HTTP + WebSocket API
+---
+
+- Create a site
+- Create Site API Token
+- Make site public to GET anonymously
+
+Root Schema:
+
+```
+GET /api/s/SITE_NAME/\_schema
+```
+
+Full schema:
+
+```
+GET /api/s/SITE_NAME/\_schema_full
+```
+
+List Site nodes:
+
+```
+GET /api/s/SITE_NAME/\_children
+```
+
+For a record node:
+
+```
+GET /api/s/SITE_NAME/NODE_ADDRESS
+```
+
+```
+PUT /api/s/SITE_NAME/NODE_ADDRESS
+```
+
+For a record set node:
+
+```
+GET /api/s/SITE_NAME/NODE_ADDRESS/\_children
+```
+
+```
+POST /api/s/SITE_NAME/NODE_ADDRESS
+```
+
+For records in a record set:
+
+```
+GET /api/s/SITE_NAME/NODE_ADDRESS
+```
+
+```
+PUT /api/s/SITE_NAME/NODE_ADDRESS
+```
+
+```
+DELETE /api/s/SITE_NAME/NODE_ADDRESS
+```

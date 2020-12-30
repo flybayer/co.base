@@ -74,7 +74,8 @@ export const articleStyles = css`
     margin: 12px 0 0 0;
     font-size: 16px;
   }
-  ul {
+  ul,
+  ol {
     margin-left: 36px;
   }
   a {

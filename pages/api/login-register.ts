@@ -55,7 +55,7 @@ function validatePayload(input: any): LoginRegisterPayload {
   return { email, phone, redirect, method: input.method, password: input.password };
 }
 
-const userSelectQuery = { passwordHash: true, email: true, id: true };
+const userSelectQuery = { passwordHash: true, email: true, id: true, username: true };
 
 async function loginRegisterEmail(
   email: string,
@@ -119,7 +119,14 @@ async function loginRegisterEmail(
     });
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + 60 * 60 * 24; // 1 day.. for now
-    const jwt = encode({ sub: existingUser.id, exp, iat, revalidateToken, revalidateIP: originIp });
+    const jwt = encode({
+      sub: existingUser.id,
+      exp,
+      iat,
+      revalidateToken,
+      revalidateIP: originIp,
+      username: existingUser.username,
+    });
     setCookie(res, "AvenSession", jwt);
     return { status: 3, jwt, email };
   }

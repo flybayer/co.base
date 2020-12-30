@@ -28,6 +28,7 @@ export default function CreateChildPage({ siteName, user }: { user: APIUser; sit
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <SiteTabs tab="site" siteName={siteName} address={[]} />

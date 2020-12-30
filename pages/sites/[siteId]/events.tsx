@@ -90,6 +90,7 @@ export default function SiteTeamPage({
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <SiteTabs tab="events" siteName={siteName} />

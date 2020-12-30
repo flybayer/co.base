@@ -5,6 +5,8 @@ import { InnerWidth } from "./CommonViews";
 import AvenLogo from "./AvenLogo";
 import { Button } from "@chakra-ui/core";
 import { APIUser } from "../server/getVerifedUser";
+import { parse } from "cookie";
+import { decode } from "jwt-simple";
 
 const HeaderContainer = styled.div`
   background: #0e2b49;
@@ -18,6 +20,20 @@ const HeaderLinkA = styled.a`
   font-size: 18px;
 `;
 
+function useCurrentUser(loadedUser?: null | APIUser): null | { username: string } {
+  if (loadedUser) {
+    return { username: loadedUser.username };
+  }
+  if (global.document) {
+    const cookies = parse(global.document.cookie);
+    const session = cookies.AvenSession;
+    if (!session) return null;
+    const jwtSession = decode(session, "unknown", true);
+    return { username: jwtSession.username };
+  }
+  return null;
+}
+
 function HeaderLink({ href, children }: React.PropsWithChildren<{ href: string }>) {
   return (
     <Link href={href} passHref>
@@ -25,7 +41,14 @@ function HeaderLink({ href, children }: React.PropsWithChildren<{ href: string }
     </Link>
   );
 }
-export default function SiteHeader({ user }: { user?: APIUser }): ReactElement {
+export default function SiteHeader({
+  user,
+  isDashboard,
+}: {
+  user?: APIUser | null;
+  isDashboard?: boolean;
+}): ReactElement {
+  const currentUser = useCurrentUser(user);
   return (
     <HeaderContainer>
       <InnerWidth>
@@ -41,11 +64,15 @@ export default function SiteHeader({ user }: { user?: APIUser }): ReactElement {
               <AvenLogo />
             </div>
           </Link>
-          <HeaderLinks>
-            <HeaderLink href="/pricing">Pricing</HeaderLink>
-            <HeaderLink href="/docs">Docs</HeaderLink>
-            <HeaderLink href="/docs/open-source">Open Source</HeaderLink>
-          </HeaderLinks>
+          {!isDashboard && (
+            <>
+              <HeaderLinks>
+                <HeaderLink href="/pricing">Pricing</HeaderLink>
+                <HeaderLink href="/docs">Docs</HeaderLink>
+                <HeaderLink href="/docs/open-source">Open Source</HeaderLink>
+              </HeaderLinks>
+            </>
+          )}
         </span>
         <span
           style={{
@@ -54,14 +81,18 @@ export default function SiteHeader({ user }: { user?: APIUser }): ReactElement {
             alignItems: "center",
           }}
         >
-          {user ? (
+          {currentUser ? (
             <>
-              <HeaderLink href="/account">@{user.username}</HeaderLink>
+              <HeaderLink href="/account">@{currentUser.username}</HeaderLink>
             </>
           ) : (
             <>
-              <HeaderLink href="/login">Log In</HeaderLink>
-              <Button colorScheme="avenColor">Create a Data Site</Button>
+              <HeaderLink href="/login">Register / Log In</HeaderLink>
+              <Link href="/docs/getting-started" passHref>
+                <Button as={"a"} colorScheme="avenColor">
+                  Get Started
+                </Button>
+              </Link>
             </>
           )}
         </span>

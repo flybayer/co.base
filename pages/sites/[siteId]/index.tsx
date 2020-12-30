@@ -48,6 +48,7 @@ export default function SiteSettingsPage({
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <SiteTabs tab="site" siteName={siteName} />

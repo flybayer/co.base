@@ -179,6 +179,7 @@ export default function NodeOptionsPage({
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <SiteTabs tab="options" siteName={siteName} address={address} />

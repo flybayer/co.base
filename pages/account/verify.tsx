@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
+import { BasicSiteLayout } from "../../lib/components/SiteLayout";
 import { Error400 } from "../../lib/server/Errors";
 import { verifyEmail } from "../api/email-auth";
 
@@ -16,8 +17,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 export default function Verify({ error }: { error?: string }): ReactElement {
+  let content = null;
   if (error) {
-    return <h3>Account Verify Error: {error}</h3>;
+    content = <h3>Account Verify Error: {error}</h3>;
+  } else {
+    content = <h2>Thanks for verifying</h2>;
   }
-  return <h2>Thanks for verifying</h2>;
+  return <BasicSiteLayout title="Account Verification" isDashboard content={content} />;
 }

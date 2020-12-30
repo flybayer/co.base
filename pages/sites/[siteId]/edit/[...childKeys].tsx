@@ -102,6 +102,7 @@ export default function ChildNodePage({
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <SiteTabs tab="data" siteName={siteName} address={address} />

@@ -6,6 +6,7 @@ type AvenJWT = {
   sub: number;
   iat: number;
   exp: number;
+  username: string;
   revalidateToken?: string;
   revalidateIP?: string;
 };

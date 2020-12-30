@@ -83,6 +83,7 @@ export function BasicSiteLayout({
   content,
   tailContent,
   bottomContent,
+  isDashboard,
 }: {
   title?: string;
   user?: APIUser;
@@ -92,13 +93,14 @@ export function BasicSiteLayout({
   tailContent?: ReactNode;
   bottomContent?: ReactNode;
   hideFooter?: boolean;
+  isDashboard?: boolean;
 }): ReactElement {
   return (
     <>
       <Head>
         <title>{title || "Aven Cloud"}</title>
       </Head>
-      <SiteHeader user={user} />
+      <SiteHeader user={user} isDashboard={isDashboard} />
       <MainArea>
         {topContent}
         <InnerWidth>

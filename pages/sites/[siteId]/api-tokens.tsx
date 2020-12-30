@@ -177,6 +177,7 @@ export default function APITokensPage({
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <SiteTabs tab="api-tokens" siteName={siteName} />

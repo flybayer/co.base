@@ -66,6 +66,7 @@ export default function setNamePage({ user }: { user: APIUser }): ReactNode {
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <h3>Create Site</h3>

@@ -57,6 +57,7 @@ export default function siteInvitePage({
     <BasicSiteLayout
       user={user}
       title={`Site Role Invite`}
+      isDashboard
       content={
         <>
           <MainSection title={`Invite to ${siteName}`}>

@@ -105,7 +105,7 @@ export async function verifyEmail(
   });
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + 60 * 60 * 24; // 1 day.. for now
-  const jwt = encode({ sub: user.id, exp, iat, revalidateToken, revalidateIP: originIp });
+  const jwt = encode({ sub: user.id, exp, iat, revalidateToken, revalidateIP: originIp, username: user.username });
 
   return { verifiedEmail: email, jwt, user, isNewUser };
 }

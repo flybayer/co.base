@@ -30,6 +30,9 @@ async function siteSchemaGet(user: APIUser | null, { siteName }: SiteSchemaGetPa
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const verifiedUser = await getVerifiedUser(req);
+
+  // uh is verifiedUser null.. todo. kill this whole file, move to the REST api
+
   const action = validatePayload(req.body);
   await tagSiteRead(action.siteName, verifiedUser, ":site-schema", undefined);
   return await siteSchemaGet(verifiedUser, action, res);

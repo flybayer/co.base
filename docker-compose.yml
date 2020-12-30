@@ -3,7 +3,7 @@ services:
   database:
     image: "postgres" # use latest official postgres version
     env_file:
-      - ../prisma/dev-db.env # configure postgres
+      - prisma/dev-db.env # configure postgres
     volumes:
       - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
     ports:

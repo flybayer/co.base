@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { SimpleGrid, Box, Heading, Text, Divider } from "@chakra-ui/core";
+import { SimpleGrid, Heading, Text, Divider } from "@chakra-ui/core";
 import { LinkButton } from "./Buttons";
 import { APIUser } from "../server/getVerifedUser";
 import { DevPreviewSubscribeButton } from "./Paddle";
@@ -28,12 +28,15 @@ function FeatureBox({ label, value }: { label: string; value: string }): ReactEl
     </FeatureBoxContainer>
   );
 }
-
+const ColContainer = styled.div`
+  padding: 16px;
+  margin-top: 32px;
+`;
 const PrimaryCol = styled.div`
   // border: 1px solid blue;
   border-radius: 16px;
   padding: 16px;
-  margin-top: -32px;
+  margin-top: 32px;
   box-shadow: 0px 0px 6px #888888;
   background: #f0f6ff;
 `;
@@ -52,6 +55,7 @@ function PricingCol({
   sites,
   readRequests,
   writeRequests,
+  container: Container = ColContainer,
 }: {
   title: string;
   price?: string;
@@ -61,9 +65,10 @@ function PricingCol({
   sites?: string;
   readRequests?: string;
   writeRequests?: string;
+  container?: React.FC<{ children: React.ReactNode }>;
 }) {
   return (
-    <Box>
+    <Container>
       <div style={{ height: 70 }}>
         <Heading>{title}</Heading>
       </div>
@@ -80,7 +85,7 @@ function PricingCol({
       <Divider />
       {readRequests && <FeatureBox label="Read Requests" value={readRequests} />}
       {writeRequests && <FeatureBox label="Write Requests" value={writeRequests} />}
-    </Box>
+    </Container>
   );
 }
 
@@ -100,28 +105,27 @@ export default function PricingGrid({ user }: { user: APIUser }): ReactElement {
           </>
         }
       />
-      <PrimaryCol>
-        <PricingCol
-          title="Developer Preview"
-          price="$12/mo"
-          sites="3"
-          team="5"
-          readRequests="10,000 / day"
-          writeRequests="1,000 / day"
-          cta={<DevPreviewSubscribeButton user={user} />}
-          content={
-            <>
-              <ul>
-                <li>Aven Cloud Hosting</li>
-                <li>Email Support</li>
-              </ul>
-            </>
-          }
-        />
-      </PrimaryCol>
+      <PricingCol
+        title="Developer Preview"
+        price="$12/mo"
+        sites="3"
+        team="5"
+        readRequests="10,000 / day"
+        writeRequests="1,000 / day"
+        cta={<DevPreviewSubscribeButton user={user} />}
+        container={PrimaryCol}
+        content={
+          <>
+            <ul>
+              <li>Aven Cloud Hosting</li>
+              <li>Email Support</li>
+            </ul>
+          </>
+        }
+      />
       <PricingCol
         title="Enterprise"
-        cta={<LinkButton href="mailto:enterprise@aven.io">Contact Us</LinkButton>}
+        cta={<LinkButton href="/enterprise">Learn more</LinkButton>}
         content={
           <>
             <ul>

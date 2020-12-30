@@ -23,6 +23,7 @@ export default function DestroyAccountPage({ user }: { user: APIUser }): ReactEl
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <h3>Destroy User Account</h3>

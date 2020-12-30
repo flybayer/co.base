@@ -66,6 +66,7 @@ export default function setNamePage({ user }: { user: APIUser }): ReactElement {
   return (
     <BasicSiteLayout
       user={user}
+      isDashboard
       content={
         <>
           <h3>Set Public Name</h3>
