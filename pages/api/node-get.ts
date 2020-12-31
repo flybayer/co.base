@@ -50,7 +50,7 @@ async function nodeGet({ siteName, address }: NodeGetPayload, res: NextApiRespon
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   setAnyCors(req, res);
-  const verifiedUser = await getVerifiedUser(req);
+  const verifiedUser = await getVerifiedUser(req, res);
   const action = validatePayload(req.body);
   await tagSiteRead(action.siteName, verifiedUser, ":site-schema", action.apiToken);
   return await nodeGet(action, res);

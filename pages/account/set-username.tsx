@@ -11,7 +11,7 @@ import { handleAsync } from "../../lib/data/handleAsync";
 import { authRedirect } from "../../lib/server/authRedirect";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   if (!verifiedUser) return authRedirect(context);
   return {
     props: {

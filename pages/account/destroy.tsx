@@ -7,7 +7,7 @@ import { APIButton } from "../../lib/components/APIButton";
 import { BasicSiteLayout } from "../../lib/components/SiteLayout";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   if (!verifiedUser) {
     return { redirect: { destination: "/login", permanent: false } };
   }

@@ -120,7 +120,7 @@ export async function protectedNodePost(
   }
 }
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
-  const verifiedUser = await getVerifiedUser(req);
+  const verifiedUser = await getVerifiedUser(req, res);
   const action = validatePayload(req.body);
   return protectedNodePost(action, verifiedUser, getToken(req));
 });

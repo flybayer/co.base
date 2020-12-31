@@ -9,7 +9,7 @@ import { Button, FormControl, FormLabel, Spinner } from "@chakra-ui/core";
 import { api } from "../../lib/server/api";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   if (!verifiedUser) {
     return {
       redirect: {

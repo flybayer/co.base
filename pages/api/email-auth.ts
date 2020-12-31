@@ -4,7 +4,7 @@ import { Error400, Error500 } from "../../lib/server/Errors";
 import { findTempUsername } from "../../lib/server/findTempUsername";
 import { parseCookies } from "nookies";
 import setCookie from "../../lib/server/setCookie";
-import { encode } from "../../lib/server/jwt";
+import { encode, freshJwt } from "../../lib/server/jwt";
 import { createAPI } from "../../lib/server/createAPI";
 import { atob } from "../../lib/server/Base64";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";
@@ -103,9 +103,7 @@ export async function verifyEmail(
       name: "fixme: email auth token name",
     },
   });
-  const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + 60 * 60 * 24; // 1 day.. for now
-  const jwt = encode({ sub: user.id, exp, iat, revalidateToken, revalidateIP: originIp, username: user.username });
+  const jwt = encode({ sub: user.id, revalidateToken, revalidateIP: originIp, username: user.username, ...freshJwt() });
 
   return { verifiedEmail: email, jwt, user, isNewUser };
 }

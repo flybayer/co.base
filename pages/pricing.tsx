@@ -5,7 +5,7 @@ import getVerifiedUser, { APIUser } from "../lib/server/getVerifedUser";
 import { ReactElement } from "react";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   return {
     props: {
       user: verifiedUser,

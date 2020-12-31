@@ -9,8 +9,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const email = atob(String(context.query.email));
   const redirect = context.query.redirect ? String(context.query.redirect) : "/account";
   try {
-    const { jwt, user, isNewUser } = await verifyEmail(String(token), email);
-    console.log("verified token", { token, user, isNewUser });
+    const { jwt } = await verifyEmail(String(token), email);
     setCookie(context.res, "AvenSession", jwt);
   } catch (e) {
     return { props: { error: e.message } };

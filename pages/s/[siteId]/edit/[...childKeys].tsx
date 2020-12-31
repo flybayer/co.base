@@ -12,7 +12,7 @@ import { database } from "../../../../lib/data/database";
 import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   const siteName = String(context.params?.siteId);
   const childKeys = String(context.params?.childKeys || "").split(",");
   if (!verifiedUser) {

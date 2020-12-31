@@ -41,7 +41,7 @@ import { BillingState } from "../api/billing-hook";
 // "content-length":"0",
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   if (!verifiedUser) {
     return { redirect: { destination: "/login", permanent: false } };
   }

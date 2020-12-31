@@ -2,7 +2,8 @@
 
 import { GetServerSideProps } from "next";
 import { database } from "../../../lib/data/database";
-import { User } from "@prisma/client";
+import { ReactElement } from "react";
+import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const username = context?.params?.userId;
@@ -11,11 +12,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const user = await database.user.findUnique({
     where: { username: String(username) },
+    select: { name: true, username: true },
   });
 
   return { props: { user } };
 };
 
-export default function UserPage({ user }: { user: User }) {
-  return <div>{JSON.stringify(user)}</div>;
+export default function UserPage({ user }: { user: { name: string; username: string } }): ReactElement {
+  return <BasicSiteLayout title={`@${user.username}`} content={<p>{user.name}</p>} />;
 }

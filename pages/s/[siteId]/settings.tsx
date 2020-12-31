@@ -13,7 +13,7 @@ import { handleAsync } from "../../../lib/data/handleAsync";
 import { SiteSchema } from "../../../lib/data/SiteSchema";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   const siteName = String(context.params?.siteId);
   if (!verifiedUser) {
     return {

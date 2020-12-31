@@ -50,7 +50,7 @@ async function siteRoleRespond(user: APIUser, { siteName, accept }: SiteRoleResp
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
-  const verifiedUser = await getVerifiedUser(req);
+  const verifiedUser = await getVerifiedUser(req, res);
   if (!verifiedUser) {
     throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }

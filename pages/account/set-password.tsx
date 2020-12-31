@@ -10,7 +10,7 @@ import { handleAsync } from "../../lib/data/handleAsync";
 import { useRouter } from "next/router";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   if (!verifiedUser) {
     return { redirect: { destination: "/login", permanent: false } };
   }

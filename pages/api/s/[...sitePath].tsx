@@ -103,7 +103,7 @@ async function childrenQuery({ siteName, user, token }: QueryContext, address: s
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const sitePath = req.query.sitePath;
-  const user = await getVerifiedUser(req);
+  const user = await getVerifiedUser(req, res);
   const [siteName, ...address] = typeof sitePath === "string" ? [sitePath] : sitePath;
   const token = getToken(req);
   const queryContext = {

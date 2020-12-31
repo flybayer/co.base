@@ -1,6 +1,10 @@
+import { IncomingMessage, ServerResponse } from "http";
+import { NextApiRequest, NextApiResponse } from "next";
 import { parseCookies } from "nookies";
 import { database } from "../data/database";
-import { decode } from "./jwt";
+import { getOriginIp } from "./getOriginIp";
+import { decode, encode, freshJwt } from "./jwt";
+import setCookie from "./setCookie";
 
 export type APIUser = {
   id: number;
@@ -11,14 +15,17 @@ export type APIUser = {
   hasPassword: boolean;
 };
 
-export default async function getVerifiedUser(req: any): Promise<APIUser | null> {
+export default async function getVerifiedUser(
+  req: NextApiRequest | IncomingMessage,
+  res: NextApiResponse | ServerResponse,
+): Promise<APIUser | null> {
   const cookies = parseCookies({ req });
   const { AvenSession } = cookies;
   const encodedJwt = AvenSession || req.headers["x-aven-jwt"];
   if (!encodedJwt) {
     return null;
   }
-  const [verifiedJwt, expiredJwt] = decode(encodedJwt);
+  const [verifiedJwt, expiredJwt] = decode(String(encodedJwt));
   let verifiedUserId: number | null = null;
 
   if (!verifiedJwt && !expiredJwt) {
@@ -27,8 +34,25 @@ export default async function getVerifiedUser(req: any): Promise<APIUser | null>
     verifiedUserId = verifiedJwt.sub;
   } else if (expiredJwt) {
     const { revalidateIP, revalidateToken } = expiredJwt;
-
-    console.log("JWT revalidate workflow!", expiredJwt);
+    if (getOriginIp(req) !== revalidateIP) {
+      return null;
+    }
+    const deviceToken = await database.deviceToken.findFirst({
+      where: {
+        user: { id: expiredJwt.sub },
+        token: revalidateToken,
+        approveTime: { not: null },
+      },
+    });
+    if (!deviceToken) {
+      return null;
+    }
+    verifiedUserId = expiredJwt.sub;
+    const jwt = encode({
+      ...expiredJwt,
+      ...freshJwt(),
+    });
+    setCookie(res, "AvenSession", jwt);
   }
   if (!verifiedUserId) {
     return null;

@@ -8,6 +8,7 @@ import Ajv, { DefinedError } from "ajv";
 import { InputJsonObject } from "@prisma/client";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../lib/data/SiteNodes";
 import { NodeEditResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { getToken } from "../../lib/server/APIToken";
 
 const ajv = new Ajv();
 
@@ -86,9 +87,9 @@ export async function protectedNodePut(
   }
 }
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
-  const verifiedUser = await getVerifiedUser(req);
+  const verifiedUser = await getVerifiedUser(req, res);
   const action = validatePayload(req.body);
-  return await protectedNodePut(action, verifiedUser);
+  return await protectedNodePut(action, verifiedUser, getToken(req));
 });
 
 export default APIHandler;

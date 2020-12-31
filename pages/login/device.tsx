@@ -12,7 +12,7 @@ import ControlledInput from "../../lib/components/ControlledInput";
 import { database } from "../../lib/data/database";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const user = await getVerifiedUser(context.req);
+  const user = await getVerifiedUser(context.req, context.res);
   if (!user) return authRedirect(context);
   const token = context.query.t && String(context.query.t);
   if (!token) return { redirect: { destination: "/account", permanent: false } };

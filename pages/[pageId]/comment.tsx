@@ -18,7 +18,7 @@ type Comment = {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   const page = context.params?.pageId;
   if (!page) {
     throw new Error400({ message: "No page", name: "NoPage" });

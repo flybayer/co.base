@@ -35,7 +35,7 @@ const BasicUserQuery = { select: { name: true, id: true, username: true, email: 
 type RoleType = "owner" | "admin" | "manager" | "writer" | "reader";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   const siteName = String(context.params?.siteId);
   if (!verifiedUser) {
     return {

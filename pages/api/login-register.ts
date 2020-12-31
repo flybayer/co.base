@@ -9,9 +9,10 @@ import getSiteLink from "../../lib/server/getSiteLink";
 import { getRandomNumbers } from "../../lib/server/getRandomNumbers";
 import { createAPI } from "../../lib/server/createAPI";
 import bcrypt from "bcrypt";
-import { encode } from "../../lib/server/jwt";
+import { encode, freshJwt } from "../../lib/server/jwt";
 import { looksLikeAnEmail } from "../../lib/server/looksLikeAnEmail";
 import { btoa } from "../../lib/server/Base64";
+import { getOriginIp } from "../../lib/server/getOriginIp";
 
 type Email = string;
 
@@ -117,12 +118,9 @@ async function loginRegisterEmail(
         type: "web:password",
       },
     });
-    const iat = Math.floor(Date.now() / 1000);
-    const exp = iat + 60 * 60 * 24; // 1 day.. for now
     const jwt = encode({
+      ...freshJwt(),
       sub: existingUser.id,
-      exp,
-      iat,
       revalidateToken,
       revalidateIP: originIp,
       username: existingUser.username,
@@ -196,7 +194,7 @@ async function loginRegister(
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const action = validatePayload(req.body);
-  const originIp = req.headers["x-forwarded-for"] && String(req.headers["x-forwarded-for"]);
+  const originIp = getOriginIp(req);
   return await loginRegister(action, res, originIp);
 });
 

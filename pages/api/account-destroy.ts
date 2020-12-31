@@ -14,7 +14,7 @@ async function destroyAccount(user: APIUser, {}: DestroyAccountPayload, res: Nex
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
-  const verifiedUser = await getVerifiedUser(req);
+  const verifiedUser = await getVerifiedUser(req, res);
   if (!verifiedUser) {
     throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }

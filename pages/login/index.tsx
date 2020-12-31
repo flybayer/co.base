@@ -15,7 +15,7 @@ import { handleAsync } from "../../lib/data/handleAsync";
 import { LoginRegisterResponse } from "../api/login-register";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const user = await getVerifiedUser(context.req);
+  const user = await getVerifiedUser(context.req, context.res);
   if (user) {
     return {
       redirect: {

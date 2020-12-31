@@ -10,7 +10,7 @@ import { database } from "../../../lib/data/database";
 const PAGE_SIZE = 30;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const verifiedUser = await getVerifiedUser(context.req);
+  const verifiedUser = await getVerifiedUser(context.req, context.res);
   const siteName = String(context.params?.siteId);
   const page = context.query.p ? Number(context.query.p) : 1;
   if (!verifiedUser) {

@@ -15,6 +15,15 @@ export function encode(payload: AvenJWT): string {
   return jwtEncode(payload, jwtSecret);
 }
 
+export function freshJwt(): { iat: number; exp: number } {
+  const iat = Math.floor(Date.now() / 1000);
+  const exp = iat + 60 * 60 * 12; // 12 hours
+  return {
+    iat,
+    exp,
+  };
+}
+
 export function decode(encodedPayload: string): [AvenJWT | null, AvenJWT | null] {
   if (!encodedPayload || encodedPayload === "") return [null, null];
   try {
