@@ -16,7 +16,8 @@ type QueryContext = {
   token?: string;
 };
 
-async function siteRootQuery({ siteName }: QueryContext) {
+async function siteRootQuery({ siteName, user, token }: QueryContext) {
+  await tagSiteRead(siteName, user, "_root", token);
   const site = await database.site.findUnique({ where: { name: siteName }, select: { schema: true } });
   if (!site) {
     throw new Error403({ name: "NotAuthorized" });
@@ -30,7 +31,16 @@ async function schemaQuery({ siteName, user, token }: QueryContext, address: str
   if (!address.length) {
     const site = await database.site.findUnique({ where: { name: siteName }, select: { schema: true } });
     if (!site) throw new Error404({ name: "SiteNotFound" });
-    return { schema: site.schema };
+
+    const nodes = await database.siteNode.findMany({
+      where: { site: { name: siteName }, parentNode: null },
+      select: { schema: true, key: true },
+    });
+    const nodeSchemas = Object.fromEntries(nodes.map((node) => [node.key, node.schema]));
+    return {
+      nodes: nodeSchemas,
+      schema: site.schema,
+    };
   }
   const nodeQuery = siteNodeQuery(siteName, address);
   if (!nodeQuery) throw new Error404({ name: "NodeNotFound" });
@@ -129,8 +139,6 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
   if (req.method !== "GET") {
     throw new Error400({ name: "MethodNotImplemented" });
   }
-  await tagSiteRead(siteName, user, address.join("/"), token);
-  console.log(siteName, user, address, token, "hmm");
 
   if (!address.length) {
     return await siteRootQuery(queryContext);

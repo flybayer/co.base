@@ -173,7 +173,6 @@ function getRole(r: string): SiteAccessRole {
 }
 
 async function queryPermission(siteName: string, user?: APIUser | null, apiToken?: string) {
-  console.log("ppp", { siteName, user, apiToken });
   const siteRolePermission = await database.site.findUnique({
     where: { name: siteName },
     select: {

@@ -18,13 +18,21 @@ class AvenError extends Error {
   }
 }
 
-async function api(remoteHost: string, remoteSSL: boolean, endpoint: string, payload: any) {
+async function api(
+  remoteHost: string,
+  remoteSSL: boolean,
+  endpoint: string,
+  payload: any,
+  method: "post" | "get" = "post",
+  authToken?: string,
+) {
   return fetchHTTP(`http${remoteSSL ? "s" : ""}://${remoteHost}/api/${endpoint}`, {
-    method: "post",
+    method,
     headers: {
       "Content-Type": "application/json",
+      ...(authToken ? { "X-Aven-Token": authToken } : {}),
     },
-    body: JSON.stringify(payload),
+    body: method === "get" ? undefined : JSON.stringify(payload),
   }).then(async (res) => {
     const body = await res.json();
     if (res.status !== 200) {
@@ -148,7 +156,7 @@ async function getAuthenticateShellConfig(): Promise<ShellConfig> {
 
 export async function pull(siteName: string): Promise<any> {
   const { remoteHost, remoteSSL, authToken, deviceName, username } = await getAuthenticateShellConfig();
-  const { nodes, schema } = await api(remoteHost, remoteSSL, "site-schema-get", { siteName });
+  const { nodes, schema } = await api(remoteHost, remoteSSL, `s/${siteName}/_schema`, { siteName }, "get", authToken);
   // schema.isPublic tells us if an API key is needed..
   const allRecords: any = {};
   for (const nodeKey in nodes) {
