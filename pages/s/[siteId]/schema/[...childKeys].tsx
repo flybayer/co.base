@@ -80,7 +80,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!node) {
     return {
       redirect: {
-        destination: `/sites/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
+        destination: `/s/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
         permanent: false,
       },
     };

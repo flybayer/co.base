@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!node) {
     return {
       redirect: {
-        destination: `/sites/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
+        destination: `/s/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
         permanent: false,
       },
     };
@@ -72,7 +72,7 @@ function EditForm({ value, siteName, address }: { value: any; siteName: string; 
           address,
         })
           .then(() => {
-            push(`/sites/${siteName}/dashboard/${address.join("/")}`);
+            push(`/s/${siteName}/dashboard/${address.join("/")}`);
           })
           .catch((e) => {
             console.error(e);

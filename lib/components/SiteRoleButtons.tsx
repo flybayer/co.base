@@ -11,7 +11,7 @@ export function SiteRoleAcceptButton({ siteName, label }: { siteName: string; la
       endpoint="site-role-respond"
       payload={{ siteName, accept: true }}
       onDone={() => {
-        push(`/sites/${siteName}`);
+        push(`/s/${siteName}`);
       }}
     >
       {label || <>Join {siteName}</>}

@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!node) {
     return {
       redirect: {
-        destination: `/sites/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
+        destination: `/s/${siteName}/dashboard/${childKeys.slice(0, childKeys.length - 1).join("/")}`,
         permanent: false,
       },
     };
@@ -81,8 +81,8 @@ function DeleteButton({ siteName, address, nodeType }: { siteName: string; addre
           .then(() => {
             push(
               address.length > 1
-                ? `/sites/${siteName}/dashboard/${address.slice(0, address.length - 1).join("/")}`
-                : `/sites/${siteName}`,
+                ? `/s/${siteName}/dashboard/${address.slice(0, address.length - 1).join("/")}`
+                : `/s/${siteName}`,
             );
           })
           .catch((e) => console.error(e))

@@ -56,11 +56,11 @@ export function SiteTabs({
   let tabs = (
     <Tabs index={["site", "team", "api-tokens", "events", "settings"].findIndex((t) => t === tab)}>
       <TabList>
-        <TabLink href={`/sites/${siteName}`}>Site</TabLink>
-        <TabLink href={`/sites/${siteName}/team`}>Team</TabLink>
-        <TabLink href={`/sites/${siteName}/api-tokens`}>API Tokens</TabLink>
-        <TabLink href={`/sites/${siteName}/events`}>Events</TabLink>
-        <TabLink href={`/sites/${siteName}/settings`}>Settings</TabLink>
+        <TabLink href={`/s/${siteName}`}>Site</TabLink>
+        <TabLink href={`/s/${siteName}/team`}>Team</TabLink>
+        <TabLink href={`/s/${siteName}/api-tokens`}>API Tokens</TabLink>
+        <TabLink href={`/s/${siteName}/events`}>Events</TabLink>
+        <TabLink href={`/s/${siteName}/settings`}>Settings</TabLink>
       </TabList>
     </Tabs>
   );
@@ -68,9 +68,9 @@ export function SiteTabs({
     tabs = (
       <Tabs index={["data", "schema", "options"].findIndex((t) => t === tab)}>
         <TabList>
-          <TabLink href={`/sites/${siteName}/dashboard/${address.join("/")}`}>Data</TabLink>
-          <TabLink href={`/sites/${siteName}/schema/${address.join("/")}`}>Schema</TabLink>
-          <TabLink href={`/sites/${siteName}/options/${address.join("/")}`}>Options</TabLink>
+          <TabLink href={`/s/${siteName}/dashboard/${address.join("/")}`}>Data</TabLink>
+          <TabLink href={`/s/${siteName}/schema/${address.join("/")}`}>Schema</TabLink>
+          <TabLink href={`/s/${siteName}/options/${address.join("/")}`}>Options</TabLink>
         </TabList>
       </Tabs>
     );
@@ -81,9 +81,9 @@ export function SiteTabs({
         <title>Admin: {siteName}</title>
       </Head>
       <TitleContainer>
-        <HeaderLink href={`/sites/${siteName}`} label={siteName} />
+        <HeaderLink href={`/s/${siteName}`} label={siteName} />
         {explodeAddress(address).map(({ key, fullAddress }) => (
-          <HeaderLink key={fullAddress} href={`/sites/${siteName}/dashboard${fullAddress}`} label={`/${key}`} />
+          <HeaderLink key={fullAddress} href={`/s/${siteName}/dashboard${fullAddress}`} label={`/${key}`} />
         ))}
       </TitleContainer>
       {tabs}

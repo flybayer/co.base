@@ -20,17 +20,13 @@ export default function NodeChildren({
       {childs.map((child) => (
         <ListLinkItem
           key={child.key}
-          href={`/sites/${siteName}/dashboard/${[...address, child.key].join("/")}`}
+          href={`/s/${siteName}/dashboard/${[...address, child.key].join("/")}`}
           label={child.key}
         />
       ))}
       <Divider />
       <ButtonContainer>
-        <LinkButton
-          href={`/sites/${siteName}/create/${address.join("/")}`}
-          leftIcon={<AddIcon />}
-          colorScheme="avenColor"
-        >
+        <LinkButton href={`/s/${siteName}/create/${address.join("/")}`} leftIcon={<AddIcon />} colorScheme="avenColor">
           Add Item
         </LinkButton>
       </ButtonContainer>

@@ -226,7 +226,7 @@ export default function AccountPage({
           <SiteInvitesSection siteInvites={siteInvites} />
           <MainSection title="Your Sites">
             {sites.map((site) => (
-              <Link href={`/sites/${site.name}`} key={site.name}>
+              <Link href={`/s/${site.name}`} key={site.name}>
                 <SiteContainer>
                   <SiteName>
                     {site.name} ({site.roleType})

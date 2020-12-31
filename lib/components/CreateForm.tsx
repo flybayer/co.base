@@ -32,7 +32,7 @@ export function CreateAnyNodeForm({ address, siteName }: { address: string[]; si
               ...data,
             }),
             () => {
-              push(`/sites/${siteName}/dashboard/${[...address, data.name].join("/")}`);
+              push(`/s/${siteName}/dashboard/${[...address, data.name].join("/")}`);
             },
           ).finally(() => {
             setIsSubmitting(false);
@@ -102,7 +102,7 @@ export function CreateRecordSetNodeForm({ address, siteName }: { address: string
             ...data,
           })
             .then(() => {
-              push(`/sites/${siteName}/dashboard/${[...address, data.name].join("/")}`);
+              push(`/s/${siteName}/dashboard/${[...address, data.name].join("/")}`);
             })
             .catch((e) => {
               console.error(e);
