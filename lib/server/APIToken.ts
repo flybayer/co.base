@@ -1,6 +1,6 @@
 import { NextApiRequest } from "next";
 
-export function getToken(req: NextApiRequest): string | undefined {
-  const token = req.headers["x-aven-token"] ? String(req.headers["x-aven-token"]) : undefined;
+export function getSiteToken(req: NextApiRequest): string | undefined {
+  const token = req.headers["x-aven-site-token"] ? String(req.headers["x-aven-site-token"]) : undefined;
   return token;
 }

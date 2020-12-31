@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getToken } from "../../../lib/server/APIToken";
+import { getSiteToken } from "../../../lib/server/APIToken";
 import { createAPI } from "../../../lib/server/createAPI";
 import { Error400, Error403, Error404 } from "../../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
@@ -105,7 +105,7 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
   const sitePath = req.query.sitePath;
   const user = await getVerifiedUser(req, res);
   const [siteName, ...address] = typeof sitePath === "string" ? [sitePath] : sitePath;
-  const token = getToken(req);
+  const token = getSiteToken(req);
   const queryContext = {
     user,
     token,

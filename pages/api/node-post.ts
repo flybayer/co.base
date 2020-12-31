@@ -7,7 +7,7 @@ import { getValueSchema, getDefaultValue, NodeSchema, NodeType, SchemaType } fro
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
 import { NodePostResponse, startSiteEvent } from "../../lib/data/SiteEvent";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";
-import { getToken } from "../../lib/server/APIToken";
+import { getSiteToken } from "../../lib/server/APIToken";
 
 export type NodePostPayload = {
   name?: string;
@@ -122,7 +122,7 @@ export async function protectedNodePost(
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const verifiedUser = await getVerifiedUser(req, res);
   const action = validatePayload(req.body);
-  return protectedNodePost(action, verifiedUser, getToken(req));
+  return protectedNodePost(action, verifiedUser, getSiteToken(req));
 });
 
 export default APIHandler;

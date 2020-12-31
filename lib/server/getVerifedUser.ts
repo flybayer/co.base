@@ -22,15 +22,16 @@ export default async function getVerifiedUser(
   const cookies = parseCookies({ req });
   const { AvenSession } = cookies;
   const encodedJwt = AvenSession || req.headers["x-aven-jwt"];
+
+  const userDeviceToken = req.headers["x-aven-user-token"] && String(req.headers["x-aven-user-token"]);
+
   if (!encodedJwt) {
     return null;
   }
   const [verifiedJwt, expiredJwt] = decode(String(encodedJwt));
   let verifiedUserId: number | null = null;
 
-  if (!verifiedJwt && !expiredJwt) {
-    return null;
-  } else if (verifiedJwt) {
+  if (verifiedJwt) {
     verifiedUserId = verifiedJwt.sub;
   } else if (expiredJwt) {
     const { revalidateIP, revalidateToken } = expiredJwt;
@@ -53,6 +54,21 @@ export default async function getVerifiedUser(
       ...freshJwt(),
     });
     setCookie(res, "AvenSession", jwt);
+  } else if (userDeviceToken) {
+    const deviceToken = await database.deviceToken.findFirst({
+      where: {
+        token: userDeviceToken,
+        approveTime: { not: null },
+      },
+      select: {
+        user: {
+          select: { id: true },
+        },
+      },
+    });
+    if (deviceToken?.user) {
+      verifiedUserId = deviceToken.user.id;
+    }
   }
   if (!verifiedUserId) {
     return null;

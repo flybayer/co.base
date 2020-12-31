@@ -30,7 +30,7 @@ async function api(
     method,
     headers: {
       "Content-Type": "application/json",
-      ...(authToken ? { "X-Aven-Token": authToken } : {}),
+      ...(authToken ? { "x-aven-user-token": authToken } : {}),
     },
     body: method === "get" ? undefined : JSON.stringify(payload),
   }).then(async (res) => {

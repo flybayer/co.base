@@ -267,8 +267,13 @@ export default function AccountPage({
             <CenterButtonRow>
               <Button
                 onClick={() => {
+                  console.log("LogOut00");
                   destroyCookie(null, "AvenSession");
-                  push("/login");
+                  console.log("LogOut01");
+                  setTimeout(() => {
+                    push("/login");
+                    console.log("LogOut02");
+                  }, 10);
                 }}
               >
                 Log Out

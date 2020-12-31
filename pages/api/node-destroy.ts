@@ -5,7 +5,7 @@ import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
 import { NodeDestroyResponse, startSiteEvent } from "../../lib/data/SiteEvent";
-import { getToken } from "../../lib/server/APIToken";
+import { getSiteToken } from "../../lib/server/APIToken";
 
 export type NodeDestroyPayload = {
   siteName: string;
@@ -50,7 +50,7 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
     throw new Error400({ message: "No Authenticated User", name: "NoAuth" });
   }
   const action = validatePayload(req.body);
-  return await protectedNodeDelete(action, verifiedUser, getToken(req));
+  return await protectedNodeDelete(action, verifiedUser, getSiteToken(req));
 });
 
 export default APIHandler;
