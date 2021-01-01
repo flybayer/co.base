@@ -141,6 +141,10 @@ async function prepareDatabase() {
   await spawnAsync("yarn", ["prisma", "migrate", "dev", "--preview-feature", "--skip-generate"], {
     cwd: __dirname,
     stdio: "inherit",
+    env: {
+      DATABASE_URL: DEFAULT_DB_URL,
+      ...process.env,
+    },
   });
 }
 
