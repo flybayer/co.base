@@ -10,6 +10,7 @@ test("api 1", async () => {
   await database.site.create({
     data: {
       name: "home",
+      schema: { isPublicReadable: true },
       owner: { connectOrCreate: { create: { username: "john" }, where: { id: 123 } } },
     },
   });

@@ -50,7 +50,7 @@ export default async function runIntegration(): Promise<void> {
         serverEventListeners.delete(handleEvent);
       }
     }
-    server = spawn("yarn", ["start"], {
+    server = spawn("yarn", ["production:start"], {
       cwd: join(__dirname, ".."),
       env: testEnv,
     });

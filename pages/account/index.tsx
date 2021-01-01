@@ -1,21 +1,17 @@
 import { GetServerSideProps } from "next";
-import { BasicSiteLayout } from "../../lib/components/SiteLayout";
 import { destroyCookie } from "nookies";
 import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
-import { LinkButton } from "../../lib/components/Buttons";
-import { Button, Spinner, Text } from "@chakra-ui/core";
+import { Button } from "@chakra-ui/core";
 import Link from "next/link";
 import { database } from "../../lib/data/database";
 import styled from "@emotion/styled";
-import { api } from "../../lib/server/api";
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import { CenterButtonRow, MainSection } from "../../lib/components/CommonViews";
 import { ListContainer, ListItem } from "../../lib/components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../lib/components/SiteRoleButtons";
 import { SiteRole } from "../../lib/data/SiteRoles";
-import { DevPreviewSubscribeButton } from "../../lib/components/Paddle";
-import { BillingState } from "../api/billing-hook";
+import { AccountPage } from "../../lib/components/AccountPage";
 
 // req.headers =
 // "host":"aven.io",
@@ -57,14 +53,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: { user: { id: verifiedUser.id } },
     select: { site: { select: { name: true } }, name: true },
   });
-  const fullUser = await database.user.findUnique({
-    where: { id: verifiedUser.id },
-    include: {
-      VerifiedEmail: { select: { email: true } },
-      EmailValidation: { select: { email: true } },
-    },
-  });
-
   return {
     props: {
       sites: [
@@ -73,50 +61,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ],
       siteInvites,
       user: verifiedUser,
-      billingState: fullUser?.billing,
-      emails: [
-        { primary: true, email: verifiedUser.email },
-        ...(fullUser?.VerifiedEmail.filter((e) => e.email !== verifiedUser.email).map((verifiedEmail) => {
-          return { email: verifiedEmail.email };
-        }) || []),
-        ...(fullUser?.EmailValidation.map((unverifiedEmail) => {
-          return { email: unverifiedEmail.email, unverified: true };
-        }) || []),
-      ],
     },
   };
 };
 
-function UserName({ user }: { user: APIUser }) {
-  return (
-    <>
-      <h2>Account: {user.username}</h2>
-      <LinkButton href="/account/set-username">Set Username</LinkButton>
-    </>
-  );
-}
-
-function NameBox({ user }: { user: APIUser }) {
-  return (
-    <>
-      <h3>Name</h3>
-      <p>{user.name}</p>
-      <LinkButton href="/account/set-name">Set Name</LinkButton>
-    </>
-  );
-}
-
-function PasswordBox({ user }: { user: APIUser }) {
-  return (
-    <>
-      <h3>Password</h3>
-      <div>{user.hasPassword ? "PW is set" : "No pw set"}</div>
-      <Link href="/account/set-password">
-        <Button>Set Password</Button>
-      </Link>
-    </>
-  );
-}
 const SiteName = styled.h3`
   font-size: 32px;
 `;
@@ -139,48 +87,6 @@ const SiteContainer = styled.div`
   }
 `;
 
-// This feature is UN-IMPLEMENTED because paddle does not allow the primary email to change. maybe this can be revisited later
-
-// function MakePrimaryEmailButton({ email }: { email: string }) {
-//   const [isSpin, setIsSpin] = useState(false);
-//   const { reload } = useRouter();
-//   return (
-//     <Button
-//       onClick={() => {
-//         setIsSpin(true);
-//         api("account-primary-email", { email })
-//           .then(reload)
-//           .catch(console.error)
-//           .finally(() => {
-//             setIsSpin(false);
-//           });
-//       }}
-//     >
-//       Set Primary Email {isSpin && <Spinner size="sm" />}
-//     </Button>
-//   );
-// }
-
-function DeleteEmailButton({ email }: { email: string }) {
-  const [isSpin, setIsSpin] = useState(false);
-  const { reload } = useRouter();
-  return (
-    <Button
-      colorScheme="red"
-      onClick={() => {
-        setIsSpin(true);
-        api("account-delete-email", { email })
-          .then(reload)
-          .catch(console.error)
-          .finally(() => {
-            setIsSpin(false);
-          });
-      }}
-    >
-      Delete {isSpin && <Spinner size="sm" />}
-    </Button>
-  );
-}
 function SiteInvitesSection({
   siteInvites,
 }: {
@@ -203,88 +109,52 @@ function SiteInvitesSection({
   );
 }
 
-export default function AccountPage({
+export default function AccountIndexPage({
   user,
   sites,
-  emails,
   siteInvites,
-  billingState,
 }: {
   user: APIUser;
   sites: Array<{ name: string; roleType: SiteRole | "owner" }>;
-  emails: Array<{ email: string; primary?: true; unverified?: true }>;
   siteInvites: Array<{ name: string; site: { name: string } }>;
-  billingState: BillingState;
 }): ReactElement {
   const { push } = useRouter();
   return (
-    <BasicSiteLayout
-      user={user}
-      isDashboard
-      content={
-        <>
-          <SiteInvitesSection siteInvites={siteInvites} />
-          <MainSection title="Your Sites">
-            {sites.map((site) => (
-              <Link href={`/s/${site.name}`} key={site.name}>
-                <SiteContainer>
-                  <SiteName>
-                    {site.name} ({site.roleType})
-                  </SiteName>
-                </SiteContainer>
-              </Link>
-            ))}
-            <CenterButtonRow>
-              <Link href={`/account/new-site`}>
-                <Button colorScheme="avenColor">New Site</Button>
-              </Link>
-            </CenterButtonRow>
-          </MainSection>
-          <MainSection title="Name">
-            <UserName user={user} />
-            <NameBox user={user} />
-          </MainSection>
-          <MainSection title="Auth">
-            <PasswordBox user={user} />
-          </MainSection>
-          <MainSection title="Email">
-            {emails.map(({ email, unverified, primary }) => (
-              <div key={email}>
-                {email} {unverified && "(unverified)"}
-                {primary && "(primary)"}
-                {/* {!unverified && !primary && <MakePrimaryEmailButton email={email} />} */}
-                {!primary && <DeleteEmailButton email={email} />}
-              </div>
-            ))}
-            <LinkButton href={`/account/add-email`}>Add Email</LinkButton>
-          </MainSection>
-          <MainSection title="Billing">
-            <DevPreviewSubscribeButton user={user} />
-            <Text>{JSON.stringify(billingState)}</Text>
-          </MainSection>
-
-          <MainSection title="Account">
-            <CenterButtonRow>
-              <Button
-                onClick={() => {
-                  console.log("LogOut00");
-                  destroyCookie(null, "AvenSession");
-                  console.log("LogOut01");
-                  setTimeout(() => {
-                    push("/login");
-                    console.log("LogOut02");
-                  }, 10);
-                }}
-              >
-                Log Out
-              </Button>
-              <LinkButton colorScheme="red" href={"/account/destroy"}>
-                Delete Account
-              </LinkButton>
-            </CenterButtonRow>
-          </MainSection>
-        </>
-      }
-    />
+    <AccountPage tab="index" user={user}>
+      <SiteInvitesSection siteInvites={siteInvites} />
+      <MainSection title="Your Sites">
+        {sites.map((site) => (
+          <Link href={`/s/${site.name}`} key={site.name}>
+            <SiteContainer>
+              <SiteName>
+                {site.name} ({site.roleType})
+              </SiteName>
+            </SiteContainer>
+          </Link>
+        ))}
+        <CenterButtonRow>
+          <Link href={`/account/new-site`}>
+            <Button colorScheme="avenColor">New Site</Button>
+          </Link>
+        </CenterButtonRow>
+      </MainSection>
+      <MainSection title="Account">
+        <CenterButtonRow>
+          <Button
+            onClick={() => {
+              console.log("LogOut00");
+              destroyCookie(null, "AvenSession");
+              console.log("LogOut01");
+              setTimeout(() => {
+                push("/login");
+                console.log("LogOut02");
+              }, 10);
+            }}
+          >
+            Log Out
+          </Button>
+        </CenterButtonRow>
+      </MainSection>
+    </AccountPage>
   );
 }
