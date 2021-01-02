@@ -180,7 +180,7 @@ export default function APITokensPage({
       isDashboard
       content={
         <>
-          <SiteTabs tab="api-tokens" siteName={siteName} />
+          <SiteTabs tab="settings" siteName={siteName} />
           <APITokens tokens={tokens} siteName={siteName} />
         </>
       }
