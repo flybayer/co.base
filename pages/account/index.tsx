@@ -146,7 +146,7 @@ export default function AccountIndexPage({
               destroyCookie(null, "AvenSession");
               console.log("LogOut01");
               setTimeout(() => {
-                push("/login");
+                push("/preview");
                 console.log("LogOut02");
               }, 10);
             }}

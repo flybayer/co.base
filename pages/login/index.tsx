@@ -1,9 +1,8 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import SiteLayout from "../../lib/components/SiteLayout";
+import SiteLayout, { SmallFormPage } from "../../lib/components/SiteLayout";
 import { GetServerSideProps } from "next";
-import React, { ReactElement } from "react";
+import React, { ReactElement, ReactNode } from "react";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import ControlledInput from "../../lib/components/ControlledInput";
 import { Button, Divider, FormControl, FormHelperText, FormLabel, Spinner } from "@chakra-ui/core";
@@ -13,7 +12,19 @@ import { Error400 } from "../../lib/server/Errors";
 import { LinkButton } from "../../lib/components/Buttons";
 import { handleAsync } from "../../lib/data/handleAsync";
 import { LoginRegisterResponse } from "../api/login-register";
+import styled from "@emotion/styled";
 
+const TextLinkA = styled.a`
+  color: blue;
+  text-decoration: underline;
+`;
+function TextLink({ href, children }: { href: string; children: ReactNode }): ReactElement {
+  return (
+    <Link href={href} passHref>
+      <TextLinkA>{children}</TextLinkA>
+    </Link>
+  );
+}
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getVerifiedUser(context.req, context.res);
   if (user) {
@@ -145,17 +156,19 @@ function LoginForm({ redirect }: { redirect?: string }) {
         })}
       >
         <FormControl>
-          <FormLabel htmlFor="email-input">Login Email or Username</FormLabel>
+          {/* <FormLabel htmlFor="email-input">Login Email or Username</FormLabel> */}
           {errors.email && <p>{errors.email.message}</p>}
-          <ControlledInput name="email" id="email-input" aria-describedby="email-helper-text" control={control} />
+          <ControlledInput
+            name="email"
+            id="email-input"
+            aria-describedby="email-helper-text"
+            control={control}
+            placeholder="Email or Username"
+          />
           <FormHelperText id="email-helper-text">Your email will be kept private.</FormHelperText>
         </FormControl>
         <p>
-          By logging in, you agree to the{" "}
-          <Link href="/legal/terms-of-service">
-            <a>Terms of Service</a>
-          </Link>
-          .
+          By logging in, you agree to the <TextLink href="/legal/terms-of-service">Terms of Service</TextLink>.
         </p>
         <Button type="submit">Log In</Button>
         {isSubmitting && <Spinner size="sm" />}
@@ -172,25 +185,19 @@ export default function LoginPage({
   redirect?: string;
 }): ReactElement {
   return (
-    <>
-      <Head>
-        <title>Login or Register</title>
-      </Head>
-      <SiteLayout
-        content={
-          currentUser ? (
-            <>
-              <h1>You are logged in.</h1>
-              <LinkButton href="/account">Go to Account</LinkButton>
-            </>
-          ) : (
-            <>
-              <h1>Login or Register</h1>
-              <LoginForm redirect={redirect} />
-            </>
-          )
-        }
-      />
-    </>
+    <SiteLayout
+      title="Register / Log In"
+      content={
+        currentUser ? (
+          <SmallFormPage title={`Logged in as @${currentUser.username}`}>
+            <LinkButton href="/account">Go to Account</LinkButton>
+          </SmallFormPage>
+        ) : (
+          <SmallFormPage title="Register / Log In">
+            <LoginForm redirect={redirect} />
+          </SmallFormPage>
+        )
+      }
+    />
   );
 }

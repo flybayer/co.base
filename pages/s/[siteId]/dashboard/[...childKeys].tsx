@@ -20,6 +20,7 @@ import {
   ValueSchema,
 } from "../../../../lib/data/NodeSchema";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../lib/data/SiteNodes";
+import { LinkButton } from "../../../../lib/components/Buttons";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -427,6 +428,8 @@ export default function NodeDashboard({
         <>
           <SiteTabs tab="data" siteName={siteName} address={address} />
           <MainSection>
+            <LinkButton href={`/s/${siteName}/schema/${address.join("/")}`}>Schema</LinkButton>
+            <LinkButton href={`/s/${siteName}/history/${address.join("/")}`}>History</LinkButton>
             <NodeContent node={node} address={address} siteName={siteName} />
           </MainSection>
         </>

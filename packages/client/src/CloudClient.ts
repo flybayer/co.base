@@ -1,6 +1,7 @@
 import { PojoMap } from "pojo-maps";
 import { useEffect, useState } from "react";
 import fetchHTTP from "node-fetch";
+import { NodeSchema } from "../../../lib/data/NodeSchema";
 
 const DEFAULT_HOST = "aven.io";
 const DEFAULT_USE_SSL = true;
@@ -12,6 +13,7 @@ export type SiteLoad<SiteDataSchema> = {
 
 type ClientOptions = {
   siteName: string;
+  siteToken: string;
   connectionHost?: string;
   connectionUseSSL?: boolean;
 };
@@ -41,18 +43,36 @@ type AvenClient<SiteDataSchema> = {
   ): Promise<{ freshFor: number; values: Partial<SiteDataSchema> }>;
 };
 
+console.log("REquired CLIENT 1");
+
+type NodeCache<SiteDataSchema, NodeKey extends keyof SiteDataSchema> = {
+  value?: SiteDataSchema[NodeKey];
+  // children?: Record<string, NodeCache>;
+  schema?: NodeSchema;
+  valueFetchTime?: null | number;
+  schemaFetchTime?: null | number;
+};
+type SiteNodeCache<SiteDataSchema> = PartialRecord<
+  keyof SiteDataSchema,
+  NodeCache<SiteDataSchema, keyof SiteDataSchema>
+>;
+type PartialRecord<K extends string | number | symbol, V> = Partial<Record<K, V>>;
+
 export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient<SiteDataSchema> {
   const connectionUseSSL = options.connectionUseSSL == null ? DEFAULT_USE_SSL : options.connectionUseSSL;
   const connectionHost = options.connectionHost == null ? DEFAULT_HOST : options.connectionHost;
-  const { siteName } = options;
+  const { siteName, siteToken } = options;
 
-  async function api(endpoint: string, payload: any) {
+  const siteNodeCache: SiteNodeCache<SiteDataSchema> = {};
+
+  async function api(endpoint: string, payload: any, method: "post" | "put" | "delete" | "get" = "post") {
     return fetchHTTP(`http${connectionUseSSL ? "s" : ""}://${connectionHost}/api/${endpoint}`, {
-      method: "post",
+      method,
       headers: {
         "Content-Type": "application/json",
+        ...(siteToken ? { "x-aven-site-token": siteToken } : {}),
       },
-      body: JSON.stringify(payload),
+      body: method === "get" || method === "delete" ? undefined : JSON.stringify(payload),
     }).then(async (res) => {
       const body = await res.json();
       if (res.status !== 200) throw new AvenError(body.error);
@@ -63,14 +83,30 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
   async function fetch<NodeKey extends keyof SiteDataSchema>(
     nodeKey: NodeKey,
   ): Promise<{ value: SiteDataSchema[NodeKey]; freshFor: number }> {
-    const resp = await api("node-get", {
-      siteName,
-      address: String(nodeKey).split("/"),
-    });
+    let nodeCache = siteNodeCache[nodeKey];
+    if (!nodeCache) {
+      nodeCache = {};
+      siteNodeCache[nodeKey] = nodeCache;
+    }
+    // const address = String(nodeKey).split("/");
+    // for (const addressI in address) {
+    //   const key = address[addressI];
+    // }
+    const resp = await api(`s/${siteName}/${nodeKey}`, undefined, "get");
+    // const resp = await api(`s/${nodeKey}`, {
+    //   siteName,
+    //   address: String(nodeKey).split("/"),
+    // });
+    // debugger;
+    // cache.
+    console.log("req client3", resp, nodeKey);
+
     if (resp.value === null) {
       throw new Error("value not found");
     }
     const value: SiteDataSchema[NodeKey] = resp.value;
+    nodeCache.value = value;
+    nodeCache.valueFetchTime = Date.now();
     return { value, freshFor: resp.freshFor };
   }
 

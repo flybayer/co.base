@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/core";
 import { CloseIcon } from "@chakra-ui/icons";
 import { GetServerSideProps } from "next";
-import { ReactElement, useCallback, useState } from "react";
+import { ReactElement, useCallback, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../../../../lib/server/api";
 import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
@@ -54,6 +54,7 @@ import {
   VALUE_TYPES,
 } from "../../../../lib/data/NodeSchema";
 import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
+import { createClient } from "../../../../packages/client/src/CloudClient";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -449,6 +450,11 @@ function SchemaForm({ siteName, address, schema }: { siteName: string; address: 
   );
 }
 
+function useClient(siteName: string) {
+  const client = useMemo(() => createClient({ siteName }), []);
+  return client;
+}
+
 export default function ChildNodePage({
   user,
   siteName,
@@ -463,6 +469,7 @@ export default function ChildNodePage({
     schema: NodeSchema;
   };
 }): ReactElement {
+  // const client = useClient(siteName);
   return (
     <BasicSiteLayout
       user={user}

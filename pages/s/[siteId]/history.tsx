@@ -63,7 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function SiteTeamPage({
+export default function SiteHistoryPage({
   user,
   siteName,
   events,
@@ -93,7 +93,7 @@ export default function SiteTeamPage({
       isDashboard
       content={
         <>
-          <SiteTabs tab="events" siteName={siteName} />
+          <SiteTabs tab="history" siteName={siteName} />
           {events.map((event) => (
             <>
               <Text>

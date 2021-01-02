@@ -6,6 +6,7 @@ import NodeChildren from "../../../lib/components/NodeChildren";
 import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
 import { SiteTabs } from "../../../lib/components/SiteTabs";
 import { database } from "../../../lib/data/database";
+import { LinkButton } from "../../../lib/components/Buttons";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -52,6 +53,9 @@ export default function SiteSettingsPage({
       content={
         <>
           <SiteTabs tab="site" siteName={siteName} />
+          <LinkButton href={`/s/${siteName}/history`}>History</LinkButton>
+          <LinkButton href={`/s/${siteName}/team`}>Team</LinkButton>
+          <LinkButton href={`/s/${siteName}/settings`}>Settings</LinkButton>
           <NodeChildren childs={nodes} address={[]} siteName={siteName} />
         </>
       }

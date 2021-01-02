@@ -42,6 +42,7 @@ export function ArticleLayout({ content }: { content: ReactNode }): ReactElement
 }
 
 export default function SiteLayout({
+  title,
   user,
   topContent,
   headContent,
@@ -50,6 +51,7 @@ export default function SiteLayout({
   bottomContent,
   hideFooter = false,
 }: {
+  title?: string;
   user?: APIUser;
   topContent?: ReactNode;
   headContent?: ReactNode;
@@ -60,6 +62,9 @@ export default function SiteLayout({
 }): ReactElement {
   return (
     <>
+      <Head>
+        <title>{title || "Aven Cloud"}</title>
+      </Head>
       <SiteHeader user={user} />
       <MainArea>
         {topContent}
@@ -111,5 +116,27 @@ export function BasicSiteLayout({
         {bottomContent}
       </MainArea>
     </>
+  );
+}
+
+const SmallPageTitle = styled.h1`
+  font-size: 42px;
+  line-height: 46px;
+  color: #555;
+  margin: 0 0 36px;
+`;
+const SmallPageContainer = styled.div`
+  padding: 24px;
+  border-radius: 4px;
+  background: white;
+  max-width: 400px;
+  margin: 0 auto;
+`;
+export function SmallFormPage({ children, title }: { children: ReactNode; title?: string }): ReactElement {
+  return (
+    <SmallPageContainer>
+      {title && <SmallPageTitle>{title}</SmallPageTitle>}
+      {children}
+    </SmallPageContainer>
   );
 }

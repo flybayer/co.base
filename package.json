@@ -1,5 +1,5 @@
 {
-  "name": "cloud",
+  "name": "@aven/cloud",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -20,6 +20,7 @@
     "configure-package": "ts-node --project tsconfig.server.json config/configure-package.ts",
     "shell": "yarn configure-package aven-shell && yarn --cwd packages/aven-shell run",
     "client": "yarn configure-package client && yarn --cwd packages/client run",
+    "example": "yarn --cwd rocketship-example",
     "migrate-dev": "DATABASE_URL='postgresql://user:pw@localhost:5992/db' yarn prisma migrate dev --preview-feature"
   },
   "workspaces": [
@@ -33,6 +34,9 @@
     "@emotion/react": "^11.0.0-rc.0",
     "@emotion/styled": "^11.0.0-rc.0",
     "@expo/spawn-async": "^1.5.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/pro-light-svg-icons": "^5.15.1",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@prisma/client": "^2.13.1",
     "@sendgrid/mail": "^7.3.0",
     "@stripe/stripe-js": "^1.11.0",
@@ -72,6 +76,7 @@
     "react-hook-form": "^6.8.4",
     "react-native-web": "^0.14.7",
     "react-syntax-highlighter": "^15.3.0",
+    "reconnecting-websocket": "^4.4.0",
     "rehype": "^11.0.0",
     "remark": "^12.0.1",
     "remark-autolink-headings": "^6.0.1",

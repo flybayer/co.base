@@ -5,7 +5,6 @@ import Cloud, { CloudLoad } from "../Cloud-rocketship-Generated";
 import { ReactElement } from "react";
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  console.log("ok here goes");
   const preload = await Cloud.load({
     "pricing-plans": true,
   });

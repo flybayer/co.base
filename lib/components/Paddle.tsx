@@ -17,6 +17,7 @@ export function DevPreviewSubscribeButton({ label, user }: { label?: string; use
               email: user.email,
               quantity: 1,
               allowQuantity: false,
+              success: "https://aven.io/account/billing",
               passthrough: JSON.stringify({ userId: user.id }),
             });
           })

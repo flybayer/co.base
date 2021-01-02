@@ -11,6 +11,7 @@ import { testOutput } from "./TestOutput";
 import spawnAsync from "@expo/spawn-async";
 
 dotenv.config();
+
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 
@@ -18,6 +19,10 @@ const defaultPort = dev ? 3001 : 3000;
 const port = process.env.PORT ? Number(process.env.PORT) : defaultPort;
 
 const DEFAULT_DB_URL = "postgresql://user:pw@localhost:5992/db";
+
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = DEFAULT_DB_URL;
+}
 
 async function startServer() {
   const server = express();

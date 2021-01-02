@@ -1,4 +1,4 @@
-import { Tab, TabList, Tabs } from "@chakra-ui/core";
+import { Tab } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import Head from "next/head";
 import Link from "next/link";
@@ -50,30 +50,44 @@ export function SiteTabs({
   address,
 }: {
   siteName: string;
-  tab: "site" | "team" | "api-tokens" | "events" | "settings" | "data" | "options" | "schema";
+  tab?: "site" | "team" | "history" | "settings" | "data" | "options" | "schema";
   address?: string[];
 }): ReactElement {
-  let tabs = (
-    <Tabs index={["site", "team", "api-tokens", "events", "settings"].findIndex((t) => t === tab)}>
-      <TabList>
-        <TabLink href={`/s/${siteName}`}>Site</TabLink>
-        <TabLink href={`/s/${siteName}/team`}>Team</TabLink>
-        <TabLink href={`/s/${siteName}/api-tokens`}>API Tokens</TabLink>
-        <TabLink href={`/s/${siteName}/events`}>Events</TabLink>
-        <TabLink href={`/s/${siteName}/settings`}>Settings</TabLink>
-      </TabList>
-    </Tabs>
-  );
-  if (address?.length) {
-    tabs = (
-      <Tabs index={["data", "schema", "options"].findIndex((t) => t === tab)}>
-        <TabList>
-          <TabLink href={`/s/${siteName}/dashboard/${address.join("/")}`}>Data</TabLink>
-          <TabLink href={`/s/${siteName}/schema/${address.join("/")}`}>Schema</TabLink>
-          <TabLink href={`/s/${siteName}/options/${address.join("/")}`}>Options</TabLink>
-        </TabList>
-      </Tabs>
-    );
+  // let tabs = (
+  //   <Tabs index={["site", "team", "api-tokens", "history", "settings"].findIndex((t) => t === tab)}>
+  //     <TabList>
+  //       <TabLink href={`/s/${siteName}`}>Site</TabLink>
+  //       <TabLink href={`/s/${siteName}/team`}>Team</TabLink>
+  //       <TabLink href={`/s/${siteName}/api-tokens`}>API Tokens</TabLink>
+  //       <TabLink href={`/s/${siteName}/history`}>History</TabLink>
+  //       <TabLink href={`/s/${siteName}/settings`}>Settings</TabLink>
+  //     </TabList>
+  //   </Tabs>
+  // );
+  // if (address?.length) {
+  //   tabs = (
+  //     <Tabs index={["data", "schema", "options"].findIndex((t) => t === tab)}>
+  //       <TabList>
+  //         <TabLink href={`/s/${siteName}/dashboard/${address.join("/")}`}>Data</TabLink>
+  //         <TabLink href={`/s/${siteName}/schema/${address.join("/")}`}>Schema</TabLink>
+  //         <TabLink href={`/s/${siteName}/options/${address.join("/")}`}>Options</TabLink>
+  //       </TabList>
+  //     </Tabs>
+  //   );
+  // }
+  const nodeURL = `/s/${[siteName, ...(address || [])].join("/")}`;
+  let tabLink = null;
+  const rootLevel = !address?.length;
+  if (rootLevel && tab === "history") {
+    tabLink = <HeaderLink href={`${nodeURL}/history`} label="/History" />;
+  } else if (rootLevel && tab === "settings") {
+    tabLink = <HeaderLink href={`${nodeURL}/settings`} label="/Settings" />;
+  } else if (rootLevel && tab === "team") {
+    tabLink = <HeaderLink href={`${nodeURL}/team`} label="/Team" />;
+  } else if (tab === "schema") {
+    tabLink = <HeaderLink href={`${nodeURL}/schema`} label="/Schema" />;
+  } else if (tab === "history") {
+    tabLink = <HeaderLink href={`${nodeURL}/history`} label="/History" />;
   }
   return (
     <TabBarContainer>
@@ -85,8 +99,8 @@ export function SiteTabs({
         {explodeAddress(address).map(({ key, fullAddress }) => (
           <HeaderLink key={fullAddress} href={`/s/${siteName}/dashboard${fullAddress}`} label={`/${key}`} />
         ))}
+        {tabLink}
       </TitleContainer>
-      {tabs}
     </TabBarContainer>
   );
 }

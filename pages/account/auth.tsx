@@ -1,5 +1,4 @@
 import { GetServerSideProps } from "next";
-import { destroyCookie } from "nookies";
 import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { LinkButton } from "../../lib/components/Buttons";
@@ -100,19 +99,6 @@ export default function AccountIndexPage({
       </MainSection>
       <MainSection title="Account">
         <CenterButtonRow>
-          <Button
-            onClick={() => {
-              console.log("LogOut00");
-              destroyCookie(null, "AvenSession");
-              console.log("LogOut01");
-              setTimeout(() => {
-                push("/login");
-                console.log("LogOut02");
-              }, 10);
-            }}
-          >
-            Log Out
-          </Button>
           <LinkButton colorScheme="red" href={"/account/destroy"}>
             Delete Account
           </LinkButton>
