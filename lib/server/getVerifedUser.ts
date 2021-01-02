@@ -36,6 +36,7 @@ export default async function getVerifiedUser(
   } else if (expiredJwt) {
     const { revalidateIP, revalidateToken } = expiredJwt;
     if (getOriginIp(req) !== revalidateIP) {
+      console.log("invalid ip match", getOriginIp(req), revalidateIP);
       return null;
     }
     const deviceToken = await database.deviceToken.findFirst({

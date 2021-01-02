@@ -8,10 +8,12 @@ import { encode, freshJwt } from "../../lib/server/jwt";
 import { createAPI } from "../../lib/server/createAPI";
 import { atob } from "../../lib/server/Base64";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";
+import { getOriginIp } from "../../lib/server/getOriginIp";
 
 export async function verifyEmail(
   secret: string,
   email: string,
+  originIp?: string,
 ): Promise<{
   verifiedEmail: string;
   jwt: string;
@@ -91,7 +93,6 @@ export async function verifyEmail(
     });
   }
   const revalidateToken = getRandomLetters(47);
-  const originIp = "fixme-device-originip";
   await database.deviceToken.create({
     data: {
       token: revalidateToken,
@@ -108,8 +109,13 @@ export async function verifyEmail(
   return { verifiedEmail: email, jwt, user, isNewUser };
 }
 
-async function emailAuth(secret: string, email: string, parsedCookies: any, res: NextApiResponse) {
-  const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(secret, email);
+async function emailAuth(req: NextApiRequest, res: NextApiResponse) {
+  // todo, shouldn't we verify the users current jwt??
+  const token = req.query.token;
+  const emailEncoded = req.query.email;
+  const email = atob(String(emailEncoded));
+  const originIp = getOriginIp(req);
+  const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(String(token), email, originIp);
   setCookie(res, "AvenSession", jwt);
   return {
     verifiedEmail,
@@ -121,11 +127,8 @@ async function emailAuth(secret: string, email: string, parsedCookies: any, res:
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const parsedCookies = parseCookies({ req });
-  // todo, shouldn't we verify the users current jwt??
-  const token = req.query.token;
-  const emailEncoded = req.query.email;
-  const email = atob(String(emailEncoded));
-  await emailAuth(String(token), email, parsedCookies, res);
+
+  await emailAuth(req, res);
   res.redirect("/account");
   return res;
 });
