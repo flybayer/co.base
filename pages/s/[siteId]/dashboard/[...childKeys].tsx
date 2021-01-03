@@ -434,6 +434,9 @@ export default function NodeDashboard({
             <LinkButton href={`/s/${siteName}/history/${address.join("/")}`} icon="history">
               History
             </LinkButton>
+            <LinkButton href={`/s/${siteName}/options/${address.join("/")}`} icon="cog">
+              Options
+            </LinkButton>
             <NodeContent node={node} address={address} siteName={siteName} />
           </MainSection>
         </>

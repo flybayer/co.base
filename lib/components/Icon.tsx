@@ -10,7 +10,7 @@ export function Icon({
 }: {
   color?: string;
   icon: IconName;
-  size: PropsOf<typeof FontAwesomeIcon>["size"];
+  size?: PropsOf<typeof FontAwesomeIcon>["size"];
 }): ReactElement {
   return <FontAwesomeIcon color={color} icon={["fal", icon]} size={size} />;
 }

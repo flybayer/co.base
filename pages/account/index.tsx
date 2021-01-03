@@ -12,6 +12,8 @@ import { ListContainer, ListItem } from "../../lib/components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../lib/components/SiteRoleButtons";
 import { SiteRole } from "../../lib/data/SiteRoles";
 import { AccountPage } from "../../lib/components/AccountPage";
+import { Icon } from "../../lib/components/Icon";
+import { LinkButton, RightIconContainer } from "../../lib/components/Buttons";
 
 // req.headers =
 // "host":"aven.io",
@@ -133,9 +135,9 @@ export default function AccountIndexPage({
           </Link>
         ))}
         <CenterButtonRow>
-          <Link href={`/account/new-site`}>
-            <Button colorScheme="avenColor">New Site</Button>
-          </Link>
+          <LinkButton href="/account/new-site" colorScheme="avenColor">
+            Create Data Site
+          </LinkButton>
         </CenterButtonRow>
       </MainSection>
       <MainSection title="Account">
@@ -151,7 +153,10 @@ export default function AccountIndexPage({
               }, 10);
             }}
           >
-            Log Out
+            Sign Out
+            <RightIconContainer>
+              <Icon icon="sign-out" />
+            </RightIconContainer>
           </Button>
         </CenterButtonRow>
       </MainSection>

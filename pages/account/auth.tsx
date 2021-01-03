@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { LinkButton } from "../../lib/components/Buttons";
 import { Button, Spinner } from "@chakra-ui/core";
-import Link from "next/link";
 import { database } from "../../lib/data/database";
 import { api } from "../../lib/server/api";
 import { ReactElement, useState } from "react";
@@ -45,9 +44,7 @@ function PasswordBox({ user }: { user: APIUser }) {
     <>
       <h3>Password</h3>
       <div>{user.hasPassword ? "PW is set" : "No pw set"}</div>
-      <Link href="/account/set-password">
-        <Button>Set Password</Button>
-      </Link>
+      <LinkButton href="/account/set-password">Set Password</LinkButton>
     </>
   );
 }

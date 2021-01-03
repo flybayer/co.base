@@ -1,16 +1,13 @@
-import { Button, Text } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
-import { api } from "../../../lib/server/api";
-import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
-import { APIButton } from "../../../lib/components/APIButton";
-import { CenterButtonRow, MainSection } from "../../../lib/components/CommonViews";
-import { BasicSiteLayout } from "../../../lib/components/SiteLayout";
-import { SiteTabs } from "../../../lib/components/SiteTabs";
-import { database } from "../../../lib/data/database";
-import { handleAsync } from "../../../lib/data/handleAsync";
-import { SiteSchema } from "../../../lib/data/SiteSchema";
+import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
+import { database } from "../../../../lib/data/database";
+import { Button, Text } from "@chakra-ui/core";
+import { api } from "../../../../lib/server/api";
+import { handleAsync } from "../../../../lib/data/handleAsync";
+import { SiteSettingsPage } from "../../../../lib/components/SiteSettingsPage";
+import { CenterButtonRow, MainSection } from "../../../../lib/components/CommonViews";
+import { SiteSchema } from "../../../../lib/data/SiteSchema";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -73,7 +70,7 @@ function SiteAccessSection({ schema, siteName }: { schema?: SiteSchema; siteName
   return <MainSection title="Site Access">{content}</MainSection>;
 }
 
-export default function SiteTeamPage({
+export default function SiteAccessPage({
   user,
   siteName,
   schema,
@@ -82,36 +79,9 @@ export default function SiteTeamPage({
   siteName: string;
   schema?: SiteSchema;
 }): ReactElement {
-  const { push } = useRouter();
   return (
-    <BasicSiteLayout
-      user={user}
-      isDashboard
-      content={
-        <>
-          <SiteTabs tab="settings" siteName={siteName} />
-          <SiteAccessSection schema={schema} siteName={siteName} />
-          <MainSection title="Site Ownership">
-            <CenterButtonRow>
-              <Button disabled>Transfer to Another User</Button>
-            </CenterButtonRow>
-          </MainSection>
-          <MainSection title="Danger">
-            <CenterButtonRow>
-              <APIButton
-                colorScheme="red"
-                endpoint="site-destroy"
-                payload={{ siteName }}
-                onDone={() => {
-                  push("/account");
-                }}
-              >
-                Delete Site
-              </APIButton>
-            </CenterButtonRow>
-          </MainSection>
-        </>
-      }
-    />
+    <SiteSettingsPage user={user} siteName={siteName} tab="access">
+      <SiteAccessSection schema={schema} siteName={siteName} />
+    </SiteSettingsPage>
   );
 }

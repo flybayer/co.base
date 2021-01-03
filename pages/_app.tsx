@@ -32,6 +32,9 @@ function Page({ children }: React.PropsWithChildren<unknown>) {
     </>
   );
 }
+
+export const primaryColor = "#3160CE";
+
 const AvenTheme = extendTheme({
   colors: {
     avenColor: {
@@ -40,7 +43,7 @@ const AvenTheme = extendTheme({
       200: "#90A7F4",
       300: "#637FED",
       400: "#426EE1",
-      500: "#3160CE",
+      500: primaryColor,
       600: "#2B49B0",
       700: "#2C4582",
       800: "#2A3C65",

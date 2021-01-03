@@ -34,7 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default function SiteSettingsPage({
+export default function SiteIndex({
   user,
   siteName,
   nodes,
@@ -60,7 +60,7 @@ export default function SiteSettingsPage({
             Team
           </LinkButton>
           <LinkButton href={`/s/${siteName}/settings`} icon="cog">
-            Settings
+            Site Settings
           </LinkButton>
           <NodeChildren childs={nodes} address={[]} siteName={siteName} />
         </>

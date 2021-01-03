@@ -1,8 +1,6 @@
-import * as React from "react";
+import { ReactElement } from "react";
 
-const colorBlue = "#0E2B49";
-
-export default function AvenLogo() {
+export default function AvenLogo(): ReactElement {
   return (
     <svg width={60} height={60} viewBox="0 0 479 398" xmlns="http://www.w3.org/2000/svg">
       <g fill="white" fillRule="evenodd">

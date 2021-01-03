@@ -68,6 +68,8 @@ export function SiteTabs({
     tabLink = <HeaderLink href={`${nodeURL}/team`} label="/team" icon="users" />;
   } else if (tab === "schema") {
     tabLink = <HeaderLink href={`/s/${siteName}/schema/${address?.join("/")}`} label="/schema" icon="pencil-ruler" />;
+  } else if (tab === "options") {
+    tabLink = <HeaderLink href={`/s/${siteName}/options/${address?.join("/")}`} label="/options" icon="cog" />;
   } else if (tab === "history") {
     tabLink = <HeaderLink href={`/s/${siteName}/history/${address?.join("/")}`} label="/history" icon="history" />;
   }
@@ -80,7 +82,7 @@ export function SiteTabs({
         <HeaderLink
           href={`/s/${siteName}`}
           label={siteName}
-          icon={address?.length || tab !== "site" ? null : "cubes"}
+          icon={address?.length || tab !== "site" ? undefined : "cubes"}
         />
         {explodeAddress(address).map(({ key, fullAddress }, index) => {
           if (index + 1 === address?.length) {
@@ -93,7 +95,7 @@ export function SiteTabs({
                 key={fullAddress}
                 href={`/s/${siteName}/dashboard${fullAddress}`}
                 label={`/${key}`}
-                icon={icon}
+                icon={icon as IconName}
               />
             );
           }

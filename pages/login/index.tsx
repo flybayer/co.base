@@ -13,9 +13,10 @@ import { LinkButton } from "../../lib/components/Buttons";
 import { handleAsync } from "../../lib/data/handleAsync";
 import { LoginRegisterResponse } from "../api/login-register";
 import styled from "@emotion/styled";
+import { primaryColor } from "../_app";
 
 const TextLinkA = styled.a`
-  color: blue;
+  color: ${primaryColor};
   text-decoration: underline;
 `;
 function TextLink({ href, children }: { href: string; children: ReactNode }): ReactElement {
@@ -71,7 +72,9 @@ function PasswordForm({
           <FormLabel htmlFor="password-input">Password</FormLabel>
           <ControlledInput type="password" name="password" id="password-input" control={control} />
         </FormControl>
-        <Button type="submit">Log In</Button>
+        <Button type="submit" colorScheme="avenColor">
+          Log In
+        </Button>
       </form>
       <Divider />
       <Button onClick={onEmail}>Email me a login link</Button>
@@ -165,12 +168,13 @@ function LoginForm({ redirect }: { redirect?: string }) {
             control={control}
             placeholder="Email or Username"
           />
-          <FormHelperText id="email-helper-text">Your email will be kept private.</FormHelperText>
+          <FormHelperText id="email-helper-text">
+            By logging in, you agree to the <TextLink href="/legal/terms-of-service">Terms of Service</TextLink>.
+          </FormHelperText>
         </FormControl>
-        <p>
-          By logging in, you agree to the <TextLink href="/legal/terms-of-service">Terms of Service</TextLink>.
-        </p>
-        <Button type="submit">Log In</Button>
+        <Button type="submit" colorScheme="avenColor">
+          Log In
+        </Button>
         {isSubmitting && <Spinner size="sm" />}
       </form>
     </>

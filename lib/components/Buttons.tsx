@@ -5,8 +5,12 @@ import { IconName } from "@fortawesome/fontawesome-svg-core";
 import styled from "@emotion/styled";
 import { Icon } from "./Icon";
 
-const IconContainer = styled.div`
+export const LeftIconContainer = styled.div`
   padding: 0 10px 0 0;
+`;
+
+export const RightIconContainer = styled.div`
+  margin: 10px 0 10px 10px;
 `;
 
 export default function PostButton({
@@ -37,9 +41,9 @@ export function LinkButton({
     <Link href={href}>
       <Button {...props} variant="outline">
         {icon && (
-          <IconContainer>
+          <LeftIconContainer>
             <Icon color="#111" icon={icon} size="lg" />
-          </IconContainer>
+          </LeftIconContainer>
         )}
         {children}
       </Button>
