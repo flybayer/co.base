@@ -53,9 +53,15 @@ export default function SiteSettingsPage({
       content={
         <>
           <SiteTabs tab="site" siteName={siteName} />
-          <LinkButton href={`/s/${siteName}/history`}>History</LinkButton>
-          <LinkButton href={`/s/${siteName}/team`}>Team</LinkButton>
-          <LinkButton href={`/s/${siteName}/settings`}>Settings</LinkButton>
+          <LinkButton href={`/s/${siteName}/history`} icon="history">
+            History
+          </LinkButton>
+          <LinkButton href={`/s/${siteName}/team`} icon="users">
+            Team
+          </LinkButton>
+          <LinkButton href={`/s/${siteName}/settings`} icon="cog">
+            Settings
+          </LinkButton>
           <NodeChildren childs={nodes} address={[]} siteName={siteName} />
         </>
       }

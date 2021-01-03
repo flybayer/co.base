@@ -8,10 +8,6 @@ import { database } from "../../../../lib/data/database";
 import { DEFAULT_SCHEMA, NodeSchema } from "../../../../lib/data/NodeSchema";
 import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fal } from "@fortawesome/pro-light-svg-icons";
-import { library } from "@fortawesome/fontawesome-svg-core";
-
-library.add(fal);
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);

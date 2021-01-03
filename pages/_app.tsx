@@ -6,6 +6,11 @@ import Title from "../lib/components/Title";
 import { Global } from "@emotion/react";
 import prism from "../lib/components/styles/prism";
 import { ChakraProvider, extendTheme } from "@chakra-ui/core";
+import { fal } from "@fortawesome/pro-light-svg-icons";
+import { fas } from "@fortawesome/pro-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+library.add(fal, fas);
 
 const mdComponents = {
   h1: Title,

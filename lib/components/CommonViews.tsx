@@ -63,7 +63,7 @@ export const NumberContainer = styled.div`
 const MainSectionContainer = styled.div`
   background: white;
   border-radius: 5px;
-  margin: 24px 0 0;
+  margin: 0 0 24px;
   padding-top: 3px;
 `;
 const MainSectionInnerBorder = styled.div`

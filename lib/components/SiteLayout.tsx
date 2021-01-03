@@ -15,11 +15,11 @@ const MainContainer = styled.div`
   flex-grow: 1;
   max-width: 950px;
   margin: 0 auto;
-  padding-top: 40px;
+  padding-top: 20px;
   padding-bottom: 40px;
   @media only screen and (max-width: 1030px) {
-    padding-left: 40px;
-    padding-right: 40px;
+    // padding-left: 40px;
+    // padding-right: 40px;
   }
 `;
 const Article = styled.article`
@@ -29,11 +29,11 @@ const BasicContainer = styled.div`
   flex-grow: 1;
   max-width: 950px;
   margin: 0 auto;
-  padding-top: 40px;
+  padding-top: 20px;
   padding-bottom: 40px;
   @media only screen and (max-width: 1030px) {
-    padding-left: 40px;
-    padding-right: 40px;
+    // padding-left: 40px;
+    // padding-right: 40px;
   }
 `;
 

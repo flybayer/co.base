@@ -426,10 +426,14 @@ export default function NodeDashboard({
       isDashboard
       content={
         <>
-          <SiteTabs tab="data" siteName={siteName} address={address} />
+          <SiteTabs tab="data" siteName={siteName} address={address} nodeType={node.schema?.type} />
           <MainSection>
-            <LinkButton href={`/s/${siteName}/schema/${address.join("/")}`}>Schema</LinkButton>
-            <LinkButton href={`/s/${siteName}/history/${address.join("/")}`}>History</LinkButton>
+            <LinkButton href={`/s/${siteName}/schema/${address.join("/")}`} icon="pencil-ruler">
+              Schema
+            </LinkButton>
+            <LinkButton href={`/s/${siteName}/history/${address.join("/")}`} icon="history">
+              History
+            </LinkButton>
             <NodeContent node={node} address={address} siteName={siteName} />
           </MainSection>
         </>

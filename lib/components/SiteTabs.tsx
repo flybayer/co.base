@@ -1,9 +1,11 @@
-import { Tab } from "@chakra-ui/core";
 import styled from "@emotion/styled";
 import Head from "next/head";
 import Link from "next/link";
-import { PropsWithChildren, ReactElement } from "react";
+import { ReactElement } from "react";
+import { NodeType } from "../../packages/client/dist/lib/data/NodeSchema";
 import { explodeAddress } from "../server/explodeAddress";
+import { Icon } from "./Icon";
+import { IconName } from "@fortawesome/fontawesome-svg-core";
 
 const TabBarContainer = styled.div`
   display: flex;
@@ -27,19 +29,19 @@ const HeaderA = styled.a`
   :hover {
     color: #666;
   }
+  line-height: 52px;
 `;
-function HeaderLink({ href, label }: { href: string; label: string }) {
+function HeaderLink({ href, label, icon }: { href: string; label: string; icon?: IconName }) {
   return (
     <Link href={href} passHref>
-      <HeaderA>{label}</HeaderA>
-    </Link>
-  );
-}
-
-function TabLink({ children, href }: PropsWithChildren<{ href: string }>): ReactElement {
-  return (
-    <Link href={href} passHref>
-      <Tab as="a">{children}</Tab>
+      <HeaderA>
+        {label}
+        {icon && (
+          <div style={{ marginLeft: 12, position: "relative", top: 3, display: "inline-block" }}>
+            <Icon icon={icon} size="1x" />
+          </div>
+        )}
+      </HeaderA>
     </Link>
   );
 }
@@ -48,46 +50,26 @@ export function SiteTabs({
   siteName,
   tab,
   address,
+  nodeType,
 }: {
   siteName: string;
   tab?: "site" | "team" | "history" | "settings" | "data" | "options" | "schema";
   address?: string[];
+  nodeType?: NodeType;
 }): ReactElement {
-  // let tabs = (
-  //   <Tabs index={["site", "team", "api-tokens", "history", "settings"].findIndex((t) => t === tab)}>
-  //     <TabList>
-  //       <TabLink href={`/s/${siteName}`}>Site</TabLink>
-  //       <TabLink href={`/s/${siteName}/team`}>Team</TabLink>
-  //       <TabLink href={`/s/${siteName}/api-tokens`}>API Tokens</TabLink>
-  //       <TabLink href={`/s/${siteName}/history`}>History</TabLink>
-  //       <TabLink href={`/s/${siteName}/settings`}>Settings</TabLink>
-  //     </TabList>
-  //   </Tabs>
-  // );
-  // if (address?.length) {
-  //   tabs = (
-  //     <Tabs index={["data", "schema", "options"].findIndex((t) => t === tab)}>
-  //       <TabList>
-  //         <TabLink href={`/s/${siteName}/dashboard/${address.join("/")}`}>Data</TabLink>
-  //         <TabLink href={`/s/${siteName}/schema/${address.join("/")}`}>Schema</TabLink>
-  //         <TabLink href={`/s/${siteName}/options/${address.join("/")}`}>Options</TabLink>
-  //       </TabList>
-  //     </Tabs>
-  //   );
-  // }
   const nodeURL = `/s/${[siteName, ...(address || [])].join("/")}`;
   let tabLink = null;
   const rootLevel = !address?.length;
   if (rootLevel && tab === "history") {
-    tabLink = <HeaderLink href={`${nodeURL}/history`} label="/History" />;
+    tabLink = <HeaderLink href={`${nodeURL}/history`} label="/history" icon="history" />;
   } else if (rootLevel && tab === "settings") {
-    tabLink = <HeaderLink href={`${nodeURL}/settings`} label="/Settings" />;
+    tabLink = <HeaderLink href={`${nodeURL}/settings`} label="/settings" icon="cog" />;
   } else if (rootLevel && tab === "team") {
-    tabLink = <HeaderLink href={`${nodeURL}/team`} label="/Team" />;
+    tabLink = <HeaderLink href={`${nodeURL}/team`} label="/team" icon="users" />;
   } else if (tab === "schema") {
-    tabLink = <HeaderLink href={`${nodeURL}/schema`} label="/Schema" />;
+    tabLink = <HeaderLink href={`/s/${siteName}/schema/${address?.join("/")}`} label="/schema" icon="pencil-ruler" />;
   } else if (tab === "history") {
-    tabLink = <HeaderLink href={`${nodeURL}/history`} label="/History" />;
+    tabLink = <HeaderLink href={`/s/${siteName}/history/${address?.join("/")}`} label="/history" icon="history" />;
   }
   return (
     <TabBarContainer>
@@ -95,10 +77,28 @@ export function SiteTabs({
         <title>Admin: {siteName}</title>
       </Head>
       <TitleContainer>
-        <HeaderLink href={`/s/${siteName}`} label={siteName} />
-        {explodeAddress(address).map(({ key, fullAddress }) => (
-          <HeaderLink key={fullAddress} href={`/s/${siteName}/dashboard${fullAddress}`} label={`/${key}`} />
-        ))}
+        <HeaderLink
+          href={`/s/${siteName}`}
+          label={siteName}
+          icon={address?.length || tab !== "site" ? null : "cubes"}
+        />
+        {explodeAddress(address).map(({ key, fullAddress }, index) => {
+          if (index + 1 === address?.length) {
+            let icon = undefined;
+            if (nodeType === "folder") icon = "folder";
+            else if (nodeType === "record") icon = "sticky-note";
+            else if (nodeType === "record-set") icon = "layer-group";
+            return (
+              <HeaderLink
+                key={fullAddress}
+                href={`/s/${siteName}/dashboard${fullAddress}`}
+                label={`/${key}`}
+                icon={icon}
+              />
+            );
+          }
+          return <HeaderLink key={fullAddress} href={`/s/${siteName}/dashboard${fullAddress}`} label={`/${key}`} />;
+        })}
         {tabLink}
       </TitleContainer>
     </TabBarContainer>

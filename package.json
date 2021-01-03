@@ -36,6 +36,7 @@
     "@expo/spawn-async": "^1.5.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/pro-light-svg-icons": "^5.15.1",
+    "@fortawesome/pro-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@prisma/client": "^2.13.1",
     "@sendgrid/mail": "^7.3.0",
