@@ -13,6 +13,8 @@ import styled from "@emotion/styled";
 import { observe, generate } from "fast-json-patch";
 import { handleAsync } from "../../../../lib/data/handleAsync";
 import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
+import { LeftIconContainer } from "../../../../lib/components/Buttons";
+import { Icon } from "../../../../lib/components/Icon";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -91,9 +93,13 @@ function DeleteButton({ siteName, address, nodeType }: { siteName: string; addre
           });
       }}
       colorScheme="red"
+      variant="outline"
       rightIcon={isDeleting ? <Spinner size="sm" /> : undefined}
     >
-      Permanently Delete {nodeTypeName(nodeType || "record")} &quot;{address[address.length - 1]}&quot;
+      <LeftIconContainer>
+        <Icon icon="trash" />
+      </LeftIconContainer>
+      Delete {nodeTypeName(nodeType || "record")}
     </Button>
   );
 }

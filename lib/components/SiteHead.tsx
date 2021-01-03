@@ -1,7 +1,8 @@
 import { FrontMatter } from "../data/frontMatter";
 import Head from "next/head";
+import { ReactElement } from "react";
 
-export default function SiteHead({ frontMatter }: { frontMatter: FrontMatter }) {
+export default function SiteHead({ frontMatter }: { frontMatter: FrontMatter }): ReactElement {
   return (
     <Head>
       <title>{frontMatter?.title || "Aven Cloud"}</title>

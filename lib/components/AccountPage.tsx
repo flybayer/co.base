@@ -4,6 +4,7 @@ import { ReactElement } from "react";
 import styled from "@emotion/styled";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { SidebarPage } from "./Sidebar";
+import { HeaderLink, TitleContainer } from "./Header";
 
 export type AccountTab = "index" | "billing" | "auth" | "profile" | "devices";
 
@@ -33,9 +34,14 @@ export function AccountPage({
       user={user}
       isDashboard
       content={
-        <SidebarPage links={AccountPageLinks} tab={tab}>
-          <MainSection>{children}</MainSection>
-        </SidebarPage>
+        <>
+          <TitleContainer>
+            <HeaderLink href={`/account`} label={user.username} icon={"user"} />
+          </TitleContainer>
+          <SidebarPage links={AccountPageLinks} tab={tab}>
+            <MainSection>{children}</MainSection>
+          </SidebarPage>
+        </>
       }
     />
   );
