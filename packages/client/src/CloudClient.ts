@@ -2,6 +2,7 @@ import { PojoMap } from "pojo-maps";
 import { useEffect, useState } from "react";
 import fetchHTTP from "node-fetch";
 import { NodeSchema } from "../../../lib/data/NodeSchema";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 const DEFAULT_HOST = "aven.io";
 const DEFAULT_USE_SSL = true;
@@ -13,7 +14,7 @@ export type SiteLoad<SiteDataSchema> = {
 
 type ClientOptions = {
   siteName: string;
-  siteToken: string;
+  siteToken?: string;
   connectionHost?: string;
   connectionUseSSL?: boolean;
 };
@@ -30,7 +31,7 @@ class AvenError extends Error {
   }
 }
 
-type AvenClient<SiteDataSchema> = {
+export type AvenClient<SiteDataSchema> = {
   fetch<NodeKey extends keyof SiteDataSchema>(
     nodeKey: NodeKey,
   ): Promise<{ value: SiteDataSchema[NodeKey]; freshFor: number }>;
@@ -41,9 +42,11 @@ type AvenClient<SiteDataSchema> = {
   load(
     query: Partial<Record<keyof SiteDataSchema, true>>,
   ): Promise<{ freshFor: number; values: Partial<SiteDataSchema> }>;
+  open(): void;
+  close(): void;
+  isConnected(): boolean;
+  onIsConnected(handler: (isConnected: boolean) => void): () => void;
 };
-
-console.log("REquired CLIENT 1");
 
 type NodeCache<SiteDataSchema, NodeKey extends keyof SiteDataSchema> = {
   value?: SiteDataSchema[NodeKey];
@@ -162,5 +165,49 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
     };
   }
 
-  return { fetch, useNode, load };
+  let ws: any = null;
+  function open(): void {
+    console.log("connecting to ", { connectionHost, connectionUseSSL, siteName });
+    const wsUrl = `${connectionUseSSL ? "wss" : "ws"}://${connectionHost}`;
+    ws = new ReconnectingWebSocket(wsUrl);
+    ws.onopen = () => {
+      _setIsConnected(true);
+      console.log("socket opened");
+    };
+    ws.onmessage = (msg: any) => {
+      console.log("socket msg", msg);
+    };
+    ws.onclose = () => {
+      _setIsConnected(false);
+      console.log("socket closed");
+      ws = null;
+    };
+
+    ws.onerror = (e: any) => {
+      _setIsConnected(false);
+      console.log("socket errored", e);
+      ws = null;
+    };
+  }
+  function close(): void {
+    console.log("closing token");
+    ws && ws.close();
+  }
+
+  let isConn = false;
+  const isConnectedHandlers = new Set<(isConn: boolean) => void>();
+  function _setIsConnected(isConnected: boolean): void {
+    isConn = isConnected;
+    isConnectedHandlers.forEach((handler) => handler(isConnected));
+  }
+  function isConnected(): boolean {
+    return isConn;
+  }
+  function onIsConnected(handler: (isConn: boolean) => void): () => void {
+    isConnectedHandlers.add(handler);
+    return () => {
+      isConnectedHandlers.delete(handler);
+    };
+  }
+  return { fetch, useNode, load, open, close, isConnected, onIsConnected };
 }

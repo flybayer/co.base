@@ -9,7 +9,6 @@ import { MainSection } from "../../../../lib/components/CommonViews";
 import { ListContainer } from "../../../../lib/components/List";
 import NodeChildren from "../../../../lib/components/NodeChildren";
 
-import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
 import { SiteTabs } from "../../../../lib/components/SiteTabs";
 import { database } from "../../../../lib/data/database";
 import {
@@ -21,6 +20,7 @@ import {
 } from "../../../../lib/data/NodeSchema";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../lib/data/SiteNodes";
 import { ButtonBar, LinkButton } from "../../../../lib/components/Buttons";
+import { SiteDashboardPage } from "../../../../lib/components/SiteDashboardPage";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -90,21 +90,6 @@ function RecordSetContent({
 }) {
   return <NodeChildren childs={node.children} address={address} siteName={siteName} />;
 }
-
-const StringText = styled.p`
-  color: brown;
-  font-size: 18px;
-`;
-
-const NumberText = styled.p`
-  color: blue;
-  font-size: 18px;
-`;
-
-const BooleanText = styled.p`
-  color: green;
-  font-size: 18px;
-`;
 
 type Node<Schema = NodeSchema> = {
   value: any;
@@ -389,8 +374,13 @@ function RecordContent({
   );
 }
 
+function useRealValue(siteName: string, address: string[], node: Node) {
+  // debugger;
+}
+
 function NodeContent({ siteName, address, node }: { siteName: string; address: string[]; node: Node }) {
   const parent = node.parentSchemas[0];
+  const a = useRealValue(siteName, address, node);
   if (parent?.type === "record") {
     return <p>Unexpected condition: this node is the child of a record.</p>;
   }
@@ -421,28 +411,22 @@ export default function NodeDashboard({
   node: Node;
 }): ReactElement {
   return (
-    <BasicSiteLayout
-      user={user}
-      isDashboard
-      content={
-        <>
-          <SiteTabs tab="data" siteName={siteName} address={address} nodeType={node.schema?.type} />
-          <ButtonBar>
-            <LinkButton href={`/s/${siteName}/schema/${address.join("/")}`} icon="pencil-ruler">
-              Schema
-            </LinkButton>
-            <LinkButton href={`/s/${siteName}/history/${address.join("/")}`} icon="history">
-              History
-            </LinkButton>
-            <LinkButton href={`/s/${siteName}/options/${address.join("/")}`} icon="cog">
-              Options
-            </LinkButton>
-          </ButtonBar>
-          <MainSection>
-            <NodeContent node={node} address={address} siteName={siteName} />
-          </MainSection>
-        </>
-      }
-    />
+    <SiteDashboardPage user={user} siteName={siteName}>
+      <SiteTabs tab="data" siteName={siteName} address={address} nodeType={node.schema?.type} />
+      <ButtonBar>
+        <LinkButton href={`/s/${siteName}/schema/${address.join("/")}`} icon="pencil-ruler">
+          Schema
+        </LinkButton>
+        <LinkButton href={`/s/${siteName}/history/${address.join("/")}`} icon="history">
+          History
+        </LinkButton>
+        <LinkButton href={`/s/${siteName}/options/${address.join("/")}`} icon="cog">
+          Options
+        </LinkButton>
+      </ButtonBar>
+      <MainSection>
+        <NodeContent node={node} address={address} siteName={siteName} />
+      </MainSection>
+    </SiteDashboardPage>
   );
 }

@@ -119,7 +119,7 @@ async function startServer() {
     const clientId = clientIdCount++;
     sockets.set(clientId, socket);
     socketSubscriptions.set(clientId, new Map());
-
+    console.log("socket client connected!");
     socket.on("message", (data: string) => {
       const msg = JSON.parse(data);
       handleMessage(clientId, msg);
