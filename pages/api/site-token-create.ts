@@ -5,7 +5,8 @@ import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";
 import { SiteTokenType } from "../../lib/data/SiteToken";
-import { startSiteEvent, TokenCreateResponse } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
+import { TokenCreateResponse } from "../../lib/data/EventTypes";
 
 export type SiteTokenCreatePayload = {
   siteName: string;

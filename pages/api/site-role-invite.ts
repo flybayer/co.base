@@ -9,7 +9,8 @@ import { getRandomLetters } from "../../lib/server/getRandomLetters";
 import getSiteLink from "../../lib/server/getSiteLink";
 import { btoa } from "../../lib/server/Base64";
 import { SiteRole } from "../../lib/data/SiteRoles";
-import { RoleInviteResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
+import { RoleInviteResponse } from "../../lib/data/EventTypes";
 
 export type SiteRoleInvitePayload = {
   emailUsername: string;

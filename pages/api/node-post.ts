@@ -5,9 +5,10 @@ import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 import { getValueSchema, getDefaultValue, NodeSchema, NodeType, SchemaType } from "../../lib/data/NodeSchema";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
-import { NodePostResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";
 import { getSiteToken } from "../../lib/server/APIToken";
+import { NodePostResponse } from "../../lib/data/EventTypes";
 
 export type NodePostPayload = {
   name?: string;

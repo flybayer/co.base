@@ -4,8 +4,9 @@ import { Error400, Error500 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
-import { NodeDestroyResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
 import { getSiteToken } from "../../lib/server/APIToken";
+import { NodeDestroyResponse } from "../../lib/data/EventTypes";
 
 export type NodeDestroyPayload = {
   siteName: string;

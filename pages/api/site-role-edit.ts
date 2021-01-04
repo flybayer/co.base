@@ -3,7 +3,8 @@ import { database } from "../../lib/data/database";
 import { Error500 } from "../../lib/server/Errors";
 import getVerifiedUser from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
-import { RoleEditResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
+import { RoleEditResponse } from "../../lib/data/EventTypes";
 
 type SiteRole = "admin" | "manager" | "writer" | "reader";
 

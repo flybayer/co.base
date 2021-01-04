@@ -7,8 +7,9 @@ import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../lib/data/NodeSche
 import Ajv, { DefinedError } from "ajv";
 import { InputJsonObject } from "@prisma/client";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../lib/data/SiteNodes";
-import { NodeEditResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
 import { getSiteToken } from "../../lib/server/APIToken";
+import { NodeEditResponse } from "../../lib/data/EventTypes";
 
 const ajv = new Ajv();
 

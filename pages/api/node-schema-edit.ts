@@ -6,7 +6,8 @@ import { createAPI } from "../../lib/server/createAPI";
 import { NodeSchema } from "../../lib/data/NodeSchema";
 import { applyPatch } from "fast-json-patch";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
-import { NodeSchemaEditResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
+import { NodeSchemaEditResponse } from "../../lib/data/EventTypes";
 
 export type NodeSchemaEditPayload = {
   address: string[];

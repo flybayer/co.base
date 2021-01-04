@@ -22,8 +22,8 @@ import { ControlledSelect } from "../../../../lib/components/ControlledSelect";
 import { api } from "../../../../lib/server/api";
 import { handleAsync } from "../../../../lib/data/handleAsync";
 import { useForm } from "react-hook-form";
-import { TokenCreateResponse } from "../../../../lib/data/SiteEvent";
 import { SiteSettingsPage } from "../../../../lib/components/SiteSettingsPage";
+import { TokenCreateResponse } from "../../../../lib/data/EventTypes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);

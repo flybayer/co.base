@@ -3,7 +3,8 @@ import { database } from "../../lib/data/database";
 import { Error400 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
-import { startSiteEvent, TokenDestroyResponse } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
+import { TokenDestroyResponse } from "../../lib/data/EventTypes";
 
 export type SiteTokenDestroyPayload = {
   siteName: string;

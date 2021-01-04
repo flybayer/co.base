@@ -4,8 +4,9 @@ import { Error400 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 import { applyPatch } from "fast-json-patch";
-import { SchemaEditResponse, startSiteEvent } from "../../lib/data/SiteEvent";
+import { startSiteEvent } from "../../lib/data/SiteEvent";
 import { SiteSchema } from "../../lib/data/SiteSchema";
+import { SchemaEditResponse } from "../../lib/data/EventTypes";
 
 export type SiteSchemaEditPayload = {
   siteName: string;
