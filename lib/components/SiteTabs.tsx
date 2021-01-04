@@ -1,8 +1,8 @@
 import { ReactElement } from "react";
-import { NodeType } from "../../packages/client/dist/lib/data/NodeSchema";
 import { explodeAddress } from "../server/explodeAddress";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { HeaderLink, TitleContainer } from "../components/Header";
+import { NodeType } from "../data/NodeSchema";
 
 export function SiteTabs({
   siteName,
