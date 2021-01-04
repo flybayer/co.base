@@ -9,14 +9,15 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import { testOutput } from "./TestOutput";
 import spawnAsync from "@expo/spawn-async";
-import { hostname } from "os";
+import { database } from "../data/database";
+import { flushEvents, SERVER_HOST, writeEvent } from "../data/HostEvent";
 
 dotenv.config();
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 
-console.log("Starting Host " + hostname());
+console.log("Starting Host " + SERVER_HOST);
 
 const defaultPort = dev ? 3001 : 3000;
 const port = process.env.PORT ? Number(process.env.PORT) : defaultPort;
@@ -26,6 +27,11 @@ const DEFAULT_DB_URL = "postgresql://user:pw@localhost:5992/db";
 if (!process.env.DATABASE_URL) {
   process.env.DATABASE_URL = DEFAULT_DB_URL;
 }
+
+let closeServer: null | (() => Promise<void>) = null;
+
+const sockets = new Map<number, WebSocket>();
+const socketSubscriptions = new Map<number, Map<string, Subscription>>();
 
 async function startServer() {
   const server = express();
@@ -45,6 +51,27 @@ async function startServer() {
   });
   const httpServer = createServer(server);
 
+  const heartbeatInterval = setInterval(() => {
+    writeEvent("Heartbeat", { socketCount: sockets.size });
+  }, 30_000);
+
+  closeServer = async () => {
+    // fixme: todo: websocket shutdown /disconnections?
+    await new Promise<void>((resolve, reject) => {
+      clearInterval(heartbeatInterval);
+      console.log("Closing HTTP server.");
+      httpServer.close();
+      const rejectTimeout = setTimeout(() => {
+        console.log("HTTP server did not close within 10 seconds!");
+        reject(new Error("HTTPCloseError"));
+      }, 10_000);
+      httpServer.on("close", () => {
+        console.log("HTTP server did close.");
+        clearTimeout(rejectTimeout);
+        resolve();
+      });
+    });
+  };
   const wss = new WebSocket.Server({
     server: httpServer,
   });
@@ -55,13 +82,12 @@ async function startServer() {
     httpServer.on("error", reject);
   });
 
+  writeEvent("HostOpen", undefined);
+
   testOutput({ type: "ServerReady", port });
   dev && console.log(`> Ready on http://localhost:${port}`);
 
   let clientIdCount = 0;
-
-  const sockets = new Map<number, WebSocket>();
-  const socketSubscriptions = new Map<number, Map<string, Subscription>>();
 
   function clientSend(clientId: number, data: any) {
     const socket = sockets.get(clientId);
@@ -122,7 +148,12 @@ async function startServer() {
     const clientId = clientIdCount++;
     sockets.set(clientId, socket);
     socketSubscriptions.set(clientId, new Map());
-    console.log("socket client connected!");
+    writeEvent("SocketConnect", { clientId });
+    clientSend(clientId, {
+      t: "info",
+      clientId,
+      host: SERVER_HOST,
+    });
     socket.on("message", (data: string) => {
       const msg = JSON.parse(data);
       handleMessage(clientId, msg);
@@ -130,6 +161,7 @@ async function startServer() {
     socket.on("close", () => {
       sockets.delete(clientId);
       socketSubscriptions.delete(clientId);
+      writeEvent("SocketDisconnect", { clientId });
     });
   });
 }
@@ -165,4 +197,27 @@ async function runServer() {
 
 runServer().catch((err) => {
   console.error(err);
+});
+
+process.on("SIGHUP", () => {
+  console.info("SIGHUP signal received.");
+});
+
+process.on("SIGTERM", () => {
+  console.info("SIGTERM signal received.");
+  (async () => {
+    writeEvent("HostClose", undefined);
+    await flushEvents();
+    if (closeServer) await closeServer();
+    database.$disconnect();
+  })()
+    .then(() => {
+      process.exit(0);
+    })
+    .catch((e) => {
+      console.error("Error while shutting down server");
+      // good luck finding this error in the production logs, lol!
+      console.error(e);
+      process.exit(1);
+    });
 });

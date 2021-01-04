@@ -1,85 +1,9 @@
 import { Error400, Error403 } from "../server/Errors";
 import { APIUser } from "../server/getVerifedUser";
 import { database } from "./database";
-import { SiteRole } from "./SiteRoles";
+import { writeEvent } from "./HostEvent";
+import { RecordedSiteEvent, SiteEvent, SiteEventName } from "./EventTypes";
 import { SiteSchema } from "./SiteSchema";
-import { SiteTokenType } from "./SiteToken";
-
-export type SchemaEditResponse = { schema: SiteSchema };
-
-export type TokenCreateResponse = {
-  token: string;
-  tokenId: number;
-  type: SiteTokenType;
-  label: string;
-};
-
-export type TokenDestroyResponse = {
-  tokenId: number;
-};
-
-export type RoleInviteResponse = {
-  toEmail: string | null;
-  toUserId: number | null;
-  role: SiteRole;
-  createdEmailValidationId: number | null;
-  inviteId: number;
-};
-
-export type RoleEditResponse = {
-  role: SiteRole | "none";
-  userId: number;
-};
-
-export type NodeEditResponse = {
-  value: any;
-};
-
-export type NodeSchemaEditResponse = {
-  schema: any;
-};
-
-export type NodePostResponse = {
-  nodeId: number;
-  address: string[];
-  key: string;
-  value: any;
-};
-
-export type NodeDestroyResponse = {
-  address: string[];
-};
-
-export type SiteEvent = {
-  SchemaEdit: SchemaEditResponse;
-  TokenCreate: TokenCreateResponse;
-  TokenDestroy: TokenDestroyResponse;
-  RoleInvite: RoleInviteResponse;
-  RoleEdit: RoleEditResponse;
-  NodeEdit: NodeEditResponse;
-  NodeSchemaEdit: NodeSchemaEditResponse;
-  NodePost: NodePostResponse;
-  NodeDestroy: NodeDestroyResponse;
-  SiteNodePost: NodePostResponse;
-  SiteNodeDestroy: NodeDestroyResponse;
-};
-
-type SiteEventName = keyof SiteEvent;
-
-type SiteEventMeta = {
-  userId?: number;
-  nodeId?: number;
-  address?: string[];
-};
-
-export type RecordedSiteEvent<SiteEventKey extends keyof SiteEvent> = {
-  requestTime: Date;
-  completeTime: Date;
-  siteName: string;
-  eventName: SiteEventKey;
-  meta: SiteEventMeta;
-  payload: SiteEvent[SiteEventKey];
-};
 
 async function writeSiteEvent<SiteEventKey extends keyof SiteEvent>({
   meta,
@@ -89,7 +13,7 @@ async function writeSiteEvent<SiteEventKey extends keyof SiteEvent>({
   eventName,
   siteName,
 }: RecordedSiteEvent<SiteEventKey>) {
-  await database.siteEvent.create({
+  const event = await database.siteEvent.create({
     data: {
       user: meta.userId == null ? undefined : { connect: { id: meta.userId } },
       payload,
@@ -100,7 +24,9 @@ async function writeSiteEvent<SiteEventKey extends keyof SiteEvent>({
       requestTime: requestTime,
       completeTime: completeTime,
     },
+    select: { id: true },
   });
+  writeEvent("SiteEvent", { name: eventName, userId: meta.userId, tokenId: meta.tokenId, siteName, eventId: event.id });
 }
 
 async function writeSiteEventWithRetries<SiteEventKey extends keyof SiteEvent>(
@@ -111,6 +37,10 @@ async function writeSiteEventWithRetries<SiteEventKey extends keyof SiteEvent>(
     await writeSiteEvent(event);
   } catch (e) {
     if (retries <= 0) throw e;
+    await new Promise((res) => {
+      // 5 seconds between tries to avoid network jitters
+      setTimeout(res, 5_000);
+    });
     await writeSiteEventWithRetries(event, retries - 1);
   }
 }
@@ -188,7 +118,7 @@ async function queryPermission(siteName: string, user?: APIUser | null, apiToken
       SiteToken: apiToken
         ? {
             where: { token: apiToken },
-            select: { type: true },
+            select: { type: true, id: true },
           }
         : false,
     },
@@ -204,13 +134,17 @@ async function queryPermission(siteName: string, user?: APIUser | null, apiToken
   if (user?.id && siteRolePermission.owner.id === user?.id) {
     accessRole = "admin";
   }
-  if (siteRolePermission.SiteRole)
+  let userId: number | null = null;
+  if (user && siteRolePermission.SiteRole)
     siteRolePermission.SiteRole.forEach((siteRole) => {
+      userId = user.id;
       const grantedRole = getRole(siteRole.name);
       accessRole = elevateRole(accessRole, grantedRole);
     });
+  let tokenId: number | null = null;
   if (siteRolePermission.SiteToken)
     siteRolePermission.SiteToken.forEach((siteToken) => {
+      tokenId = siteToken.id;
       if (siteToken.type === "read") {
         accessRole = elevateRole(accessRole, getRole("reader"));
       }
@@ -218,7 +152,7 @@ async function queryPermission(siteName: string, user?: APIUser | null, apiToken
         accessRole = elevateRole(accessRole, getRole("writer"));
       }
     });
-  return { accessRole };
+  return { accessRole, tokenId, userId };
 }
 
 export async function tagSiteRead(
@@ -227,11 +161,12 @@ export async function tagSiteRead(
   readTag: string,
   apiToken?: string,
 ): Promise<void> {
-  const { accessRole } = await queryPermission(siteName, user, apiToken);
+  const { accessRole, userId, tokenId } = await queryPermission(siteName, user, apiToken);
   const accessRoleHeight = roleOrder.indexOf(accessRole);
   if (accessRoleHeight < roleOrder.indexOf("reader")) {
     throw new Error403({ name: "InsufficientPrivilege", data: { accessRole, requiredAccessRole: "reader" } });
   }
+  writeEvent("SiteRead", { tag: readTag, tokenId, userId, siteName });
   // to do: track the read tag somewhere along with the user/apiToken/"reader". use for rate limiting and usage tracking. cache the auth check somehow maybe
 }
 
@@ -254,7 +189,7 @@ export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
   type SE = SiteEvent[SiteEventKey];
   const requestTime = new Date();
 
-  const { accessRole } = await queryPermission(siteName, user, apiToken);
+  const { accessRole, userId, tokenId } = await queryPermission(siteName, user, apiToken);
 
   const requiredAccessRole = accessRoleOfSiteEvent(eventName);
   const requiredAccessRoleHeight = roleOrder.indexOf(requiredAccessRole);
@@ -266,7 +201,8 @@ export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
     saveSiteEvent({
       eventName,
       meta: {
-        userId: user?.id,
+        userId,
+        tokenId,
         address,
         nodeId,
       },

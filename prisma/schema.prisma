@@ -135,6 +135,13 @@ model SiteEvent {
   siteNode     SiteNode? @relation(fields: [siteNodeId], references: [id])
 }
 
+model HostEvent {
+  id       Int      @id @default(autoincrement())
+  saveTime DateTime @default(now())
+  host     String
+  events   Json
+}
+
 model SiteToken {
   id         Int      @id @default(autoincrement())
   createTime DateTime @default(now())

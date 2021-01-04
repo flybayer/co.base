@@ -168,14 +168,16 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
   let ws: any = null;
   function open(): void {
     console.log("connecting to ", { connectionHost, connectionUseSSL, siteName });
-    const wsUrl = `${connectionUseSSL ? "wss" : "ws"}://${connectionHost}`;
+    const wsUrl = `${connectionUseSSL ? "wss" : "ws"}://${connectionHost}/s/${siteName}`;
     ws = new ReconnectingWebSocket(wsUrl);
     ws.onopen = () => {
       _setIsConnected(true);
       console.log("socket opened");
     };
     ws.onmessage = (msg: any) => {
-      console.log("socket msg", msg);
+      const payload = JSON.parse(msg.data);
+      console.log(payload);
+      // console.log(msg);
     };
     ws.onclose = () => {
       _setIsConnected(false);
