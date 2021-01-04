@@ -9,11 +9,14 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import { testOutput } from "./TestOutput";
 import spawnAsync from "@expo/spawn-async";
+import { hostname } from "os";
 
 dotenv.config();
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
+
+console.log("Starting Host " + hostname());
 
 const defaultPort = dev ? 3001 : 3000;
 const port = process.env.PORT ? Number(process.env.PORT) : defaultPort;
