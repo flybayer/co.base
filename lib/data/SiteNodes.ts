@@ -1,4 +1,4 @@
-import { NodeSchema } from "./NodeSchema";
+import { NodeSchema } from "../../packages/client/src/NodeSchema";
 
 export type ManyQuery = null | {
   parentNode: ManyQuery;

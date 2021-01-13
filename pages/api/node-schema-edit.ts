@@ -3,7 +3,7 @@ import { database } from "../../lib/data/database";
 import { Error400 } from "../../lib/server/Errors";
 import getVerifiedUser from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
-import { NodeSchema } from "../../lib/data/NodeSchema";
+import { NodeSchema } from "../../packages/client/src/NodeSchema";
 import { applyPatch } from "fast-json-patch";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
 import { startSiteEvent } from "../../lib/data/SiteEvent";

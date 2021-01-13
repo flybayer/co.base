@@ -3,7 +3,6 @@ import { CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
 import { ReactElement, useRef, useState } from "react";
-import { api } from "../../../../lib/server/api";
 import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
 import { MainSection } from "../../../../lib/components/CommonViews";
 import { ListContainer } from "../../../../lib/components/List";
@@ -17,10 +16,11 @@ import {
   RecordSchema,
   RecordSetSchema,
   ValueSchema,
-} from "../../../../lib/data/NodeSchema";
+} from "../../../../packages/client/src/NodeSchema";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../lib/data/SiteNodes";
 import { ButtonBar, LinkButton } from "../../../../lib/components/Buttons";
 import { SiteDashboardPage } from "../../../../lib/components/SiteDashboardPage";
+import { useCloudClient } from "../../../../lib/data/CloudContext";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -323,29 +323,43 @@ function ValueDisplay({
 function RecordContent({
   siteName,
   address,
-  node,
+  preloadNode,
   contentSchema,
 }: {
   siteName: string;
   address: string[];
-  node: Node<RecordSchema>;
+  preloadNode: Node<RecordSchema>;
   contentSchema: ValueSchema;
 }) {
-  const initValue = node.value === null ? getDefaultValue(contentSchema) : node.value;
-  const [savedNodeValue, setSavedNodeValue] = useState(initValue);
-  const [nodeValue, setNodeValue] = useState(initValue);
+  // const [] = useWritableNodeValue(siteName, address)
+  // const value = useNodeValue(address.join("/"));
+  const client = useCloudClient<any>();
+  const nodeKey = address.join("/");
+  const initValue = preloadNode.value === null ? getDefaultValue(contentSchema) : preloadNode.value;
+  const value = client.useNodeValue(nodeKey, {
+    freshFor: 60 * 60,
+    values: {
+      [nodeKey]: initValue,
+    },
+  });
+  console.log({ value, contentSchema });
+
+  //preloadNode);
+  // connectNodeValue(siteName, address)
+  // const [savedNodeValue, setSavedNodeValue] = useState(initValue);
+  // const [nodeValue, setNodeValue] = useState(initValue);
   return (
     <>
       <ValueDisplay
         // label={`${siteName}/${address.join("/")}`}
         label=""
-        value={nodeValue}
+        value={value}
         schema={contentSchema}
         onValue={(value: any) => {
-          setNodeValue(value);
+          // setNodeValue(value);
         }}
       />
-      {savedNodeValue !== nodeValue && (
+      {/* {savedNodeValue !== nodeValue && (
         <div>
           <Button
             onClick={() => {
@@ -369,18 +383,13 @@ function RecordContent({
             Cancel
           </Button>
         </div>
-      )}
+      )} */}
     </>
   );
 }
 
-function useRealValue(siteName: string, address: string[], node: Node) {
-  // debugger;
-}
-
 function NodeContent({ siteName, address, node }: { siteName: string; address: string[]; node: Node }) {
   const parent = node.parentSchemas[0];
-  const a = useRealValue(siteName, address, node);
   if (parent?.type === "record") {
     return <p>Unexpected condition: this node is the child of a record.</p>;
   }
@@ -395,7 +404,12 @@ function NodeContent({ siteName, address, node }: { siteName: string; address: s
     return <p>Unexpected condition: Schema not found.</p>;
   }
   return (
-    <RecordContent siteName={siteName} address={address} node={node as Node<RecordSchema>} contentSchema={schema} />
+    <RecordContent
+      siteName={siteName}
+      address={address}
+      preloadNode={node as Node<RecordSchema>}
+      contentSchema={schema}
+    />
   );
 }
 
@@ -411,7 +425,7 @@ export default function NodeDashboard({
   node: Node;
 }): ReactElement {
   return (
-    <SiteDashboardPage user={user} siteName={siteName}>
+    <SiteDashboardPage user={user} siteName={siteName} title={address.join("/")}>
       <SiteTabs tab="data" siteName={siteName} address={address} nodeType={node.schema?.type} />
       <ButtonBar>
         <LinkButton href={`/s/${siteName}/schema/${address.join("/")}`} icon="pencil-ruler">

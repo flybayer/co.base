@@ -5,7 +5,7 @@ import { CreateNodeForm } from "../../../../lib/components/CreateForm";
 import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
 import { SiteTabs } from "../../../../lib/components/SiteTabs";
 import { database } from "../../../../lib/data/database";
-import { NodeSchema } from "../../../../lib/data/NodeSchema";
+import { NodeSchema } from "../../../../packages/client/src/NodeSchema";
 import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

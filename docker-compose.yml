@@ -1,7 +1,7 @@
 version: "3"
 services:
   database:
-    image: "postgres" # use latest official postgres version
+    image: postgres:13
     env_file:
       - prisma/dev-db.env # configure postgres
     volumes:

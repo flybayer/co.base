@@ -3,7 +3,7 @@ import { database } from "../../lib/data/database";
 import { Error400, Error404 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
-import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../lib/data/NodeSchema";
+import { DEFAULT_SCHEMA, NodeSchema, ValueSchema } from "../../packages/client/src/NodeSchema";
 import Ajv, { DefinedError } from "ajv";
 import { InputJsonObject } from "@prisma/client";
 import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../lib/data/SiteNodes";

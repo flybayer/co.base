@@ -16,14 +16,16 @@ export function SiteDashboardPage({
   user,
   siteName,
   children,
+  title,
 }: {
   user: APIUser;
   siteName: string;
   children: ReactNode;
+  title?: string;
 }): ReactElement {
   return (
     <SiteProvider siteName={siteName}>
-      <BasicSiteLayout user={user} isDashboard content={children} />
+      <BasicSiteLayout user={user} isDashboard content={children} title={title} />
       <ConnectionStatus />
     </SiteProvider>
   );

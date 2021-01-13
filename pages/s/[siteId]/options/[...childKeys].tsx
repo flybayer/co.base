@@ -7,7 +7,7 @@ import { Button, Select, Spinner } from "@chakra-ui/core";
 import { ReactElement, useState } from "react";
 import { SiteTabs } from "../../../../lib/components/SiteTabs";
 import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
-import { NodeSchema, NodeType, nodeTypeName, RecordSchema } from "../../../../lib/data/NodeSchema";
+import { NodeSchema, NodeType, nodeTypeName, RecordSchema } from "../../../../packages/client/src/NodeSchema";
 import { CenterButtonRow, MainContainer, MainSection } from "../../../../lib/components/CommonViews";
 import styled from "@emotion/styled";
 import { observe, generate } from "fast-json-patch";

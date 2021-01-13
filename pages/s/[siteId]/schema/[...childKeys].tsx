@@ -52,7 +52,7 @@ import {
   StringSchema,
   ValueSchema,
   VALUE_TYPES,
-} from "../../../../lib/data/NodeSchema";
+} from "../../../../packages/client/src/NodeSchema";
 import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

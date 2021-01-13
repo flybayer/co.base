@@ -5,7 +5,7 @@ import { MainSection } from "../../../../lib/components/CommonViews";
 import { BasicSiteLayout } from "../../../../lib/components/SiteLayout";
 import { SiteTabs } from "../../../../lib/components/SiteTabs";
 import { database } from "../../../../lib/data/database";
-import { DEFAULT_SCHEMA, NodeSchema } from "../../../../lib/data/NodeSchema";
+import { DEFAULT_SCHEMA, NodeSchema } from "../../../../packages/client/src/NodeSchema";
 import { siteNodeQuery } from "../../../../lib/data/SiteNodes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

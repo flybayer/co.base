@@ -172,9 +172,11 @@ function LoginForm({ redirect }: { redirect?: string }) {
             By logging in, you agree to the <TextLink href="/legal/terms-of-service">Terms of Service</TextLink>.
           </FormHelperText>
         </FormControl>
+
         <Button type="submit" colorScheme="avenColor">
           Log In
         </Button>
+
         {isSubmitting && <Spinner size="sm" />}
       </form>
     </>

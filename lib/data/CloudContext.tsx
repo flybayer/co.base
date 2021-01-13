@@ -3,8 +3,10 @@ import { createClient, AvenClient } from "../../packages/client/src/CloudClient"
 
 export const CloudContext = createContext<null | AvenClient<any>>(null);
 
-export function useCloudClient(): null | AvenClient<any> {
-  return useContext(CloudContext);
+export function useCloudClient<SiteSchema>(): AvenClient<SiteSchema> {
+  const client = useContext(CloudContext);
+  if (client === null) throw new Error("Could not access cloud client.");
+  return client;
 }
 
 export function useCloudClientIsConnected(): boolean {

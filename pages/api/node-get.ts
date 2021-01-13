@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { database } from "../../lib/data/database";
 import { Error404 } from "../../lib/server/Errors";
 import { createAPI } from "../../lib/server/createAPI";
-import { NodeSchema } from "../../lib/data/NodeSchema";
+import { NodeSchema } from "../../packages/client/src/NodeSchema";
 import { setAnyCors } from "../../lib/server/cors";
 import Ajv from "ajv";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";

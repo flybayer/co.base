@@ -3,7 +3,13 @@ import { database } from "../../lib/data/database";
 import { Error400 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
-import { getValueSchema, getDefaultValue, NodeSchema, NodeType, SchemaType } from "../../lib/data/NodeSchema";
+import {
+  getValueSchema,
+  getDefaultValue,
+  NodeSchema,
+  NodeType,
+  SchemaType,
+} from "../../packages/client/src/NodeSchema";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
 import { startSiteEvent } from "../../lib/data/SiteEvent";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";

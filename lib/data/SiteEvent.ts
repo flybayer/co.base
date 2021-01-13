@@ -4,6 +4,7 @@ import { database } from "./database";
 import { writeEvent } from "./HostEvent";
 import { RecordedSiteEvent, SiteEvent, SiteEventName } from "./EventTypes";
 import { SiteSchema } from "./SiteSchema";
+import { dataNotify } from "../server/DataNotify";
 
 async function writeSiteEvent<SiteEventKey extends keyof SiteEvent>({
   meta,
@@ -26,6 +27,18 @@ async function writeSiteEvent<SiteEventKey extends keyof SiteEvent>({
     },
     select: { id: true },
   });
+  const channelName = `${siteName}${meta.address ? `/${meta.address.join("/")}` : ""}`;
+  const notifPayload = {
+    // ...meta,
+    eventName,
+    address: meta.address,
+  };
+  // Do not "await" this notification. The siteEvent write has succeeded and should not be retried if the notif fails.
+  dataNotify(channelName, notifPayload).catch((e) => {
+    console.error("Failed to send event notification");
+    console.error(e);
+  });
+
   writeEvent("SiteEvent", { name: eventName, userId: meta.userId, tokenId: meta.tokenId, siteName, eventId: event.id });
 }
 
@@ -198,7 +211,7 @@ export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
     throw new Error403({ name: "InsufficientPrivilege", data: { accessRole, requiredAccessRole } });
   }
   function resolve(eventResult: SE): void {
-    saveSiteEvent({
+    const recordedEvent = {
       eventName,
       meta: {
         userId,
@@ -210,7 +223,8 @@ export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
       completeTime: new Date(),
       siteName,
       payload: eventResult,
-    });
+    };
+    saveSiteEvent(recordedEvent);
   }
   function reject(error: any): void {
     console.log("action failed!", error);

@@ -4,7 +4,7 @@ import { ReactElement, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { api } from "../server/api";
 import { handleAsync } from "../data/handleAsync";
-import { NodeSchema, NodeType, NODE_TYPES, VALUE_TYPES } from "../data/NodeSchema";
+import { NodeSchema, NodeType, NODE_TYPES, VALUE_TYPES } from "../../packages/client/src/NodeSchema";
 import ControlledInput from "./ControlledInput";
 
 export function CreateAnyNodeForm({ address, siteName }: { address: string[]; siteName: string }): ReactElement {
