@@ -12,6 +12,7 @@ import { database } from "../data/database";
 import { flushEvents, SERVER_HOST, writeEvent } from "../data/HostEvent";
 import { databaseUrl } from "./config";
 import {
+  clearHandler,
   connectNotifications,
   disconnectNotifications,
   subscribeNotifications,
@@ -96,7 +97,10 @@ async function startServer() {
   }
 
   function handleSubscribe(clientId: number, siteName: string, nodeKey: string) {
+    console.log("handle subscribe!!", clientId, siteName, nodeKey);
+
     subscribeNotifications(`${siteName}/${nodeKey}`, clientId, (message) => {
+      console.log("subscribe notify!!", clientId, message);
       clientSend(clientId, message);
     });
   }
@@ -125,6 +129,7 @@ async function startServer() {
     });
     socket.on("close", () => {
       sockets.delete(clientId);
+      clearHandler(clientId);
       writeEvent("SocketDisconnect", { clientId });
     });
   });

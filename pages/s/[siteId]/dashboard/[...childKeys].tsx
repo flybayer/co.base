@@ -1,8 +1,8 @@
-import { Button, FormControl, FormLabel, Input, Switch } from "@chakra-ui/core";
+import { Button, FormControl, FormLabel, Input, Spinner, Switch, Text } from "@chakra-ui/core";
 import { CloseIcon } from "@chakra-ui/icons";
 import styled from "@emotion/styled";
 import { GetServerSideProps } from "next";
-import { ReactElement, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import getVerifiedUser, { APIUser } from "../../../../lib/server/getVerifedUser";
 import { MainSection } from "../../../../lib/components/CommonViews";
 import { ListContainer } from "../../../../lib/components/List";
@@ -115,6 +115,9 @@ function TextInputDisplay({
 }) {
   const [v, setV] = useState(String(value));
   const onValueTimeout = useRef<null | NodeJS.Timeout>(null);
+  useEffect(() => {
+    setV(String(value));
+  }, [value]);
 
   return (
     <div>
@@ -343,6 +346,8 @@ function RecordContent({
     },
   });
   console.log({ value, contentSchema });
+  if (value === undefined) return <Spinner />;
+  if (value === null) return <Text>Empty Value</Text>;
 
   //preloadNode);
   // connectNodeValue(siteName, address)

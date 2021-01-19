@@ -33,28 +33,40 @@ async function nodeSchemaEdit({
 }: NodeSchemaEditPayload): Promise<NodeSchemaEditResponse> {
   const nodesQuery = siteNodeQuery(siteName, address);
   if (!nodesQuery) throw new Error("unknown address");
-  if (schema) {
-    await database.siteNode.updateMany({
-      where: nodesQuery,
-      data: { schema },
-    });
-    return { schema };
-  } else if (schemaPatch) {
-    const prevNode = await database.siteNode.findFirst({
-      where: nodesQuery,
-      select: { id: true, schema: true }, // todo: save a version number. then when doing the write, add a where version clause so that race conditions are avoided. also for values of course.
-    });
-    if (!prevNode) {
-      throw new Error400({ message: "Cannot patch missing schema", name: "SchemaNotFound" });
-    }
-    const newSchema = applyPatch(prevNode.schema, schemaPatch);
-    await database.siteNode.updateMany({
-      where: nodesQuery,
-      data: { schema: newSchema.newDocument },
-    });
-    return { schema: newSchema.newDocument };
+  const node = await database.siteNode.findFirst({
+    where: nodesQuery,
+    select: { schema: !!schemaPatch, version: true, schemaVersion: true },
+  });
+  if (!node) {
+    throw new Error400({ message: "Cannot update missing node", name: "NodeNotFound" });
   }
-  throw new Error400({ name: "SchemaNorPatchProvided" });
+
+  let newSchema: NodeSchema | undefined = schema;
+
+  if (!newSchema && schemaPatch) {
+    const patchedSchema = applyPatch(node.schema as NodeSchema, schemaPatch);
+    newSchema = patchedSchema.newDocument;
+  }
+  if (!newSchema) {
+    throw new Error400({ name: "SchemaNorPatchProvided" });
+  }
+  const updateResp = await database.siteNode.updateMany({
+    where: {
+      ...nodesQuery,
+      version: node.version,
+    },
+    data: {
+      schema: newSchema,
+      versionTime: new Date(),
+      version: node.version + 1,
+      schemaVersion: node.schemaVersion + 1,
+    },
+  });
+  if (updateResp.count < 1) {
+    // it should always be 1 when it succeeds..
+    throw new Error("Conflict. Avoided multiple simultaneous put requests");
+  }
+  return { schema: newSchema };
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {

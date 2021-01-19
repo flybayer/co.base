@@ -32,7 +32,7 @@ export async function nodePut({ value, siteName, address }: NodeEditPayload): Pr
   if (!nodesQuery) throw new Error("unknown address");
   const node = await database.siteNode.findFirst({
     where: nodesQuery,
-    select: { schema: true, id: true, ...parentNodeSchemaQuery },
+    select: { schema: true, version: true, id: true, ...parentNodeSchemaQuery },
   });
   if (!node) throw new Error404({ name: "NodeNotFound" });
   const parentSchemas = digSchemas(node.parentNode as any);
@@ -60,11 +60,19 @@ export async function nodePut({ value, siteName, address }: NodeEditPayload): Pr
       data: { validationErrors: errors },
     });
   }
-  await database.siteNode.updateMany({
-    where: nodesQuery,
-    data: { value },
+  const newVersion = node.version + 1;
+  const updateResp = await database.siteNode.updateMany({
+    where: {
+      ...nodesQuery,
+      version: node.version, // this technique prevents us from writing two identical version numbers at the same time, at the risk
+    },
+    data: { value, versionTime: new Date(), version: newVersion },
   });
-  return { value };
+  if (updateResp.count < 1) {
+    // it should always be 1 when it succeeds..
+    throw new Error("Conflict. Avoided multiple simultaneous put requests");
+  }
+  return { value, version: newVersion };
 }
 
 export async function protectedNodePut(

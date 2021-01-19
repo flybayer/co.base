@@ -64,6 +64,7 @@ export type RoleEditResponse = {
 
 export type NodeEditResponse = {
   value: any;
+  version: number;
 };
 
 export type NodeSchemaEditResponse = {

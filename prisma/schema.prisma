@@ -103,16 +103,18 @@ model Site {
 }
 
 model SiteNode {
-  id           Int       @id @default(autoincrement())
-  key          String
-  siteId       Int
-  site         Site      @relation(fields: [siteId], references: [id])
-  parentNodeId Int?
-  parentNode   SiteNode? @relation(fields: [parentNodeId], references: [id])
-  schema       Json?
-  value        Json?
-
-  SiteNode SiteNode[] @relation("SiteNodeToSiteNode")
+  id            Int        @id @default(autoincrement())
+  key           String
+  siteId        Int
+  site          Site       @relation(fields: [siteId], references: [id])
+  parentNodeId  Int?
+  parentNode    SiteNode?  @relation(fields: [parentNodeId], references: [id])
+  schema        Json?
+  value         Json?
+  version       Int        @default(0)
+  schemaVersion Int        @default(0)
+  versionTime   DateTime?
+  SiteNode      SiteNode[] @relation("SiteNodeToSiteNode")
 
   NodeRole NodeRole[]
 

@@ -9,6 +9,7 @@ import { siteNodeQuery } from "../../../lib/data/SiteNodes";
 import { protectedNodeDelete } from "../node-destroy";
 import { protectedNodePut } from "../node-put";
 import { protectedNodePost } from "../node-post";
+import { NodeSchema } from "../../../packages/client/src/NodeSchema";
 
 type QueryContext = {
   siteName: string;
@@ -65,10 +66,16 @@ async function nodeQuery({ siteName, user, token }: QueryContext, address: strin
     where: nodeQuery,
     select: {
       value: true,
+      schema: true,
     },
   });
   if (!node) throw new Error404({ name: "NodeNotFound" });
-  return { value: node?.value, token, user };
+  const nodeSchema = node.schema as NodeSchema;
+  let freshFor = 60 * 10;
+  if (nodeSchema.type === "record" && nodeSchema.tti != null) {
+    freshFor = nodeSchema.tti;
+  }
+  return { value: node?.value, token, freshFor };
 }
 
 async function childrenQuery({ siteName, user, token }: QueryContext, address: string[]) {

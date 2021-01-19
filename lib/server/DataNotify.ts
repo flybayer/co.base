@@ -22,6 +22,8 @@ async function unlisten(channelName: string) {
 }
 
 export function subscribeNotifications<V>(channelName: string, handlerId: number, handler: (value: V) => void): void {
+  console.log("handle subscribe!!", { channelName, handlerId });
+
   const wasSubscribed = channelSubscriptions.size > 0;
   let channelSubs = channelSubscriptions.get(channelName);
   if (!channelSubs) {
@@ -35,6 +37,12 @@ export function subscribeNotifications<V>(channelName: string, handlerId: number
       console.error(e);
     });
   }
+}
+
+export function clearHandler(handlerId: number): void {
+  channelSubscriptions.forEach((subs) => {
+    subs.delete(handlerId);
+  });
 }
 
 export function unsubscribeNotifications<V>(channelName: string, handlerId: number): void {
@@ -57,6 +65,8 @@ export async function connectClient(): Promise<void> {
 }
 
 export async function dataNotify(channelName: string, payload: any): Promise<void> {
+  console.log("handle subscribe!!", { channelName, payload });
+
   await connectClient();
   await pgClient.query(`NOTIFY "${channelName}", '${Buffer.from(JSON.stringify(payload)).toString("base64")}';`, []);
 }

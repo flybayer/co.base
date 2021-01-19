@@ -108,12 +108,10 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
         siteNodeCache[nodeKey] = nodeCache;
       }
       const resp = await api(`s/${siteName}/${nodeKey}`, undefined, "get");
-      if (resp.value === null) {
-        throw new Error("value not found");
-      }
       const value: SiteDataSchema[NodeKey] = resp.value;
       nodeCache.value = value;
       nodeCache.valueFetchTime = Date.now();
+      nodeNotifyUpdate(value);
       return { value, freshFor: resp.freshFor };
     }
 
@@ -143,6 +141,16 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
     function connect(valueHandler: (v: SiteDataSchema[NodeKey]) => void): () => void {
       valueHandlers.add(valueHandler);
       connectIfNotConnected();
+      let nodeCache = siteNodeCache[nodeKey] as NodeCache<SiteDataSchema, NodeKey>;
+      if (!nodeCache) {
+        nodeCache = {};
+        siteNodeCache[nodeKey] = nodeCache as NodeCache<SiteDataSchema, NodeKey>;
+      }
+      if (nodeCache.value === undefined) {
+        fetch().catch((e) => {
+          console.error("oops!", e);
+        });
+      }
       return () => {
         valueHandlers.delete(valueHandler);
         if (valueHandlers.size === 0) disconnect();
@@ -231,7 +239,15 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
 
     const node = getSiteNode(nodeKey);
     const [nodeState, setNodeState] = useState(node.getValue());
-    useEffect(() => node.connect(setNodeState), []);
+    console.log("render nodeState", nodeState);
+    useEffect(
+      () =>
+        node.connect((val) => {
+          console.log("connected node has new value!", val);
+          setNodeState(val);
+        }),
+      [],
+    );
     return nodeState;
   }
 

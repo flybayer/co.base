@@ -93,6 +93,9 @@ NodePostPayload): Promise<NodePostResponse> {
   const resp = await database.siteNode.create({
     data: {
       key,
+      version: 0,
+      schemaVersion: 0,
+      versionTime: new Date(),
       parentNode: parentNode?.id ? { connect: { id: parentNode?.id } } : undefined,
       site: { connect: { name: siteName } },
       schema,
