@@ -8,7 +8,7 @@ import { TokenDestroyResponse } from "../../lib/data/EventTypes";
 
 export type SiteTokenDestroyPayload = {
   siteName: string;
-  tokenId: number;
+  tokenId: string;
 };
 
 function validatePayload(input: any): SiteTokenDestroyPayload {

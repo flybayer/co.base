@@ -11,7 +11,7 @@ test("api 1", async () => {
     data: {
       name: "home",
       schema: { isPublicReadable: true },
-      owner: { connectOrCreate: { create: { username: "john" }, where: { id: 123 } } },
+      owner: { create: { username: "john" } },
     },
   });
   const res = await fetch("http://localhost:7900/api/s/home");
@@ -24,7 +24,7 @@ test("api 2", async () => {
   await database.site.create({
     data: {
       name: "home",
-      owner: { connectOrCreate: { create: { username: "john" }, where: { id: 123 } } },
+      owner: { create: { username: "john" } },
     },
   });
   const res = await fetch("http://localhost:7900/api/s/home/1234");

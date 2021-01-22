@@ -10,7 +10,7 @@ type SiteRole = "admin" | "manager" | "writer" | "reader";
 
 export type SiteRoleEditPayload = {
   siteName: string;
-  userId: number;
+  userId: string;
   roleType: SiteRole | "revoke";
 };
 

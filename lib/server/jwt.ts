@@ -3,7 +3,7 @@ import { encode as jwtEncode, decode as jwtDecode } from "jwt-simple";
 const jwtSecret = process.env.JWT_SECRET || ("fallback_jwt_secret" as string);
 
 type AvenJWT = {
-  sub: number;
+  sub: string;
   iat: number;
   exp: number;
   username: string;

@@ -14,7 +14,7 @@ enum UserPrivilege {
 }
 
 model User {
-  id              Int                  @id @default(autoincrement())
+  id              String               @id @default(uuid())
   username        String               @unique
   email           String?              @unique
   phone           String?              @unique
@@ -37,62 +37,62 @@ model User {
 }
 
 model BillingEvent {
-  id      Int      @id @default(autoincrement())
+  id      String   @id @default(uuid())
   time    DateTime
   type    String
   payload Json?
-  userId  Int?
+  userId  String?
   user    User?    @relation(fields: [userId], references: [id])
 }
 
 model DeviceToken {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   token       String    @unique
   type        String?
   name        String
   requestTime DateTime  @default(now())
   approveTime DateTime?
   originIp    String?
-  userId      Int?
+  userId      String?
   user        User?     @relation(fields: [userId], references: [id])
 }
 
 model EmailValidation {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   emailTime DateTime @default(now())
   email     String
   secret    String   @unique
-  userId    Int?
+  userId    String?
   user      User?    @relation(fields: [userId], references: [id])
 }
 
 model VerifiedEmail {
   email      String   @id
   verifyTime DateTime @default(now())
-  userId     Int
+  userId     String
   user       User     @relation(fields: [userId], references: [id])
 }
 
 model PhoneValidation {
-  id       Int      @id @default(autoincrement())
+  id       String   @id @default(uuid())
   sendTime DateTime @default(now())
   phone    String
   secret   String   @unique
 }
 
 model Comment {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   publishTime DateTime @default(now())
   page        String
-  userId      Int
+  userId      String
   user        User     @relation(fields: [userId], references: [id])
   message     String
 }
 
 model Site {
-  id                 Int                  @id @default(autoincrement())
+  id                 String               @id @default(uuid())
   name               String               @unique
-  ownerId            Int
+  ownerId            String
   owner              User                 @relation(fields: [ownerId], references: [id])
   schema             Json?
   SiteNode           SiteNode[]
@@ -103,11 +103,11 @@ model Site {
 }
 
 model SiteNode {
-  id            Int        @id @default(autoincrement())
+  id            String     @id @default(uuid())
   key           String
-  siteId        Int
+  siteId        String
   site          Site       @relation(fields: [siteId], references: [id])
-  parentNodeId  Int?
+  parentNodeId  String?
   parentNode    SiteNode?  @relation(fields: [parentNodeId], references: [id])
   schema        Json?
   value         Json?
@@ -123,31 +123,31 @@ model SiteNode {
 }
 
 model SiteEvent {
-  id           Int       @id @default(autoincrement())
+  id           String    @id @default(uuid())
   requestTime  DateTime  @default(now())
   completeTime DateTime  @default(now())
   eventName    String
-  siteId       Int
   address      String[]
+  siteId       String
   site         Site      @relation(fields: [siteId], references: [id])
   payload      Json?
-  userId       Int?
+  userId       String?
   user         User?     @relation(fields: [userId], references: [id])
-  siteNodeId   Int?
+  siteNodeId   String?
   siteNode     SiteNode? @relation(fields: [siteNodeId], references: [id])
 }
 
 model HostEvent {
-  id       Int      @id @default(autoincrement())
+  id       String   @id @default(uuid())
   saveTime DateTime @default(now())
   host     String
   events   Json
 }
 
 model SiteToken {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   createTime DateTime @default(now())
-  siteId     Int
+  siteId     String
   site       Site     @relation(fields: [siteId], references: [id])
   label      String
   type       String
@@ -155,19 +155,19 @@ model SiteToken {
 }
 
 model NodeRole {
-  id         Int      @id @default(autoincrement())
-  siteNodeId Int
+  id         String   @id @default(uuid())
+  siteNodeId String
   siteNode   SiteNode @relation(fields: [siteNodeId], references: [id])
-  userId     Int
+  userId     String
   user       User     @relation(fields: [userId], references: [id])
   name       String
 }
 
 model SiteRole {
-  id     Int    @id @default(autoincrement())
-  siteId Int
+  id     String @id @default(uuid())
+  siteId String
   site   Site   @relation(fields: [siteId], references: [id])
-  userId Int
+  userId String
   user   User   @relation(fields: [userId], references: [id])
   name   String
 
@@ -175,13 +175,13 @@ model SiteRole {
 }
 
 model SiteRoleInvitation {
-  id              Int       @id @default(autoincrement())
+  id              String    @id @default(uuid())
   inviteTime      DateTime  @default(now())
-  siteId          Int
+  siteId          String
   site            Site      @relation(fields: [siteId], references: [id])
-  recipientUserId Int?
+  recipientUserId String?
   recipientUser   User?     @relation("InviteRecipientRelation", fields: [recipientUserId], references: [id])
-  fromUserId      Int
+  fromUserId      String
   fromUser        User      @relation("InviteSenderRelation", fields: [fromUserId], references: [id])
   acceptedTime    DateTime?
   dismissTime     DateTime?

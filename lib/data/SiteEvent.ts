@@ -147,14 +147,14 @@ async function queryPermission(siteName: string, user?: APIUser | null, apiToken
   if (user?.id && siteRolePermission.owner.id === user?.id) {
     accessRole = "admin";
   }
-  let userId: number | null = null;
+  let userId: string | null = null;
   if (user && siteRolePermission.SiteRole)
     siteRolePermission.SiteRole.forEach((siteRole) => {
       userId = user.id;
       const grantedRole = getRole(siteRole.name);
       accessRole = elevateRole(accessRole, grantedRole);
     });
-  let tokenId: number | null = null;
+  let tokenId: string | null = null;
   if (siteRolePermission.SiteToken)
     siteRolePermission.SiteToken.forEach((siteToken) => {
       tokenId = siteToken.id;
@@ -196,7 +196,7 @@ export async function startSiteEvent<SiteEventKey extends keyof SiteEvent>(
     user?: APIUser | null;
     apiToken?: string;
     address?: string[];
-    nodeId?: number;
+    nodeId?: string;
   },
 ): Promise<[(result: SiteEvent[SiteEventKey]) => void, (e: any) => void]> {
   type SE = SiteEvent[SiteEventKey];

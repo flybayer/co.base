@@ -11,7 +11,8 @@
     "**/.hg/store/**": true
   },
   "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma"
+    "editor.defaultFormatter": "Prisma.prisma",
+    "editor.formatOnSave": true
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform"

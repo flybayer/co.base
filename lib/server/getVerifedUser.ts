@@ -7,7 +7,7 @@ import { decode, encode, freshJwt } from "./jwt";
 import setCookie from "./setCookie";
 
 export type APIUser = {
-  id: number;
+  id: string;
   email: string | null;
   phone: string | null;
   name: string | null;
@@ -29,7 +29,7 @@ export default async function getVerifiedUser(
     return null;
   }
   const [verifiedJwt, expiredJwt] = decode(String(encodedJwt));
-  let verifiedUserId: number | null = null;
+  let verifiedUserId: string | null = null;
 
   if (verifiedJwt) {
     verifiedUserId = verifiedJwt.sub;

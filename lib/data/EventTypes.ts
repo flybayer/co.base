@@ -10,15 +10,15 @@ export type HeartbeatEvent = { socketCount: number };
 export type SiteReadEvent = {
   siteName: string;
   tag: string;
-  userId: null | number;
-  tokenId: null | number;
+  userId: null | string;
+  tokenId: null | string;
 };
 export type HostSiteEvent = {
   siteName: string;
   name: SiteEventName;
-  userId: null | number;
-  tokenId: null | number;
-  eventId: number;
+  userId: null | string;
+  tokenId: null | string;
+  eventId: string;
 };
 export type HostEvents = {
   HostOpen: HostOpenEvent;
@@ -40,26 +40,26 @@ export type SchemaEditResponse = { schema: SiteSchema };
 
 export type TokenCreateResponse = {
   token: string;
-  tokenId: number;
+  tokenId: string;
   type: SiteTokenType;
   label: string;
 };
 
 export type TokenDestroyResponse = {
-  tokenId: number;
+  tokenId: string;
 };
 
 export type RoleInviteResponse = {
   toEmail: string | null;
-  toUserId: number | null;
+  toUserId: string | null;
   role: SiteRole;
-  createdEmailValidationId: number | null;
-  inviteId: number;
+  createdEmailValidationId: string | null;
+  inviteId: string;
 };
 
 export type RoleEditResponse = {
   role: SiteRole | "none";
-  userId: number;
+  userId: string;
 };
 
 export type NodeEditResponse = {
@@ -72,7 +72,7 @@ export type NodeSchemaPutResponse = {
 };
 
 export type NodePostResponse = {
-  nodeId: number;
+  nodeId: string;
   address: string[];
   key: string;
   value: any;
@@ -99,9 +99,9 @@ export type SiteEvent = {
 export type SiteEventName = keyof SiteEvent;
 
 export type SiteEventMeta = {
-  userId: number | null;
-  tokenId: number | null;
-  nodeId?: number;
+  userId: string | null;
+  tokenId: string | null;
+  nodeId?: string;
   address?: string[];
 };
 

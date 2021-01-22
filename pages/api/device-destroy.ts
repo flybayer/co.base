@@ -6,7 +6,7 @@ import { Error403 } from "../../lib/server/Errors";
 
 export type DeviceDestroyPayload = {
   token?: string;
-  id?: number;
+  id?: string;
 };
 
 export type DeviceDestroyResponse = unknown;

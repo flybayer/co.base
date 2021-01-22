@@ -20,7 +20,7 @@ export async function verifyEmail(
   user: {
     email: string | null;
     name: string | null;
-    id: number;
+    id: string;
     username: string;
   };
   isNewUser: boolean;
