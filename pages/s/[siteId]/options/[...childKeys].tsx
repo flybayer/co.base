@@ -142,7 +142,7 @@ function ExpirationSection({
             const schemaPatch = generate(observer);
             setIsSpinning(true);
             handleAsync(
-              api("node-schema-edit", {
+              api("node-schema-put", {
                 schemaPatch,
                 siteName,
                 address,

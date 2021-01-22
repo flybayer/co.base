@@ -7,16 +7,16 @@ import { NodeSchema } from "../../packages/client/src/NodeSchema";
 import { applyPatch } from "fast-json-patch";
 import { siteNodeQuery } from "../../lib/data/SiteNodes";
 import { startSiteEvent } from "../../lib/data/SiteEvent";
-import { NodeSchemaEditResponse } from "../../lib/data/EventTypes";
+import { NodeSchemaPutResponse } from "../../lib/data/EventTypes";
 
-export type NodeSchemaEditPayload = {
+export type NodeSchemaPutPayload = {
   address: string[];
   siteName: string;
   schema?: NodeSchema;
   schemaPatch?: any;
 };
 
-function validatePayload(input: any): NodeSchemaEditPayload {
+function validatePayload(input: any): NodeSchemaPutPayload {
   return {
     schema: input.schema,
     address: input.address,
@@ -25,12 +25,12 @@ function validatePayload(input: any): NodeSchemaEditPayload {
   };
 }
 
-async function nodeSchemaEdit({
+async function nodeSchemaPut({
   schema,
   schemaPatch,
   siteName,
   address,
-}: NodeSchemaEditPayload): Promise<NodeSchemaEditResponse> {
+}: NodeSchemaPutPayload): Promise<NodeSchemaPutResponse> {
   const nodesQuery = siteNodeQuery(siteName, address);
   if (!nodesQuery) throw new Error("unknown address");
   const node = await database.siteNode.findFirst({
@@ -78,7 +78,7 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
     address: action.address,
   });
   try {
-    const result = await nodeSchemaEdit(action);
+    const result = await nodeSchemaPut(action);
     resolve(result);
     return result;
   } catch (e) {

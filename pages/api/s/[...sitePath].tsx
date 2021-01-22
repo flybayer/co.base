@@ -27,7 +27,7 @@ async function siteRootQuery({ siteName, user, token }: QueryContext) {
   return { siteName };
 }
 
-async function schemaQuery({ siteName, user, token }: QueryContext, address: string[]) {
+async function nodeGetSchema({ siteName, user, token }: QueryContext, address: string[]) {
   await tagSiteRead(siteName, user, address.join("/") + "/_schema", token);
   if (!address.length) {
     const site = await database.site.findUnique({ where: { name: siteName }, select: { schema: true } });
@@ -55,7 +55,7 @@ async function schemaQuery({ siteName, user, token }: QueryContext, address: str
   return { schema: node?.schema };
 }
 
-async function nodeQuery({ siteName, user, token }: QueryContext, address: string[]) {
+async function nodeGet({ siteName, user, token }: QueryContext, address: string[]) {
   await tagSiteRead(siteName, user, address.join("/"), token);
   if (!address.length) {
     throw new Error404({ name: "RootQueryDisallowed" });
@@ -78,7 +78,7 @@ async function nodeQuery({ siteName, user, token }: QueryContext, address: strin
   return { value: node?.value, token, freshFor };
 }
 
-async function childrenQuery({ siteName, user, token }: QueryContext, address: string[]) {
+async function nodeGetChildren({ siteName, user, token }: QueryContext, address: string[]) {
   await tagSiteRead(siteName, user, address.join("/") + "/_children", token);
   if (!address.length) {
     const nodes = await database.siteNode.findMany({
@@ -118,17 +118,26 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
     token,
     siteName,
   };
+  const lastAddressTerm = address[address.length - 1];
 
   if (req.method === "PUT") {
     const payload = req.body;
+    if (lastAddressTerm === "_children") throw new Error400({ name: "NoPutChildren" });
+    if (lastAddressTerm === "_schema") throw new Error400({ name: "NoPutSchema" });
+
     return await protectedNodePut({ siteName, address, ...payload }, user, token);
   }
 
   if (req.method === "DELETE") {
+    if (lastAddressTerm === "_children") throw new Error400({ name: "NoDeleteChildren" });
+    if (lastAddressTerm === "_schema") throw new Error400({ name: "NoDeleteSchema" });
+
     return await protectedNodeDelete({ siteName, address }, user, token);
   }
 
   if (req.method === "POST") {
+    if (lastAddressTerm === "_children") throw new Error400({ name: "NoPostChildren" });
+    if (lastAddressTerm === "_schema") throw new Error400({ name: "NoPostSchema" });
     const action = req.body;
     return await protectedNodePost(
       {
@@ -143,26 +152,22 @@ const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) =
     );
   }
 
-  if (req.method !== "GET") {
-    throw new Error400({ name: "MethodNotImplemented" });
+  if (req.method === "GET") {
+    if (!address.length) {
+      return await siteRootQuery(queryContext);
+    }
+    if (lastAddressTerm === "_children") {
+      const nodeAddress = address.slice(0, -1);
+      return await nodeGetChildren(queryContext, nodeAddress);
+    }
+    if (lastAddressTerm === "_schema") {
+      const nodeAddress = address.slice(0, -1);
+      return await nodeGetSchema(queryContext, nodeAddress);
+    }
+    return await nodeGet(queryContext, address);
   }
 
-  if (!address.length) {
-    return await siteRootQuery(queryContext);
-  }
-
-  const lastAddressTerm = address[address.length - 1];
-
-  if (lastAddressTerm === "_children") {
-    const nodeAddress = address.slice(0, -1);
-    return await childrenQuery(queryContext, nodeAddress);
-  }
-  if (lastAddressTerm === "_schema") {
-    const nodeAddress = address.slice(0, -1);
-    return await schemaQuery(queryContext, nodeAddress);
-  }
-
-  return await nodeQuery(queryContext, address);
+  throw new Error400({ name: "MethodNotImplemented" });
 });
 
 export default APIHandler;

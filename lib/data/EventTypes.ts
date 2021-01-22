@@ -67,7 +67,7 @@ export type NodeEditResponse = {
   version: number;
 };
 
-export type NodeSchemaEditResponse = {
+export type NodeSchemaPutResponse = {
   schema: any;
 };
 
@@ -89,7 +89,7 @@ export type SiteEvent = {
   RoleInvite: RoleInviteResponse;
   RoleEdit: RoleEditResponse;
   NodeEdit: NodeEditResponse;
-  NodeSchemaEdit: NodeSchemaEditResponse;
+  NodeSchemaEdit: NodeSchemaPutResponse;
   NodePost: NodePostResponse;
   NodeDestroy: NodeDestroyResponse;
   SiteNodePost: NodePostResponse;

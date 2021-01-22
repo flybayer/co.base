@@ -95,6 +95,7 @@ export async function protectedNodePut(
     throw e;
   }
 }
+
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const verifiedUser = await getVerifiedUser(req, res);
   const action = validatePayload(req.body);

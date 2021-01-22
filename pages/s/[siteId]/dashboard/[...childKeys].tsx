@@ -362,6 +362,7 @@ function RecordContent({
         schema={contentSchema}
         onValue={(value: any) => {
           // setNodeValue(value);
+          // client.setNodeDraft(value)
         }}
       />
       {/* {savedNodeValue !== nodeValue && (

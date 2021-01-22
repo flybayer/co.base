@@ -421,7 +421,7 @@ function SchemaForm({ siteName, address, schema }: { siteName: string; address: 
         <>
           <Button
             onClick={() => {
-              api("node-schema-edit", {
+              api("node-schema-put", {
                 siteName,
                 address,
                 schema: draftSchema,
