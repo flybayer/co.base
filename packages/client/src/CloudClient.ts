@@ -107,7 +107,7 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
         nodeCache = {};
         siteNodeCache[nodeKey] = nodeCache;
       }
-      const resp = await api(`s/${siteName}/${nodeKey}`, undefined, "get");
+      const resp = await api(`v1/${siteName}/${nodeKey}`, undefined, "get");
       const value: SiteDataSchema[NodeKey] = resp.value;
       nodeCache.value = value;
       nodeCache.valueFetchTime = Date.now();
@@ -183,8 +183,8 @@ export function createClient<SiteDataSchema>(options: ClientOptions): AvenClient
   // for (const addressI in address) {
   //   const key = address[addressI];
   // }
-  // const resp = await api(`s/${siteName}/${nodeKey}`, undefined, "get");
-  // const resp = await api(`s/${nodeKey}`, {
+  // const resp = await api(`v1/${siteName}/${nodeKey}`, undefined, "get");
+  // const resp = await api(`v1/${nodeKey}`, {
   //   siteName,
   //   address: String(nodeKey).split("/"),
   // });

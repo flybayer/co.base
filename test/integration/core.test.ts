@@ -14,9 +14,9 @@ test("api 1", async () => {
       owner: { create: { username: "john" } },
     },
   });
-  const res = await fetch("http://localhost:7900/api/s/home");
+  const res = await fetch("http://localhost:7900/api/v1/home");
   expect(res.status).toEqual(200);
-  const res2 = await fetch("http://localhost:7900/api/s/not-exists");
+  const res2 = await fetch("http://localhost:7900/api/v1/not-exists");
   expect(res2.status).not.toEqual(200);
 });
 
@@ -27,7 +27,7 @@ test("api 2", async () => {
       owner: { create: { username: "john" } },
     },
   });
-  const res = await fetch("http://localhost:7900/api/s/home/1234");
+  const res = await fetch("http://localhost:7900/api/v1/home/1234");
   // should be a 404 because /1234 does not exist.. but status code is currently 500?
   expect(res.status).not.toEqual(200);
 });

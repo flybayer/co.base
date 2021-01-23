@@ -156,7 +156,7 @@ async function getAuthenticateShellConfig(): Promise<ShellConfig> {
 
 export async function pull(siteName: string): Promise<any> {
   const { remoteHost, remoteSSL, authToken, deviceName, username } = await getAuthenticateShellConfig();
-  const { nodes, schema } = await api(remoteHost, remoteSSL, `s/${siteName}/_schema`, { siteName }, "get", authToken);
+  const { nodes, schema } = await api(remoteHost, remoteSSL, `v1/${siteName}/_schema`, { siteName }, "get", authToken);
   // schema.isPublic tells us if an API key is needed..
   const allRecords: any = {};
   for (const nodeKey in nodes) {

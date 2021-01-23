@@ -6,54 +6,54 @@ title: HTTP + WebSocket API
 - Create Site API Token
 - Make site public to GET anonymously
 
-Root Schema:
+## HTTP API
+
+Get Site Schema:
 
 ```
-GET /api/s/SITE_NAME/\_schema
-```
-
-Full schema:
-
-```
-GET /api/s/SITE_NAME/\_schema_full
+GET https://aven.io/api/v1/{SITE_NAME}/_schema
 ```
 
 List Site nodes:
 
 ```
-GET /api/s/SITE_NAME/\_children
+GET https://aven.io/api/v1/{SITE_NAME}/_children
 ```
 
 For a record node:
 
 ```
-GET /api/s/SITE_NAME/NODE_ADDRESS
+GET https://aven.io/api/v1/{SITE_NAME}/{NODE_ADDRESS}
 ```
 
 ```
-PUT /api/s/SITE_NAME/NODE_ADDRESS
+PUT https://aven.io/api/v1/{SITE_NAME}/{NODE_ADDRESS}
 ```
 
 For a record set node:
 
 ```
-GET /api/s/SITE_NAME/NODE_ADDRESS/\_children
+GET https://aven.io/api/v1/{SITE_NAME}/{NODE_ADDRESS}/_children
 ```
 
 ```
-POST /api/s/SITE_NAME/NODE_ADDRESS
+POST https://aven.io/api/v1/{SITE_NAME}/{NODE_ADDRESS}
 ```
 
 For records in a record set:
 
 ```
-GET /api/s/SITE_NAME/NODE_ADDRESS
+GET https://aven.io/api/v1/{SITE_NAME}/{NODE_ADDRESS}
 ```
 
 ```
-PUT /api/s/SITE_NAME/NODE_ADDRESS
+PUT https://aven.io/api/v1/{SITE_NAME}/NODE_ADDRESS
 ```
 
 ```
-DELETE /api/s/SITE_NAME/NODE_ADDRESS
+DELETE https://aven.io/api/v1/{SITE_NAME}/NODE_ADDRESS
 ```
+
+## WebSocket API
+
+Connect to `wss://aven.io/`
