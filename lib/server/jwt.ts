@@ -2,7 +2,7 @@ import { encode as jwtEncode, decode as jwtDecode } from "jwt-simple";
 
 const jwtSecret = process.env.JWT_SECRET || ("fallback_jwt_secret" as string);
 
-type AvenJWT = {
+export type AvenJWT = {
   sub: string;
   iat: number;
   exp: number;

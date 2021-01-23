@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { parseCookies } from "nookies";
 import { database } from "../data/database";
 import { getOriginIp } from "./getOriginIp";
-import { decode, encode, freshJwt } from "./jwt";
+import { decode, encode, freshJwt, AvenJWT } from "./jwt";
 import setCookie from "./setCookie";
 
 export type APIUser = {
@@ -13,6 +13,7 @@ export type APIUser = {
   name: string | null;
   username: string;
   hasPassword: boolean;
+  verifiedJwt: AvenJWT;
 };
 
 export default async function getVerifiedUser(
@@ -86,7 +87,7 @@ export default async function getVerifiedUser(
       passwordHash: true,
     },
   });
-  if (!verifiedUser) {
+  if (!verifiedUser || !verifiedJwt) {
     return null;
   }
 
@@ -99,6 +100,7 @@ export default async function getVerifiedUser(
     name,
     username,
     hasPassword,
+    verifiedJwt,
   };
 
   return apiUser;

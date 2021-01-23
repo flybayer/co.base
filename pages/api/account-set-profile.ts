@@ -5,28 +5,28 @@ import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
 
 export type AccountInfoPayload = {
-  name: string;
+  name?: string;
+  bio?: string;
 };
 
 function validatePayload(input: any): AccountInfoPayload {
-  if (!input)
-    throw new Error400({
-      message: "Request body not provided.",
-      name: "NoBody",
-    });
-  const { name } = input;
-  return { name };
+  const { name, bio } = input;
+  return { name, bio };
 }
 
-async function setPublicInfo(user: APIUser, { name }: AccountInfoPayload, res: NextApiResponse) {
-  const userUpdate: { name?: string } = {};
+async function setPublicInfo(user: APIUser, { name, bio }: AccountInfoPayload, res: NextApiResponse) {
+  const updates: { name?: string; bio?: string } = {};
+  if (bio) {
+    updates.bio = bio;
+  }
   if (name) {
-    userUpdate.name = name;
+    updates.name = name;
   }
   await database.user.update({
     where: { id: user.id },
-    data: userUpdate,
+    data: updates,
   });
+  return {};
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {

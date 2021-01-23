@@ -4,15 +4,15 @@ import { sendEmail } from "../../lib/server/email";
 import { sendSMS } from "../../lib/server/sms";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";
 import { Error400, Error500 } from "../../lib/server/Errors";
-import setCookie from "../../lib/server/setCookie";
 import getSiteLink from "../../lib/server/getSiteLink";
 import { getRandomNumbers } from "../../lib/server/getRandomNumbers";
 import { createAPI } from "../../lib/server/createAPI";
 import bcrypt from "bcrypt";
-import { encode, freshJwt } from "../../lib/server/jwt";
+import { AvenJWT, freshJwt } from "../../lib/server/jwt";
 import { looksLikeAnEmail } from "../../lib/server/looksLikeAnEmail";
 import { btoa } from "../../lib/server/Base64";
 import { getOriginIp } from "../../lib/server/getOriginIp";
+import { setAvenSession } from "../../lib/server/session";
 
 type Email = string;
 
@@ -28,7 +28,7 @@ export type LoginRegisterResponse = {
   status: number;
   email?: string;
   phone?: string;
-  jwt?: string;
+  jwt?: AvenJWT;
 };
 
 function validatePayload(input: any): LoginRegisterPayload {
@@ -118,14 +118,14 @@ async function loginRegisterEmail(
         type: "web:password",
       },
     });
-    const jwt = encode({
+    const jwt = {
       ...freshJwt(),
       sub: existingUser.id,
       revalidateToken,
       revalidateIP: originIp,
       username: existingUser.username,
-    });
-    setCookie(res, "AvenSession", jwt);
+    };
+    setAvenSession(res, jwt);
     return { status: 3, jwt, email };
   }
   if (!forceSend && existingUser && existingUser.passwordHash) {

@@ -3,6 +3,7 @@ import { database } from "../../lib/data/database";
 import { Error400 } from "../../lib/server/Errors";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { createAPI } from "../../lib/server/createAPI";
+import { setAvenSession } from "../../lib/server/session";
 
 export type UsernamePayload = {
   username: string;
@@ -39,10 +40,17 @@ function validatePayload(input: any): UsernamePayload {
 }
 
 async function setUsername(user: APIUser, { username }: UsernamePayload, res: NextApiResponse) {
-  await database.user.update({
-    where: { id: user.id },
-    data: { username },
-  });
+  try {
+    await database.user.update({
+      where: { id: user.id },
+      data: { username },
+    });
+    setAvenSession(res, { ...user.verifiedJwt, username });
+  } catch (e) {
+    if (e.code === "P2002" && e.meta.target[0] === "username")
+      throw new Error400({ message: "Username is already taken.", name: "UsernameConflict" });
+    throw e;
+  }
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {

@@ -1,8 +1,5 @@
 import { GetServerSideProps } from "next";
-import { destroyCookie } from "nookies";
-import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
-import { Button } from "@chakra-ui/core";
 import Link from "next/link";
 import { database } from "../../lib/data/database";
 import styled from "@emotion/styled";
@@ -12,8 +9,8 @@ import { ListContainer, ListItem } from "../../lib/components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../lib/components/SiteRoleButtons";
 import { SiteRole } from "../../lib/data/SiteRoles";
 import { AccountPage } from "../../lib/components/AccountPage";
-import { Icon } from "../../lib/components/Icon";
-import { LinkButton, RightIconContainer } from "../../lib/components/Buttons";
+import { LinkButton } from "../../lib/components/Buttons";
+import { LogOutButton } from "../../lib/components/LogOutButton";
 
 // req.headers =
 // "host":"aven.io",
@@ -120,7 +117,6 @@ export default function AccountIndexPage({
   sites: Array<{ name: string; roleType: SiteRole | "owner" }>;
   siteInvites: Array<{ name: string; site: { name: string } }>;
 }): ReactElement {
-  const { push } = useRouter();
   return (
     <AccountPage tab="index" user={user}>
       <SiteInvitesSection siteInvites={siteInvites} />
@@ -142,22 +138,7 @@ export default function AccountIndexPage({
       </MainSection>
       <MainSection title="Account">
         <CenterButtonRow>
-          <Button
-            onClick={() => {
-              console.log("LogOut00");
-              destroyCookie(null, "AvenSession");
-              console.log("LogOut01");
-              setTimeout(() => {
-                push("/preview");
-                console.log("LogOut02");
-              }, 10);
-            }}
-          >
-            Sign Out
-            <RightIconContainer>
-              <Icon icon="sign-out" />
-            </RightIconContainer>
-          </Button>
+          <LogOutButton />
         </CenterButtonRow>
       </MainSection>
     </AccountPage>

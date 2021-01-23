@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { SidebarPage } from "./Sidebar";
 import { HeaderLink, TitleContainer } from "./Header";
+import { LogOutButton } from "./LogOutButton";
 
 export type AccountTab = "index" | "billing" | "auth" | "profile" | "devices";
 
@@ -38,7 +39,7 @@ export function AccountPage({
           <TitleContainer>
             <HeaderLink href={`/account`} label={user.username} icon={"user"} />
           </TitleContainer>
-          <SidebarPage links={AccountPageLinks} tab={tab}>
+          <SidebarPage links={AccountPageLinks} tab={tab} footer={<LogOutButton />}>
             <MainSection>{children}</MainSection>
           </SidebarPage>
         </>

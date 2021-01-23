@@ -3,12 +3,12 @@ import { database } from "../../lib/data/database";
 import { Error400, Error500 } from "../../lib/server/Errors";
 import { findTempUsername } from "../../lib/server/findTempUsername";
 import { parseCookies } from "nookies";
-import setCookie from "../../lib/server/setCookie";
-import { encode, freshJwt } from "../../lib/server/jwt";
+import { AvenJWT, freshJwt } from "../../lib/server/jwt";
 import { createAPI } from "../../lib/server/createAPI";
 import { atob } from "../../lib/server/Base64";
 import { getRandomLetters } from "../../lib/server/getRandomLetters";
 import { getOriginIp } from "../../lib/server/getOriginIp";
+import { setAvenSession } from "../../lib/server/session";
 
 export async function verifyEmail(
   secret: string,
@@ -16,7 +16,7 @@ export async function verifyEmail(
   originIp?: string,
 ): Promise<{
   verifiedEmail: string;
-  jwt: string;
+  jwt: AvenJWT;
   user: {
     email: string | null;
     name: string | null;
@@ -104,7 +104,7 @@ export async function verifyEmail(
       name: "fixme: email auth token name",
     },
   });
-  const jwt = encode({ sub: user.id, revalidateToken, revalidateIP: originIp, username: user.username, ...freshJwt() });
+  const jwt = { sub: user.id, revalidateToken, revalidateIP: originIp, username: user.username, ...freshJwt() };
 
   return { verifiedEmail: email, jwt, user, isNewUser };
 }
@@ -116,7 +116,7 @@ async function emailAuth(req: NextApiRequest, res: NextApiResponse) {
   const email = atob(String(emailEncoded));
   const originIp = getOriginIp(req);
   const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(String(token), email, originIp);
-  setCookie(res, "AvenSession", jwt);
+  setAvenSession(res, jwt);
   return {
     verifiedEmail,
     username: user.username,

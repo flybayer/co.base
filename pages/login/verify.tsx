@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
 import { atob } from "../../lib/server/Base64";
-import setCookie from "../../lib/server/setCookie";
+import { setAvenSession } from "../../lib/server/session";
 import { verifyEmail } from "../api/email-auth";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -10,7 +10,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const redirect = context.query.redirect ? String(context.query.redirect) : "/account";
   try {
     const { jwt } = await verifyEmail(String(token), email);
-    setCookie(context.res, "AvenSession", jwt);
+    setAvenSession(context.res, jwt);
   } catch (e) {
     return { props: { error: e.message } };
   }

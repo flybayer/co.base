@@ -38,7 +38,7 @@ function ChangeNameForm({ name }: { name: string | null }) {
       <form
         onSubmit={handleSubmit((data) => {
           setIsSubmitting(true);
-          api("/api/account-set-public", {
+          api("/api/account-set-profile", {
             name: data.name,
           })
             .then(() => {

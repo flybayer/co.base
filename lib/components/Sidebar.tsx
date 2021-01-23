@@ -48,10 +48,12 @@ export function SidebarPage({
   children,
   links,
   tab,
+  footer,
 }: {
   children: ReactNode;
   links: SidebarLink[];
   tab: string;
+  footer?: ReactNode;
 }): ReactElement {
   return (
     <SidebarPageContainer>
@@ -64,6 +66,7 @@ export function SidebarPage({
             {label}
           </SidebarLink>
         ))}
+        {footer}
       </Sidebar>
       {children}
     </SidebarPageContainer>
