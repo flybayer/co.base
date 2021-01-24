@@ -2,8 +2,10 @@ import { Button, FormControl, FormLabel, useDisclosure } from "@chakra-ui/core";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
 import { api } from "../server/api";
+import { LeftIconContainer } from "./Buttons";
 import ControlledInput from "./ControlledInput";
 import { useFullForm } from "./Form";
+import { Icon } from "./Icon";
 import { GenericModal, ModalForm } from "./Modal";
 
 function ModalCreateSiteForm({ onComplete }: { onComplete: (response: void, data: { name: string }) => void }) {
@@ -44,6 +46,9 @@ export function CreateSiteButton(): ReactElement {
   return (
     <>
       <Button onClick={onOpen} variant="outline" colorScheme="avenColor">
+        <LeftIconContainer>
+          <Icon icon="cubes" />
+        </LeftIconContainer>
         Create Data Site
       </Button>
       <CreateSiteModal

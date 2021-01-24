@@ -14,7 +14,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } catch (e) {
     return { props: { error: e.message } };
   }
-  return { redirect: { destination: "/account", permanent: false } };
+  return { redirect: { destination: "/account/auth", permanent: false } };
 };
 
 export default function Verify({ error }: { error?: string }): ReactElement {

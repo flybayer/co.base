@@ -1,8 +1,8 @@
 import { Divider } from "@chakra-ui/core";
-import { AddIcon } from "@chakra-ui/icons";
 import { ButtonContainer, ListContainer, ListLinkItem } from "./List";
 import { LinkButton } from "./Buttons";
 import { ReactElement } from "react";
+import { Icon } from "./Icon";
 
 export default function NodeChildren({
   siteName,
@@ -26,7 +26,11 @@ export default function NodeChildren({
       ))}
       <Divider />
       <ButtonContainer>
-        <LinkButton href={`/s/${siteName}/create/${address.join("/")}`} leftIcon={<AddIcon />} colorScheme="avenColor">
+        <LinkButton
+          href={`/s/${siteName}/create/${address.join("/")}`}
+          leftIcon={<Icon icon="plus-circle" />}
+          colorScheme="avenColor"
+        >
           Add Item
         </LinkButton>
       </ButtonContainer>

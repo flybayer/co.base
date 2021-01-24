@@ -30,12 +30,11 @@ export async function verifyEmail(
   await database.emailValidation.delete({
     where: { secret },
   });
-
   if (email !== emailValidation.email) {
     // not sure how this would happen. in theory the token is sufficient proof and this check is not needed at all
     throw new Error500({ message: "Invalid email", name: "WrongEmail" });
   }
-  const { emailTime, user: validatedUser, secret: storedSecret } = emailValidation;
+  const { emailTime, secret: storedSecret, user: validatedUser } = emailValidation;
   if (!storedSecret) {
     throw new Error500({
       message: "No validation token to compare",
@@ -58,39 +57,42 @@ export async function verifyEmail(
     include: { user: { select: userSelectQuery } },
   });
 
-  let user = verifiedEmail?.user;
+  let confirmedUser = validatedUser || verifiedEmail?.user;
   let isNewUser = false;
 
-  if (!user) {
+  if (!confirmedUser) {
     const primaryEmailUser = await database.user.findUnique({
       where: { email },
       select: userSelectQuery,
     });
     if (primaryEmailUser) {
-      user = primaryEmailUser;
+      confirmedUser = primaryEmailUser;
     }
+  }
 
-    if (!user) {
-      user = await database.user.create({
-        data: {
-          username: await findTempUsername(),
-          name: "",
-          email,
-        },
-        select: userSelectQuery,
-      });
-      isNewUser = true;
-    }
+  if (!confirmedUser) {
+    confirmedUser = await database.user.create({
+      data: {
+        username: await findTempUsername(),
+        name: "",
+        email,
+      },
+      select: userSelectQuery,
+    });
+    isNewUser = true;
+  }
 
+  if (!verifiedEmail) {
     await database.verifiedEmail.create({
-      data: { email, user: { connect: { id: user.id } } },
+      data: { email, user: { connect: { id: confirmedUser.id } } },
     });
   }
+
   const revalidateToken = getRandomLetters(47);
   await database.deviceToken.create({
     data: {
       token: revalidateToken,
-      user: { connect: { id: user.id } },
+      user: { connect: { id: confirmedUser.id } },
       approveTime: new Date(),
       requestTime: new Date(),
       originIp,
@@ -98,7 +100,13 @@ export async function verifyEmail(
       name: "fixme: email auth token name",
     },
   });
-  const jwt = { sub: user.id, revalidateToken, revalidateIP: originIp, username: user.username, ...freshJwt() };
+  const jwt = {
+    sub: confirmedUser.id,
+    revalidateToken,
+    revalidateIP: originIp,
+    username: confirmedUser.username,
+    ...freshJwt(),
+  };
 
-  return { verifiedEmail: email, jwt, user, isNewUser };
+  return { verifiedEmail: email, jwt, user: confirmedUser, isNewUser };
 }

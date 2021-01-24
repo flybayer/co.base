@@ -18,6 +18,23 @@ function validatePayload(input: any): AddEmailPayload {
 
 async function addEmail(user: APIUser, { email }: AddEmailPayload, res: NextApiResponse) {
   const validationToken = getRandomLetters(32);
+  const verifiedAlreadyEmail = await database.verifiedEmail.findFirst({
+    where: { email },
+    select: { user: { select: { id: true } } },
+  });
+  if (verifiedAlreadyEmail) {
+    const thisAccount = user.id === verifiedAlreadyEmail.user.id;
+    throw new Error400({
+      name: "EmailAlreadyUsed",
+      message: thisAccount
+        ? `"${email}" is already on your account.`
+        : `"${email}" has already been claimed by another account.`,
+      data: {
+        email,
+        thisAccount,
+      },
+    });
+  }
 
   await database.emailValidation.create({
     data: {

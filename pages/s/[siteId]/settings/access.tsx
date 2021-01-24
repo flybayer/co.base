@@ -8,6 +8,7 @@ import { handleAsync } from "../../../../lib/data/handleAsync";
 import { SiteSettingsPage } from "../../../../lib/components/SiteSettingsPage";
 import { CenterButtonRow, MainSection } from "../../../../lib/components/CommonViews";
 import { SiteSchema } from "../../../../lib/data/SiteSchema";
+import { LinkButton } from "../../../../lib/components/Buttons";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -81,6 +82,11 @@ export default function SiteAccessPage({
 }): ReactElement {
   return (
     <SiteSettingsPage user={user} siteName={siteName} tab="access">
+      <MainSection title="Team">
+        <LinkButton href={`/s/${siteName}/team`} icon="users">
+          Manage Site Team
+        </LinkButton>
+      </MainSection>
       <SiteAccessSection schema={schema} siteName={siteName} />
     </SiteSettingsPage>
   );
