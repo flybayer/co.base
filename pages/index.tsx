@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 
 const ScreenContainer = styled.div`
+  flex-grow: 1;
   height: 100%;
   background: url("/img/FullCloud.png");
   background-repeat: no-repeat;

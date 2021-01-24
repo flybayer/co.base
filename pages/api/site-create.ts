@@ -38,9 +38,15 @@ function validatePayload(input: any): SiteCreatePayload {
 }
 
 async function siteCreate(user: APIUser, { name }: SiteCreatePayload, res: NextApiResponse) {
-  await database.site.create({
-    data: { name, owner: { connect: { id: user.id } } },
-  });
+  try {
+    await database.site.create({
+      data: { name, owner: { connect: { id: user.id } } },
+    });
+  } catch (e) {
+    if (e.code === "P2002" && e.meta.target[0] === "name") {
+      throw new Error400({ message: "Site name unavailable", name: "SiteNameTaken" });
+    }
+  }
 }
 
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {

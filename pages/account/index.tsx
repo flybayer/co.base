@@ -9,31 +9,8 @@ import { ListContainer, ListItem } from "../../lib/components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../lib/components/SiteRoleButtons";
 import { SiteRole } from "../../lib/data/SiteRoles";
 import { AccountPage } from "../../lib/components/AccountPage";
-import { LinkButton } from "../../lib/components/Buttons";
 import { LogOutButton } from "../../lib/components/LogOutButton";
-
-// req.headers =
-// "host":"aven.io",
-// "accept-encoding":"gzip",
-// "x-forwarded-for":"2603:8001:6b00:3b0:e022:8da9:4cc7:f9c2,172.69.33.52",
-// "x-forwarded-proto":"https",
-// "cache-control":"max-age=0",
-// "upgrade-insecure-requests":"1",
-// "user-agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
-// ,"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-// "sec-fetch-site":"same-origin",
-// "sec-fetch-mode":"navigate",
-// "sec-fetch-user":"?1",
-// "sec-fetch-dest":"document",
-// "accept-language":"en-US,en;q=0.9"
-// "cookie":"__cfduid=d94ea1341160d8133ab6a64b15fc7a08b1609268034; AvenSession=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImV4cCI6MTYwOTM1NDQ1MywiaWF0IjoxNjA5MjY4MDUzLCJyZXZhbGlkYXRlVG9rZW4iOiI5Nngzam9tbXdra2VkNm8yMGx0MW1rMHR5Y25vdDI5aXY5NGQ1N2w2eXE1MzNzbSIsInJldmFsaWRhdGVJUCI6ImZpeG1lLWRldmljZS1vcmlnaW5pcCJ9.XWbot4ki01qJYcy4w7Gp6PEZgOcTyA4Wj0S-L8Dyu-c",
-// "cdn-loop":"cloudflare",
-// "x-request-id":"491af320-ae1c-431b-9c79-0420d5208ec6",
-// "do-connecting-ip":"2603:8001:6b00:3b0:e022:8da9:4cc7:f9c2",
-// "x-b3-traceid":"eb6ba6443cef626680ca48e82c749dc4",
-// "x-b3-spanid":"80ca48e82c749dc4",
-// "x-b3-sampled":"0",
-// "content-length":"0",
+import { CreateSiteButton } from "../../lib/components/CreateSiteButton";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -131,9 +108,7 @@ export default function AccountIndexPage({
           </Link>
         ))}
         <CenterButtonRow>
-          <LinkButton href="/account/new-site" colorScheme="avenColor">
-            Create Data Site
-          </LinkButton>
+          <CreateSiteButton />
         </CenterButtonRow>
       </MainSection>
       <MainSection title="Account">
