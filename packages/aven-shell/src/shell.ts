@@ -26,6 +26,7 @@ async function api(
   method: "post" | "get" = "post",
   authToken?: string,
 ) {
+  console.log("=======", { remoteHost, remoteSSL, endpoint, payload, method, authToken });
   return fetchHTTP(`http${remoteSSL ? "s" : ""}://${remoteHost}/api/${endpoint}`, {
     method,
     headers: {

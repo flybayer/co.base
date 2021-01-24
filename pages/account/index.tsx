@@ -9,7 +9,6 @@ import { ListContainer, ListItem } from "../../lib/components/List";
 import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../lib/components/SiteRoleButtons";
 import { SiteRole } from "../../lib/data/SiteRoles";
 import { AccountPage } from "../../lib/components/AccountPage";
-import { LogOutButton } from "../../lib/components/LogOutButton";
 import { CreateSiteButton } from "../../lib/components/CreateSiteButton";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -109,11 +108,6 @@ export default function AccountIndexPage({
         ))}
         <CenterButtonRow>
           <CreateSiteButton />
-        </CenterButtonRow>
-      </MainSection>
-      <MainSection title="Account">
-        <CenterButtonRow>
-          <LogOutButton />
         </CenterButtonRow>
       </MainSection>
     </AccountPage>

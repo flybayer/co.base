@@ -35,8 +35,6 @@ function Page({ children }: React.PropsWithChildren<unknown>) {
 
 export const primaryColor = "#3160CE";
 
-console.log("lasdlfl");
-
 const AvenTheme = extendTheme({
   colors: {
     avenColor: {

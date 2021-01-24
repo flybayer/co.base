@@ -26,10 +26,14 @@ async function deviceDestroy(
 ): Promise<DeviceDestroyResponse> {
   if (token) {
     // token is considered a secret. so if they know it, they can destroy it.
-    await database.deviceToken.delete({
-      where: { token },
-    });
-    return;
+    try {
+      await database.deviceToken.delete({
+        where: { token },
+      });
+    } catch (e) {
+      if (e.code !== "P2016") throw e;
+    }
+    return {};
   }
   if (!user) {
     throw new Error403({ name: "NoAuth" });

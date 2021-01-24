@@ -2,7 +2,7 @@ import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
 import { atob } from "../../lib/server/Base64";
 import { setAvenSession } from "../../lib/server/session";
-import { verifyEmail } from "../api/email-auth";
+import { verifyEmail } from "../../lib/server/EmailAuth";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const token = context.query.token;

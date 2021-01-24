@@ -1,14 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { database } from "../../lib/data/database";
-import { Error400, Error500 } from "../../lib/server/Errors";
-import { findTempUsername } from "../../lib/server/findTempUsername";
-import { parseCookies } from "nookies";
-import { AvenJWT, freshJwt } from "../../lib/server/jwt";
-import { createAPI } from "../../lib/server/createAPI";
-import { atob } from "../../lib/server/Base64";
-import { getRandomLetters } from "../../lib/server/getRandomLetters";
-import { getOriginIp } from "../../lib/server/getOriginIp";
-import { setAvenSession } from "../../lib/server/session";
+import { database } from "../data/database";
+import { Error400, Error500 } from "./Errors";
+import { findTempUsername } from "./findTempUsername";
+import { AvenJWT, freshJwt } from "./jwt";
+import { getRandomLetters } from "./getRandomLetters";
 
 export async function verifyEmail(
   secret: string,
@@ -108,29 +102,3 @@ export async function verifyEmail(
 
   return { verifiedEmail: email, jwt, user, isNewUser };
 }
-
-async function emailAuth(req: NextApiRequest, res: NextApiResponse) {
-  // todo, shouldn't we verify the users current jwt??
-  const token = req.query.token;
-  const emailEncoded = req.query.email;
-  const email = atob(String(emailEncoded));
-  const originIp = getOriginIp(req);
-  const { verifiedEmail, user, jwt, isNewUser } = await verifyEmail(String(token), email, originIp);
-  setAvenSession(res, jwt);
-  return {
-    verifiedEmail,
-    username: user.username,
-    name: user.name,
-    isNewUser,
-  };
-}
-
-const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
-  const parsedCookies = parseCookies({ req });
-
-  await emailAuth(req, res);
-  res.redirect("/account");
-  return res;
-});
-
-export default APIHandler;

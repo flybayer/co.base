@@ -1,13 +1,13 @@
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
 import { LinkButton } from "../../lib/components/Buttons";
-import { Button, Spinner } from "@chakra-ui/core";
 import { database } from "../../lib/data/database";
-import { api } from "../../lib/server/api";
 import { ReactElement, useState } from "react";
 import { CenterButtonRow, MainSection } from "../../lib/components/CommonViews";
 import { AccountPage } from "../../lib/components/AccountPage";
+import { SetPasswordButton } from "../../lib/components/SetPassword";
+import { AddEmailButton } from "../../lib/components/AddEmail";
+import { APIButton } from "../../lib/components/APIButton";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -44,29 +44,59 @@ function PasswordBox({ user }: { user: APIUser }) {
     <>
       <h3>Password</h3>
       <div>{user.hasPassword ? "PW is set" : "No pw set"}</div>
-      <LinkButton href="/account/set-password">Set Password</LinkButton>
+      <SetPasswordButton />
     </>
   );
 }
 
-function DeleteEmailButton({ email }: { email: string }) {
-  const [isSpin, setIsSpin] = useState(false);
-  const { reload } = useRouter();
+function DeleteEmailButton({ email, onDeleted }: { email: string; onDeleted: () => void }) {
   return (
-    <Button
-      colorScheme="red"
-      onClick={() => {
-        setIsSpin(true);
-        api("account-delete-email", { email })
-          .then(reload)
-          .catch(console.error)
-          .finally(() => {
-            setIsSpin(false);
-          });
-      }}
-    >
-      Delete {isSpin && <Spinner size="sm" />}
-    </Button>
+    <APIButton colorScheme="red" endpoint="account-delete-email" payload={{ email }} onDone={onDeleted}>
+      Delete
+    </APIButton>
+  );
+}
+
+function EmailRow({
+  email,
+  unverified,
+  primary,
+}: {
+  email: string;
+  unverified?: true;
+  primary?: true;
+}): ReactElement | null {
+  const [isDeleted, setIsDeleted] = useState(false);
+  if (isDeleted) return null;
+  return (
+    <div>
+      {email} {unverified && "(unverified)"}
+      {primary && "(primary)"}
+      {!primary && (
+        <DeleteEmailButton
+          email={email}
+          onDeleted={() => {
+            setIsDeleted(true);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function EmailsSection({ emails }: { emails: Array<{ email: string; unverified?: true; primary?: true }> }) {
+  const [localEmails, setLocalEmails] = useState(emails);
+  return (
+    <MainSection title="Email">
+      {localEmails.map((row) => (
+        <EmailRow key={row.email} {...row} />
+      ))}
+      <AddEmailButton
+        onNewEmail={(email) => {
+          setLocalEmails([...localEmails, { email, unverified: true }]);
+        }}
+      />
+    </MainSection>
   );
 }
 
@@ -77,23 +107,12 @@ export default function AccountIndexPage({
   user: APIUser;
   emails: Array<{ email: string; primary?: true; unverified?: true }>;
 }): ReactElement {
-  const { push } = useRouter();
   return (
     <AccountPage tab="auth" user={user}>
       <MainSection title="Auth">
         <PasswordBox user={user} />
       </MainSection>
-      <MainSection title="Email">
-        {emails.map(({ email, unverified, primary }) => (
-          <div key={email}>
-            {email} {unverified && "(unverified)"}
-            {primary && "(primary)"}
-            {/* {!unverified && !primary && <MakePrimaryEmailButton email={email} />} */}
-            {!primary && <DeleteEmailButton email={email} />}
-          </div>
-        ))}
-        <LinkButton href={`/account/add-email`}>Add Email</LinkButton>
-      </MainSection>
+      <EmailsSection emails={emails} />
       <MainSection title="Account">
         <CenterButtonRow>
           <LinkButton colorScheme="red" href={"/account/destroy"}>

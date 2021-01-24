@@ -1,8 +1,9 @@
 import { GetServerSideProps } from "next";
 import { ReactElement } from "react";
 import { BasicSiteLayout } from "../../lib/components/SiteLayout";
+import { atob } from "../../lib/server/Base64";
 import { Error400 } from "../../lib/server/Errors";
-import { verifyEmail } from "../api/email-auth";
+import { verifyEmail } from "../../lib/server/EmailAuth";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const token = context.query.token;
