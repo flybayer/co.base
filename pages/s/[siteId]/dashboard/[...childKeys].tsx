@@ -21,6 +21,7 @@ import { digSchemas, parentNodeSchemaQuery, siteNodeQuery } from "../../../../li
 import { ButtonBar, LinkButton } from "../../../../lib/components/Buttons";
 import { SiteDashboardPage } from "../../../../lib/components/SiteDashboardPage";
 import { useCloudClient } from "../../../../lib/data/CloudContext";
+import { Error404 } from "../../../../lib/server/Errors";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -64,6 +65,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const children = node.SiteNode;
 
+  const directParentSchema = node.parentNode?.schema as NodeSchema;
+
+  let nodeSchema = node.schema;
+
+  if (directParentSchema?.type === "record") {
+    throw new Error404({ message: "Parent node is a record, somehow.", name: "ParentSchemaError" });
+  }
+  if (directParentSchema?.type === "record-set" && directParentSchema.childRecord) {
+    nodeSchema = directParentSchema.childRecord;
+  }
+
+  console.log("NODE DIRECT parent SCHEMA", directParentSchema);
+
   return {
     props: {
       user: verifiedUser,
@@ -71,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       address: childKeys,
       node: {
         value: node.value,
-        schema: node.schema,
+        schema: nodeSchema,
         parentSchemas: digSchemas(node.parentNode as any),
         children,
       },
@@ -430,9 +444,11 @@ export default function NodeDashboard({
   address: string[];
   node: Node;
 }): ReactElement {
+  const parentSchema = node.parentSchemas[0];
+  const nodeType = parentSchema?.type === "record-set" ? "record" : node.schema?.type;
   return (
     <SiteDashboardPage user={user} siteName={siteName} title={address.join("/")}>
-      <SiteTabs tab="data" siteName={siteName} address={address} nodeType={node.schema?.type} />
+      <SiteTabs tab="data" siteName={siteName} address={address} nodeType={nodeType} />
       <ButtonBar>
         <LinkButton href={`/s/${siteName}/schema/${address.join("/")}`} icon="pencil-ruler">
           Schema

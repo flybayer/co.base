@@ -31,10 +31,12 @@ export const ListItem = styled.div`
   align-items: center;
 `;
 
-export function ListLinkItem({ label, href }: { label: string; href: string }): ReactElement {
+export function ListLinkItem({ label, href, icon }: { label: string; href: string; icon?: ReactNode }): ReactElement {
   return (
     <Link href={href} passHref>
-      <ListLink>{label}</ListLink>
+      <ListLink>
+        {icon} {label}
+      </ListLink>
     </Link>
   );
 }

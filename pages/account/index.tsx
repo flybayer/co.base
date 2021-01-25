@@ -1,6 +1,5 @@
 import { GetServerSideProps } from "next";
 import getVerifiedUser, { APIUser } from "../../lib/server/getVerifedUser";
-import Link from "next/link";
 import { database } from "../../lib/data/database";
 import styled from "@emotion/styled";
 import { ReactElement } from "react";
@@ -10,6 +9,9 @@ import { SiteRoleAcceptButton, SiteRoleRejectButton } from "../../lib/components
 import { SiteRole } from "../../lib/data/SiteRoles";
 import { AccountPage } from "../../lib/components/AccountPage";
 import { CreateSiteButton } from "../../lib/components/CreateSiteButton";
+import { ListLinkItem } from "../../lib/components/List";
+import { Icon } from "../../lib/components/Icon";
+import { ButtonGroup, Text } from "@chakra-ui/core";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const verifiedUser = await getVerifiedUser(context.req, context.res);
@@ -62,28 +64,6 @@ const SiteContainer = styled.div`
   }
 `;
 
-function SiteInvitesSection({
-  siteInvites,
-}: {
-  siteInvites: Array<{ name: string; site: { name: string } }>;
-}): ReactElement | null {
-  if (!siteInvites.length) {
-    return null;
-  }
-  return (
-    <MainSection title="Site Invitations">
-      <ListContainer>
-        {siteInvites.map((invite) => (
-          <ListItem key={invite.site.name}>
-            {invite.site.name} <SiteRoleAcceptButton siteName={invite.site.name} />
-            <SiteRoleRejectButton siteName={invite.site.name} />
-          </ListItem>
-        ))}
-      </ListContainer>
-    </MainSection>
-  );
-}
-
 export default function AccountIndexPage({
   user,
   sites,
@@ -95,17 +75,36 @@ export default function AccountIndexPage({
 }): ReactElement {
   return (
     <AccountPage tab="index" user={user}>
-      <SiteInvitesSection siteInvites={siteInvites} />
-      <MainSection title="Your Sites">
-        {sites.map((site) => (
-          <Link href={`/s/${site.name}`} key={site.name}>
-            <SiteContainer>
-              <SiteName>
-                {site.name} ({site.roleType})
-              </SiteName>
-            </SiteContainer>
-          </Link>
-        ))}
+      {siteInvites.length ? (
+        <MainSection title="Invitations">
+          <ListContainer>
+            {siteInvites.map((invite) => (
+              <ListItem key={invite.site.name}>
+                <div style={{ flexGrow: 1, flexDirection: "row" }}>
+                  <Text>
+                    <b>{invite.name}</b> invite to <b>{invite.site.name}</b>
+                  </Text>
+                </div>
+                <ButtonGroup>
+                  <SiteRoleAcceptButton siteName={invite.site.name} />
+                  <SiteRoleRejectButton siteName={invite.site.name} />
+                </ButtonGroup>
+              </ListItem>
+            ))}
+          </ListContainer>
+        </MainSection>
+      ) : null}
+      <MainSection>
+        <ListContainer>
+          {sites.length ? (
+            sites.map((site) => (
+              <ListLinkItem href={`/s/${site.name}`} key={site.name} label={site.name} icon={<Icon icon="cubes" />} />
+            ))
+          ) : (
+            <Text>You do not have any data sites. Create one or get invited.</Text>
+          )}
+        </ListContainer>
+
         <CenterButtonRow>
           <CreateSiteButton />
         </CenterButtonRow>

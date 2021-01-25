@@ -191,12 +191,12 @@ export default function NodeOptionsPage({
           <SiteTabs tab="options" siteName={siteName} address={address} />
           <MainContainer>
             <ExpirationSection schema={node.schema} address={address} siteName={siteName} />
-
+            {/* Not yet implemented...
             <MainSection title="Move Node">
               <CenterButtonRow>
                 <Button>Rename {address.join("/")}</Button>
-              </CenterButtonRow>
-            </MainSection>
+              </CenterButtonRow> 
+            </MainSection>*/}
             <MainSection title="Danger">
               <CenterButtonRow>
                 <DeleteButton siteName={siteName} address={address} nodeType={node.schema?.type} />
