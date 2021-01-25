@@ -1,23 +1,7 @@
-import {
-  Button,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Spinner,
-  useDisclosure,
-} from "@chakra-ui/core";
+import { Button, FormControl, FormHelperText, FormLabel, Select, Spinner, useDisclosure } from "@chakra-ui/core";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ReactElement, useState } from "react";
-import { useForm } from "react-hook-form";
 import { api } from "../../../lib/server/api";
 import getVerifiedUser, { APIUser } from "../../../lib/server/getVerifedUser";
 import ControlledInput from "../../../lib/components/ControlledInput";
@@ -29,6 +13,8 @@ import { SITE_ROLES } from "../../../lib/data/SiteRoles";
 import { ControlledSelect } from "../../../lib/components/ControlledSelect";
 import { handleAsync } from "../../../lib/data/handleAsync";
 import styled from "@emotion/styled";
+import { GenericModal, ModalForm } from "../../../lib/components/Modal";
+import { useFullForm } from "../../../lib/components/Form";
 
 const BasicUserQuery = { select: { name: true, id: true, username: true, email: true } };
 
@@ -93,65 +79,73 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-function InviteRoleForm({ siteName }: { siteName: string }) {
+function InviteRoleForm({ siteName, onComplete }: { siteName: string; onComplete: () => void }) {
   const { reload } = useRouter();
-  const { handleSubmit, errors, control } = useForm({
-    mode: "onBlur",
+  const { isSubmitting, errors, error, control, submitHandler } = useFullForm({
     defaultValues: {
       email_username: "",
       role: "admin",
     },
+    onSubmit: (data) =>
+      api("site-role-invite", {
+        emailUsername: data.email_username,
+        siteName,
+        role: data.role,
+      }),
+    onComplete,
   });
   return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        handleAsync(
-          api("site-role-invite", {
-            emailUsername: data.email_username,
-            siteName,
-            role: data.role,
-          }),
-        );
-      })}
-    >
-      <ModalBody>
-        <FormControl>
-          <FormLabel htmlFor="role-input">New Role</FormLabel>
-          <ControlledSelect options={SITE_ROLES} id="role" name="role" control={control} />
-        </FormControl>
-        <FormControl>
-          <FormLabel htmlFor="email-input">Recipient Email or Aven Username</FormLabel>
-          <ControlledInput
-            name="email_username"
-            id="email-input"
-            aria-describedby="email-username-helper-text"
-            control={control}
-          />
-          <FormHelperText id="email-username-helper-text">
-            An invitation will be sent to the recipient via email.
-          </FormHelperText>
-        </FormControl>
-      </ModalBody>
-      <ModalFooter>
-        <Button type="submit">Invite</Button>
-      </ModalFooter>
-    </form>
+    <ModalForm isSubmitting={isSubmitting} submitHandler={submitHandler} error={error} submitLabel="Invite">
+      <FormControl>
+        <FormLabel htmlFor="role-input">New Role</FormLabel>
+        <ControlledSelect options={SITE_ROLES} id="role" name="role" control={control} />
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="email-input">Recipient Email or Aven Username</FormLabel>
+        <ControlledInput
+          name="email_username"
+          id="email-input"
+          aria-describedby="email-username-helper-text"
+          control={control}
+        />
+        <FormHelperText id="email-username-helper-text">
+          An invitation will be sent to the recipient via email.
+        </FormHelperText>
+      </FormControl>
+    </ModalForm>
+  );
+}
+
+function NewRoleModal({
+  isOpen,
+  onComplete,
+  siteName,
+}: {
+  siteName: string;
+  isOpen: boolean;
+  onComplete: () => void;
+}): ReactElement {
+  return (
+    <GenericModal isOpen={isOpen} onClose={onComplete} title="Invite Team Member">
+      <InviteRoleForm siteName={siteName} onComplete={onComplete} />
+    </GenericModal>
   );
 }
 
 function NewRoleButton({ siteName }: { siteName: string }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { reload } = useRouter();
   return (
     <>
       <Button onClick={onOpen}>Invite Team Member</Button>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Invite Team Member</ModalHeader>
-          <ModalCloseButton />
-          <InviteRoleForm siteName={siteName} />
-        </ModalContent>
-      </Modal>
+      <NewRoleModal
+        siteName={siteName}
+        isOpen={isOpen}
+        onComplete={() => {
+          onClose();
+          reload();
+        }}
+      />
     </>
   );
 }

@@ -24,11 +24,18 @@ async function siteRoleEdit(
 ): Promise<RoleEditResponse> {
   const site = await database.site.findUnique({ where: { name: siteName }, select: { id: true } });
   if (!site) throw new Error500({ name: "SiteNotFound", data: { siteName } });
-
   if (roleType === "revoke") {
-    await database.siteRole.delete({
-      where: { SiteRoleUnique: { siteId: site.id, userId } },
-    });
+    try {
+      await database.siteRole.delete({
+        where: { SiteRoleUnique: { siteId: site.id, userId } },
+      });
+    } catch (e) {
+      if (e.code === "P2016") {
+        await database.siteRoleInvitation.deleteMany({
+          where: { siteId: site.id, recipientUserId: userId },
+        });
+      }
+    }
     return { userId, role: "none" };
   } else {
     await database.siteRole.update({
