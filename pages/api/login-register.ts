@@ -13,6 +13,7 @@ import { looksLikeAnEmail } from "../../lib/server/looksLikeAnEmail";
 import { btoa } from "../../lib/server/Base64";
 import { getOriginIp } from "../../lib/server/getOriginIp";
 import { setAvenSession } from "../../lib/server/session";
+import { observe, Observer } from "../../lib/server/Performance";
 
 type Email = string;
 
@@ -63,14 +64,16 @@ async function loginRegisterEmail(
   password: undefined | string,
   forceSend: boolean,
   res: NextApiResponse,
+  obs: Observer,
   redirect?: string,
   originIp?: string,
 ) {
   let existingUser = null;
   let emailToVerify = null;
+  obs.markAndMeasure("loginRegisterEmail-START");
   if (looksLikeAnEmail(email)) {
-    console.log("EMAIL", email);
     emailToVerify = email;
+    obs.markAndMeasure("loginRegisterEmail-WILL-QUERY-verifiedEmail");
     const verified = await database.verifiedEmail.findUnique({
       where: { email },
       include: {
@@ -79,6 +82,7 @@ async function loginRegisterEmail(
     });
     existingUser = verified?.user;
     if (!existingUser) {
+      obs.markAndMeasure("loginRegisterEmail-WILL-QUERY-user-byEmail");
       // an edge case exists where a verified row does not exist but the user has the email set as a primary email. this makes sure that such a user may still log in:
       const userPrimaryLookup = await database.user.findUnique({
         where: { email },
@@ -89,12 +93,14 @@ async function loginRegisterEmail(
       }
     }
   } else {
+    obs.markAndMeasure("loginRegisterEmail-WILL-QUERY-existingUser");
     existingUser = await database.user.findUnique({
       where: { username: email },
       select: userSelectQuery,
     });
     emailToVerify = existingUser?.email;
   }
+  obs.markAndMeasure("loginRegisterEmail-HAS-emailToVerify");
   const hashedSavedPassword = existingUser?.passwordHash;
   if (existingUser && hashedSavedPassword && !!password && !forceSend) {
     const doesMatch = await new Promise((resolve, reject) => {
@@ -131,6 +137,7 @@ async function loginRegisterEmail(
   if (!forceSend && existingUser && existingUser.passwordHash) {
     return { status: 1, email };
   }
+  obs.markAndMeasure("loginRegisterEmail-SAVED-deviceToken");
   if (emailToVerify) {
     const validationToken = getRandomLetters(47);
     // create an anonymous email validation, that is not yet associated to a user account because it remains unverified. at verification time we will associate it to a user account or create one.
@@ -152,6 +159,7 @@ async function loginRegisterEmail(
     ${loginButtonURL}
     `,
     );
+    obs.markAndMeasure("loginRegisterEmail-SENT-email");
     return { status: 2, email };
   }
   throw new Error400({
@@ -182,10 +190,11 @@ async function loginRegisterPhone(phone: string, res: NextApiResponse) {
 async function loginRegister(
   { email, phone, password, method, redirect }: LoginRegisterPayload,
   res: NextApiResponse,
+  obs: Observer,
   originIp?: string,
 ): Promise<LoginRegisterResponse> {
   if (email) {
-    return loginRegisterEmail(email, password, method === "email", res, redirect, originIp);
+    return loginRegisterEmail(email, password, method === "email", res, obs, redirect, originIp);
   } else if (phone) {
     throw new Error500({ name: "Unimplemented", message: "The phone workflow has been temporarily disabled" });
     // return loginRegisterPhone(phone, res);
@@ -195,7 +204,10 @@ async function loginRegister(
 const APIHandler = createAPI(async (req: NextApiRequest, res: NextApiResponse) => {
   const action = validatePayload(req.body);
   const originIp = getOriginIp(req);
-  return await loginRegister(action, res, originIp);
+  const obs = observe("loginRegister");
+  const result = await loginRegister(action, res, obs, originIp);
+  obs.end();
+  return result;
 });
 
 export default APIHandler;
