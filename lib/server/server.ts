@@ -136,18 +136,18 @@ async function startServer() {
 }
 
 async function prepareDockerDev() {
-  if (!dev) return;
-  if (process.env.SKIP_DOCKER) return;
-  console.log("Docker startup..");
-  await spawnAsync("docker-compose", ["-f", "../../docker-compose.yml", "up", "-d"], {
-    cwd: __dirname,
-    stdio: "inherit",
-  });
+  // if (!dev) return;
+  // if (process.env.SKIP_DOCKER) return;
+  // console.log("Docker startup..");
+  // await spawnAsync("docker-compose", ["-f", "../../docker-compose.yml", "up", "-d"], {
+  //   cwd: __dirname,
+  //   stdio: "inherit",
+  // });
 }
 
 async function prepareDatabase() {
   if (!dev) return;
-  console.log("Migrating db..");
+  // console.log("Migrating db..");
   await spawnAsync("yarn", ["prisma", "migrate", "dev", "--preview-feature", "--skip-generate"], {
     cwd: __dirname,
     stdio: "inherit",
@@ -159,10 +159,15 @@ async function prepareDatabase() {
 }
 
 async function runServer() {
-  await prepareDockerDev();
-  await prepareDatabase();
-  await app.prepare();
-  await startServer();
+  console.log("--A");
+  // await prepareDockerDev();
+  console.log("--B");
+  // await prepareDatabase();
+  console.log("--C");
+  // await app.prepare();
+  // console.log("--D");
+  // await startServer();
+  // console.log("--E");
 }
 
 runServer().catch((err) => {
