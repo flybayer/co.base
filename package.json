@@ -23,10 +23,7 @@
     "example": "yarn --cwd rocketship-example",
     "migrate-dev": "DATABASE_URL='postgresql://user:pw@localhost:5992/db' yarn prisma migrate dev --preview-feature"
   },
-  "workspaces": [
-    "packages/*",
-    "rocketship-example"
-  ],
+  "workspaces": [],
   "dependencies": {
     "@chakra-ui/core": "1.0.0-rc.7",
     "@chakra-ui/icons": "^1.0.0-rc.8",
@@ -59,7 +56,7 @@
     "fs-extra": "^9.0.1",
     "json-schema-to-typescript": "^10.0.0",
     "jwt-simple": "^0.5.6",
-    "mdx-prism": "^0.3.1",
+    "mdx-prism": "^0.3.3",
     "minimist": "^1.2.5",
     "minio": "^7.0.16",
     "next": "10.0.0",
@@ -77,7 +74,7 @@
     "react-dom": "17.0.1",
     "react-hook-form": "^6.8.4",
     "react-native-web": "^0.14.7",
-    "react-syntax-highlighter": "^15.3.0",
+    "react-syntax-highlighter": "^15.4.3",
     "reconnecting-websocket": "^4.4.0",
     "rehype": "^11.0.0",
     "remark": "^12.0.1",
