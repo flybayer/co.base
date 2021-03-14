@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "SiteNode" ADD COLUMN     "version" INTEGER NOT NULL DEFAULT 0,
-ADD COLUMN     "schemaVersion" INTEGER NOT NULL DEFAULT 0,
-ADD COLUMN     "versionTime" TIMESTAMP(3);
