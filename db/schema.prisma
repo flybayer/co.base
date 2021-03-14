@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -10,19 +7,31 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// --------------------------------------
-
 model User {
-  id             Int      @id @default(autoincrement())
+  id             String   @id @default(uuid())
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  name           String?
+  username       String   @unique
   email          String   @unique
-  hashedPassword String?
   role           String   @default("USER")
+  name           String?
+  hashedPassword String?
+  publicBio      String?
+  billing        Json?
 
-  tokens   Token[]
-  sessions Session[]
+  Comment         Comment[]
+  Sites           Site[]
+  EmailValidation EmailValidation[]
+  VerifiedEmail   VerifiedEmail[]
+  SiteRole        SiteRole[]
+  NodeRole        NodeRole[]
+  SiteInvite      SiteRoleInvitation[] @relation("InviteSenderRelation")
+  SiteInviteSent  SiteRoleInvitation[] @relation("InviteRecipientRelation")
+  DeviceToken     DeviceToken[]
+  SiteEvent       SiteEvent[]
+  BillingEvent    BillingEvent[]
+  tokens          Token[]
+  sessions        Session[]
 }
 
 model Session {
@@ -36,30 +45,180 @@ model Session {
   publicData         String?
   privateData        String?
 
-  user   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
 }
 
 model Token {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   hashedToken String
-  type        String
-  // See note below about TokenType enum
-  // type        TokenType
+  type        TokenType
   expiresAt   DateTime
   sentTo      String
 
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
   @@unique([hashedToken, type])
 }
 
-// NOTE: It's highly recommended to use an enum for the token type
-//       but enums only work in Postgres.
-//       See: https://blitzjs.com/docs/database-overview#switch-to-postgresql
-// enum TokenType {
-//   RESET_PASSWORD
-// }
+enum TokenType {
+  RESET_PASSWORD
+}
+
+model BillingEvent {
+  id      String   @id @default(uuid())
+  time    DateTime
+  type    String
+  payload Json?
+  userId  String?
+  user    User?    @relation(fields: [userId], references: [id])
+}
+
+model DeviceToken {
+  id          String    @id @default(uuid())
+  token       String    @unique
+  type        String?
+  name        String
+  requestTime DateTime  @default(now())
+  approveTime DateTime?
+  originIp    String?
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+}
+
+model EmailValidation {
+  id        String   @id @default(uuid())
+  emailTime DateTime @default(now())
+  email     String
+  secret    String   @unique
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model VerifiedEmail {
+  email      String   @id
+  verifyTime DateTime @default(now())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model PhoneValidation {
+  id       String   @id @default(uuid())
+  sendTime DateTime @default(now())
+  phone    String
+  secret   String   @unique
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  publishTime DateTime @default(now())
+  page        String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  message     String
+}
+
+model Site {
+  id                 String               @id @default(uuid())
+  name               String               @unique
+  ownerId            String
+  owner              User                 @relation(fields: [ownerId], references: [id])
+  schema             Json?
+  SiteNode           SiteNode[]
+  SiteRole           SiteRole[]
+  SiteRoleInvitation SiteRoleInvitation[]
+  SiteToken          SiteToken[]
+  SiteEvent          SiteEvent[]
+}
+
+model SiteNode {
+  id            String     @id @default(uuid())
+  key           String
+  siteId        String
+  site          Site       @relation(fields: [siteId], references: [id])
+  parentNodeId  String?
+  parentNode    SiteNode?  @relation(fields: [parentNodeId], references: [id])
+  schema        Json?
+  value         Json?
+  version       Int        @default(0)
+  schemaVersion Int        @default(0)
+  versionTime   DateTime?
+  SiteNode      SiteNode[] @relation("SiteNodeToSiteNode")
+
+  NodeRole NodeRole[]
+
+  SiteEvent SiteEvent[]
+  @@unique([siteId, key, parentNodeId], name: "SiteNodeId")
+}
+
+model SiteEvent {
+  id           String    @id @default(uuid())
+  requestTime  DateTime  @default(now())
+  completeTime DateTime  @default(now())
+  eventName    String
+  address      String[]
+  siteId       String
+  site         Site      @relation(fields: [siteId], references: [id])
+  payload      Json?
+  userId       String?
+  user         User?     @relation(fields: [userId], references: [id])
+  siteNodeId   String?
+  siteNode     SiteNode? @relation(fields: [siteNodeId], references: [id])
+}
+
+model HostEvent {
+  id       String   @id @default(uuid())
+  saveTime DateTime @default(now())
+  host     String
+  events   Json
+}
+
+model SiteToken {
+  id         String   @id @default(uuid())
+  createTime DateTime @default(now())
+  siteId     String
+  site       Site     @relation(fields: [siteId], references: [id])
+  label      String
+  type       String
+  token      String   @unique
+}
+
+model NodeRole {
+  id         String   @id @default(uuid())
+  siteNodeId String
+  siteNode   SiteNode @relation(fields: [siteNodeId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  name       String
+}
+
+model SiteRole {
+  id     String @id @default(uuid())
+  siteId String
+  site   Site   @relation(fields: [siteId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  name   String
+
+  @@unique([siteId, userId], name: "SiteRoleUnique")
+}
+
+model SiteRoleInvitation {
+  id              String    @id @default(uuid())
+  inviteTime      DateTime  @default(now())
+  siteId          String
+  site            Site      @relation(fields: [siteId], references: [id])
+  recipientUserId String?
+  recipientUser   User?     @relation("InviteRecipientRelation", fields: [recipientUserId], references: [id])
+  fromUserId      String
+  fromUser        User      @relation("InviteSenderRelation", fields: [fromUserId], references: [id])
+  acceptedTime    DateTime?
+  dismissTime     DateTime?
+  name            String // this is the eventual SiteRole.name
+  toEmail         String?
+
+  @@unique([siteId, recipientUserId, toEmail], name: "SiteRoleInviteUnique")
+}
