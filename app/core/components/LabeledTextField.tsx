@@ -1,7 +1,10 @@
+import { Input } from "@chakra-ui/input"
+import { PropsOf } from "@emotion/react"
+import styled from "@emotion/styled"
 import { forwardRef, PropsWithoutRef } from "react"
 import { useFormContext } from "react-hook-form"
 
-export interface LabeledTextFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
+export interface LabeledTextFieldProps extends PropsWithoutRef<PropsOf<typeof Input>> {
   /** Field name. */
   name: string
   /** Field label. */
@@ -10,6 +13,15 @@ export interface LabeledTextFieldProps extends PropsWithoutRef<JSX.IntrinsicElem
   type?: "text" | "password" | "email" | "number"
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
 }
+
+const Label = styled.label`
+  label {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    font-size: 1rem;
+  }
+`
 
 export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldProps>(
   ({ label, outerProps, ...props }, ref) => {
@@ -24,33 +36,15 @@ export const LabeledTextField = forwardRef<HTMLInputElement, LabeledTextFieldPro
 
     return (
       <div {...outerProps}>
-        <label>
+        <Label>
           {label}
-          <input disabled={isSubmitting} {...props} ref={register} />
-        </label>
-
+          <Input disabled={isSubmitting || props.disabled} {...props} ref={register} />
+        </Label>
         {error && (
           <div role="alert" style={{ color: "red" }}>
             {error}
           </div>
         )}
-
-        <style jsx>{`
-          label {
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-            font-size: 1rem;
-          }
-          input {
-            font-size: 1rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            border: 1px solid purple;
-            appearance: none;
-            margin-top: 0.5rem;
-          }
-        `}</style>
       </div>
     )
   }

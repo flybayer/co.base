@@ -32,6 +32,7 @@ model User {
   BillingEvent    BillingEvent[]
   tokens          Token[]
   sessions        Session[]
+  Host            Host[]
 }
 
 model Session {

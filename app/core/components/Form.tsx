@@ -1,12 +1,11 @@
 import { useState, ReactNode, PropsWithoutRef } from "react"
 import { FormProvider, useForm, UseFormOptions } from "react-hook-form"
 import * as z from "zod"
+import { Button } from "./Button"
 
 export interface FormProps<S extends z.ZodType<any, any>>
   extends Omit<PropsWithoutRef<JSX.IntrinsicElements["form"]>, "onSubmit"> {
-  /** All your form fields */
   children?: ReactNode
-  /** Text to display in the submit button */
   submitText?: string
   schema?: S
   onSubmit: (values: z.infer<S>) => Promise<void | OnSubmitResult>
@@ -63,26 +62,17 @@ export function Form<S extends z.ZodType<any, any>>({
         className="form"
         {...props}
       >
-        {/* Form fields supplied as children are rendered here */}
         {children}
-
         {formError && (
           <div role="alert" style={{ color: "red" }}>
             {formError}
           </div>
         )}
-
         {submitText && (
-          <button type="submit" disabled={ctx.formState.isSubmitting}>
+          <Button type="submit" disabled={ctx.formState.isSubmitting}>
             {submitText}
-          </button>
+          </Button>
         )}
-
-        <style global jsx>{`
-          .form > * + * {
-            margin-top: 1rem;
-          }
-        `}</style>
       </form>
     </FormProvider>
   )
