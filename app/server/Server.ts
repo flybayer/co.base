@@ -14,6 +14,8 @@ import db from "db"
 
 dotenv.config()
 
+console.log("YES, executing app/server/Server.ts")
+
 const dev = process.env.NODE_ENV !== "production"
 
 const app = blitz({ dev, conf: require("./blitz.config.js") })
@@ -138,8 +140,8 @@ async function prepareDatabase() {
 }
 
 async function runServer() {
-  await prepareDockerDev()
-  await prepareDatabase()
+  // await prepareDockerDev()
+  // await prepareDatabase()
   await app.prepare()
   await startServer()
 }

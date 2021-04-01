@@ -140,8 +140,8 @@ async function prepareDatabase() {
 }
 
 async function runServer() {
-  await prepareDockerDev()
-  await prepareDatabase()
+  // await prepareDockerDev()
+  // await prepareDatabase()
   await app.prepare()
   await startServer()
 }
