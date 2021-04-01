@@ -5,21 +5,30 @@
     "baseUrl": "./",
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "noEmit": false,
     "esModuleInterop": true,
 
-    "module": "esnext",
+    "module": "commonjs",
 
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "jsx": "preserve",
     "incremental": true,
-    "tsBuildInfoFile": ".tsbuildinfo"
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "outDir": "dist"
   },
-  "exclude": ["node_modules", "**/*.e2e.ts", "cypress"],
+  "exclude": [
+    "node_modules",
+    "**/*.e2e.ts",
+    "cypress",
+    "app/pages",
+    "app/*/pages",
+    "app/*/mutations",
+    "test"
+  ],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

@@ -7,6 +7,45 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Node {
+  id                BigInt  @id @default(autoincrement()) @db.BigInt
+  value             Json?
+  mutable           Boolean @default(false)
+  immutableChecksum String? @unique
+
+  nameLinks   NameLink[] @relation(name: "NameLinkOn")
+  nameLinksTo NameLink[] @relation(name: "NameLinkTo")
+  links       TypeLink[] @relation(name: "TypeLinkFrom")
+  linksTo     TypeLink[] @relation(name: "TypeLinkTo")
+  linksOfType TypeLink[] @relation(name: "TypeLinkType")
+}
+
+model TypeLink {
+  id     BigInt @id @default(autoincrement()) @db.BigInt
+  weight BigInt
+
+  from   Node   @relation(fields: [fromId], references: [id], name: "TypeLinkFrom")
+  fromId BigInt @db.BigInt
+  type   Node   @relation(fields: [typeId], references: [id], name: "TypeLinkType")
+  typeId BigInt @db.BigInt
+  to     Node   @relation(fields: [toId], references: [id], name: "TypeLinkTo")
+  toId   BigInt @db.BigInt
+
+  @@unique([fromId, typeId, toId])
+}
+
+model NameLink {
+  name   String
+  weight BigInt
+
+  on   Node   @relation(fields: [onId], references: [id], name: "NameLinkOn")
+  onId BigInt @db.BigInt
+  to   Node   @relation(fields: [toId], references: [id], name: "NameLinkTo")
+  toId BigInt @db.BigInt
+
+  @@unique([onId, name])
+}
+
 model User {
   id             String   @id @default(uuid())
   createdAt      DateTime @default(now())
@@ -32,7 +71,6 @@ model User {
   BillingEvent    BillingEvent[]
   tokens          Token[]
   sessions        Session[]
-  Host            Host[]
 }
 
 model Session {

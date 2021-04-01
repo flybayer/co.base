@@ -5,7 +5,7 @@ import { HomeLayout } from "app/core/layouts/HomeLayout"
 const WhyCobase: BlitzPage = () => {
   return (
     <>
-      <img src="/cobase-logo-latest.svg" />
+      <img src="/cobase-logo-latest.svg" alt="" />
       <Title>cobase.dev</Title>
       <Text>
         <i>The problem:</i> Your non-technical team needs <b>direct access</b> to the{" "}
