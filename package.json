@@ -7,7 +7,7 @@
     "dev1": "NODE_ENV=development nodemon --watch server -e js,ts,tsx --exec 'ts-node --project tsconfig.server.json server.ts'",
     "dev2": "yarn build2:clean && yarn build2 && yarn --cwd=dist start ",
     "dev3": "yarn build3:clean && yarn build3 && node dist/server.js",
-    "dev4": "tsc server.ts --esModuleInterop && blitz start",
+    "dev4": "tsc server.ts --esModuleInterop --skipLibCheck && blitz dev",
     "build": "blitz build",
     "build2:clean": "rm -rf .blitz dist .tsbuildinfo",
     "build2:server": "mkdir dist && tsc --project tsconfig.server.json && cp blitz.config.js dist/blitz.config.js && cp package.json dist/package.json && cp db/schema.prisma dist/db/schema.prisma && cp -r db/migrations dist/db/migrations && cp tsconfig.json dist/tsconfig.json",
